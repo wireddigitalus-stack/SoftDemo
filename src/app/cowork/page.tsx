@@ -87,6 +87,65 @@ const gallery = [
 export default function CoWorkPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CoworkingSpace",
+            name: "Bristol CoWork",
+            url: "https://www.teamvisionllc.com/cowork",
+            telephone: "+14235731022",
+            email: "leasing@teamvisionllc.com",
+            description: "Downtown Bristol's premier professional coworking space — private offices, dedicated desks, and conference rooms at 620 State Street.",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "620 State Street",
+              addressLocality: "Bristol",
+              addressRegion: "TN",
+              postalCode: "37620",
+              addressCountry: "US",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "36.5946",
+              longitude: "-82.1893",
+            },
+            openingHoursSpecification: {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+              opens: "00:00",
+              closes: "23:59",
+            },
+            amenityFeature: [
+              { "@type": "LocationFeatureSpecification", name: "High-Speed Wi-Fi", value: true },
+              { "@type": "LocationFeatureSpecification", name: "Conference Rooms", value: true },
+              { "@type": "LocationFeatureSpecification", name: "24/7 Access", value: true },
+              { "@type": "LocationFeatureSpecification", name: "Coffee & Beverages", value: true },
+              { "@type": "LocationFeatureSpecification", name: "Printing & Scanning", value: true },
+              { "@type": "LocationFeatureSpecification", name: "Secure Building", value: true },
+            ],
+            parentOrganization: {
+              "@type": "RealEstateAgent",
+              name: "Vision LLC",
+              url: "https://www.teamvisionllc.com",
+            },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.teamvisionllc.com" },
+              { "@type": "ListItem", position: 2, name: "Bristol CoWork", item: "https://www.teamvisionllc.com/cowork" },
+            ],
+          }),
+        }}
+      />
       <Navigation />
       <main>
         {/* Dark spacer behind the fixed nav — keeps the top of the page black */}

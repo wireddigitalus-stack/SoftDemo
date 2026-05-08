@@ -8,11 +8,38 @@ export const metadata: Metadata = {
   title: "Commercial Real Estate Blog | Tri-Cities Market Insights | Vision LLC",
   description:
     "Expert insights on commercial real estate in Bristol TN, the Tri-Cities market, coworking, historic adaptive reuse, and executive business consulting from Vision LLC.",
+  keywords: [
+    "Bristol TN commercial real estate blog",
+    "Tri-Cities market insights",
+    "CRE news Bristol Tennessee",
+    "commercial property blog Kingsport Johnson City",
+    "coworking trends Bristol TN",
+    "downtown Bristol development news",
+  ],
   alternates: { canonical: "https://www.teamvisionllc.com/blog" },
   openGraph: {
     title: "Tri-Cities CRE Blog | Market Insights & News | Vision LLC",
     description: "Expert market analysis, business insights, and development news from the Tri-Cities region — written by the team that owns and operates it.",
     url: "https://www.teamvisionllc.com/blog",
+    siteName: "Vision LLC",
+    type: "website",
+    images: [
+      {
+        url: "https://www.teamvisionllc.com/api/og?title=CRE+Intelligence&subtitle=Market+Insights+%C2%B7+Bristol%2C+TN+%E2%80%94+Tri-Cities+Region&tag=Vision+LLC+Blog&type=blog",
+        width: 1200,
+        height: 630,
+        alt: "Vision LLC Blog — Commercial Real Estate Insights",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tri-Cities CRE Blog | Vision LLC",
+    description:
+      "Expert market analysis, business insights, and development news from the Tri-Cities region.",
+    images: [
+      "https://www.teamvisionllc.com/api/og?title=CRE+Intelligence&subtitle=Market+Insights+%C2%B7+Bristol%2C+TN+%E2%80%94+Tri-Cities+Region&tag=Vision+LLC+Blog&type=blog",
+    ],
   },
 };
 

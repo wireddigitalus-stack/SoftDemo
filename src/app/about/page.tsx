@@ -11,6 +11,15 @@ export const metadata: Metadata = {
   title: "About Vision LLC | J. Allen Hurley II — Bristol, TN CRE Leader",
   description:
     "Vision LLC is Downtown Bristol's largest private commercial property owner, led by CEO J. Allen Hurley II. 20+ years building the Tri-Cities through real estate, development & executive advisement. Call 423-573-1022.",
+  keywords: [
+    "Vision LLC about",
+    "J Allen Hurley II",
+    "Bristol TN commercial real estate owner",
+    "Downtown Bristol property developer",
+    "Tri-Cities CRE leadership",
+    "Vision LLC history",
+    "adaptive reuse Bristol Tennessee",
+  ],
   alternates: {
     canonical: "https://www.teamvisionllc.com/about",
   },
@@ -18,6 +27,25 @@ export const metadata: Metadata = {
     title: "J. Allen Hurley II | CEO, Vision LLC — Bristol, TN's #1 CRE Firm",
     description: "20+ years. 50+ properties. Downtown Bristol's largest private commercial property owner & the Tri-Cities' most integrated CRE firm.",
     url: "https://www.teamvisionllc.com/about",
+    siteName: "Vision LLC",
+    type: "website",
+    images: [
+      {
+        url: "https://www.teamvisionllc.com/api/og?title=About+Vision+LLC&subtitle=J.+Allen+Hurley+II+%C2%B7+20%2B+Years+in+the+Tri-Cities&tag=Est.+2002&type=default",
+        width: 1200,
+        height: 630,
+        alt: "About Vision LLC — Bristol, TN Commercial Real Estate",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Vision LLC | J. Allen Hurley II — Bristol's Top CRE Firm",
+    description:
+      "20+ years. 50+ properties. Downtown Bristol's largest private commercial property owner. Led by CEO J. Allen Hurley II.",
+    images: [
+      "https://www.teamvisionllc.com/api/og?title=About+Vision+LLC&subtitle=J.+Allen+Hurley+II+%C2%B7+20%2B+Years+in+the+Tri-Cities&tag=Est.+2002&type=default",
+    ],
   },
 };
 
@@ -74,6 +102,61 @@ export default async function AboutPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            name: "About Vision LLC",
+            url: "https://www.teamvisionllc.com/about",
+            mainEntity: {
+              "@type": "Person",
+              name: "J. Allen Hurley II",
+              jobTitle: "CEO",
+              worksFor: {
+                "@type": "RealEstateAgent",
+                name: "Vision LLC",
+                url: "https://www.teamvisionllc.com",
+                telephone: "+14235731022",
+                address: {
+                  "@type": "PostalAddress",
+                  streetAddress: "100 5th St., Suite 2W",
+                  addressLocality: "Bristol",
+                  addressRegion: "TN",
+                  postalCode: "37620",
+                  addressCountry: "US",
+                },
+                geo: {
+                  "@type": "GeoCoordinates",
+                  latitude: "36.5951",
+                  longitude: "-82.1887",
+                },
+                foundingDate: "2002",
+                areaServed: [
+                  { "@type": "City", name: "Bristol", containedIn: "Tennessee" },
+                  { "@type": "City", name: "Bristol", containedIn: "Virginia" },
+                  { "@type": "City", name: "Kingsport", containedIn: "Tennessee" },
+                  { "@type": "City", name: "Johnson City", containedIn: "Tennessee" },
+                ],
+              },
+            },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.teamvisionllc.com" },
+              { "@type": "ListItem", position: 2, name: "About", item: "https://www.teamvisionllc.com/about" },
+            ],
+          }),
+        }}
+      />
       <Navigation />
       <main>
         {/* Hero */}
