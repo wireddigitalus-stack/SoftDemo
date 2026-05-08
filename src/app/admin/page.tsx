@@ -8,6 +8,7 @@ import AnalyticsTab, { type AnalyticsLead } from "./AnalyticsTab";
 import MaintenanceTab from "./MaintenanceTab";
 import CleaningTab from "./CleaningTab";
 import MarketingTab from "./MarketingTab";
+import ContentTab from "./ContentTab";
 import ProTips from "./ProTips";
 import CallLogModal, { type CallLog, outcomeColor, outcomeLabel } from "./CallLogModal";
 import PrintButton from "./PrintButton";
@@ -19,7 +20,7 @@ import {
   Settings, Plus, Trash2, Save, CheckCircle2, Loader2,
   Bell, Mail, Shield, X, Radio,
   Sparkles, Brain, Send, ChevronRight, ChevronDown, Archive, MessageSquare, BarChart3, Wrench,
-  FileSpreadsheet, Download, Upload, FileText, Flame,
+  FileSpreadsheet, Download, Upload, FileText, Flame, Pencil,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1480,7 +1481,7 @@ export default function AdminPage() {
   const briefKeyRef = useRef(0);
   const [briefKey, setBriefKey] = useState(0);
   const searchParams = useSearchParams();
-  const VALID_TABS = ["leads", "tenants", "analytics", "maintenance", "cleaning", "archived", "marketing", "settings"] as const;
+  const VALID_TABS = ["leads", "tenants", "analytics", "maintenance", "cleaning", "archived", "marketing", "content", "settings"] as const;
   type TabKey = typeof VALID_TABS[number];
   const initialTab = (VALID_TABS.includes(searchParams.get("tab") as TabKey) ? searchParams.get("tab") : "leads") as TabKey;
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
@@ -1861,6 +1862,7 @@ export default function AdminPage() {
               { key: "cleaning",    label: "Cleaning", fullLabel: "Cleaning",    icon: Sparkles },
               { key: "analytics",   label: "Analytic", fullLabel: "Analytics",   icon: BarChart3 },
               { key: "marketing",   label: "Market",   fullLabel: "Marketing",   icon: FileText },
+              { key: "content",     label: "Content",  fullLabel: "Content",     icon: Pencil },
               { key: "archived",    label: "Archive",  fullLabel: `Archived (${archivedLeads.length})`, icon: Archive },
               { key: "settings",    label: "Settings", fullLabel: "Settings",    icon: Settings },
             ] as const).map(({ key, label, fullLabel, icon: Icon }) => (
@@ -2543,6 +2545,12 @@ export default function AdminPage() {
           </div>
         )}
 
+
+        {activeTab === "content" && (
+          <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8">
+            <ContentTab />
+          </div>
+        )}
 
         {activeTab === "settings" && <SettingsPanel leads={activeLeads} />}
 

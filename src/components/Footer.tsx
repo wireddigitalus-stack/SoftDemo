@@ -1,10 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Facebook, Linkedin, Youtube, ArrowRight } from "lucide-react";
 import { COMPANY, GEO_PAGES, SPACE_TYPE_PAGES } from "@/lib/data";
 
+interface FooterOverrides {
+  tagline?: string;
+  facebook_url?: string;
+  linkedin_url?: string;
+  youtube_url?: string;
+}
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [overrides, setOverrides] = useState<FooterOverrides>({});
+
+  useEffect(() => {
+    fetch("/api/site-content")
+      .then(r => r.json())
+      .then(data => {
+        const items: { section: string; key: string; value: string }[] = data.items || [];
+        const footerItems = items.filter(i => i.section === "footer");
+        const o: FooterOverrides = {};
+        for (const item of footerItems) {
+          (o as Record<string, string>)[item.key] = item.value;
+        }
+        setOverrides(o);
+      })
+      .catch(() => { /* use defaults */ });
+  }, []);
+
+  const tagline = overrides.tagline ?? "The Tri-Cities\u2019 premier commercial real estate, development & executive advisement firm — rooted in Bristol for 20+ years.";
+  const facebookUrl = overrides.facebook_url ?? "https://www.facebook.com/teamvisionllc";
+  const linkedinUrl = overrides.linkedin_url ?? "https://www.linkedin.com/company/vision-llc";
+  const youtubeUrl = overrides.youtube_url ?? "https://www.youtube.com/@teamvisionllc";
 
   return (
     <footer className="bg-[#080B0F] border-t border-[rgba(74,222,128,0.1)]">
@@ -24,19 +55,18 @@ export default function Footer() {
               />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
-              The Tri-Cities&apos; premier commercial real estate, development &amp; executive advisement firm — rooted in Bristol for 20+ years.
+              {tagline}
             </p>
             <div className="flex items-center gap-3">
-              <a href="https://www.facebook.com/teamvisionllc" target="_blank" rel="noopener noreferrer" aria-label="Vision LLC on Facebook"
+              <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Vision LLC on Facebook"
                 className="w-9 h-9 rounded-lg border border-[rgba(74,222,128,0.2)] flex items-center justify-center text-gray-400 hover:text-[#4ADE80] hover:border-[rgba(74,222,128,0.5)] transition-colors">
                 <Facebook size={16} />
               </a>
-              <a href="https://www.linkedin.com/company/vision-llc" target="_blank" rel="noopener noreferrer" aria-label="Vision LLC on LinkedIn"
+              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="Vision LLC on LinkedIn"
                 className="w-9 h-9 rounded-lg border border-[rgba(74,222,128,0.2)] flex items-center justify-center text-gray-400 hover:text-[#4ADE80] hover:border-[rgba(74,222,128,0.5)] transition-colors">
                 <Linkedin size={16} />
               </a>
-              {/* TODO: Add real YouTube channel URL or remove this icon if no channel exists */}
-              <a href="https://www.youtube.com/@teamvisionllc" target="_blank" rel="noopener noreferrer" aria-label="Vision LLC on YouTube"
+              <a href={youtubeUrl} target="_blank" rel="noopener noreferrer" aria-label="Vision LLC on YouTube"
                 className="w-9 h-9 rounded-lg border border-[rgba(74,222,128,0.2)] flex items-center justify-center text-gray-400 hover:text-[#4ADE80] hover:border-[rgba(74,222,128,0.5)] transition-colors">
                 <Youtube size={16} />
               </a>

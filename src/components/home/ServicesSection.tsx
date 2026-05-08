@@ -14,7 +14,40 @@ const hrefMap: Record<string, string> = {
   advisement: "/executive-advisement",
 };
 
-export default function ServicesSection() {
+interface ServicesOverrides {
+  section_heading_1?: string;
+  section_heading_2?: string;
+  section_subtext?: string;
+  card_1_title?: string;
+  card_1_short?: string;
+  card_1_desc?: string;
+  card_2_title?: string;
+  card_2_short?: string;
+  card_2_desc?: string;
+  card_3_title?: string;
+  card_3_short?: string;
+  card_3_desc?: string;
+}
+
+export default function ServicesSection({ overrides }: { overrides?: ServicesOverrides }) {
+  const o = overrides || {};
+
+  const heading1 = o.section_heading_1 ?? "Three Integrated Divisions.";
+  const heading2 = o.section_heading_2 ?? "One Hands-On Philosophy.";
+  const sectionSubtext = o.section_subtext ??
+    "Vision operates through three complementary divisions — from initial strategy through leasing, development, construction, and long-term advisory. No hand-offs. No silos. Just results.";
+
+  // Merge CMS overrides for each card
+  const services = SERVICES.map((service, idx) => {
+    const i = idx + 1;
+    return {
+      ...service,
+      title: o[`card_${i}_title` as keyof ServicesOverrides] ?? service.title,
+      shortDesc: o[`card_${i}_short` as keyof ServicesOverrides] ?? service.shortDesc,
+      description: o[`card_${i}_desc` as keyof ServicesOverrides] ?? service.description,
+    };
+  });
+
   return (
     <section id="services" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -22,19 +55,17 @@ export default function ServicesSection() {
         <div className="max-w-2xl mb-14">
           <div className="section-line mb-4" />
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 leading-tight">
-            Three Integrated Divisions.{" "}
-            <span className="gradient-text-green">One Hands-On Philosophy.</span>
+            {heading1}{" "}
+            <span className="gradient-text-green">{heading2}</span>
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed">
-            Vision operates through three complementary divisions — from initial strategy
-            through leasing, development, construction, and long-term advisory. No hand-offs.
-            No silos. Just results.
+            {sectionSubtext}
           </p>
         </div>
 
         {/* Service Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {SERVICES.map((service, idx) => (
+          {services.map((service, idx) => (
             <Link
               key={service.id}
               href={hrefMap[service.id]}

@@ -1,6 +1,30 @@
 import { STATS } from "@/lib/data";
 
-export default function StatsBar() {
+interface StatsOverrides {
+  stat_1_value?: string;
+  stat_1_label?: string;
+  stat_2_value?: string;
+  stat_2_label?: string;
+  stat_3_value?: string;
+  stat_3_label?: string;
+  stat_4_value?: string;
+  stat_4_label?: string;
+}
+
+export default function StatsBar({ overrides }: { overrides?: StatsOverrides }) {
+  const o = overrides || {};
+
+  // Merge CMS overrides with hardcoded defaults
+  const stats = STATS.map((stat, idx) => {
+    const i = idx + 1;
+    const valueKey = `stat_${i}_value` as keyof StatsOverrides;
+    const labelKey = `stat_${i}_label` as keyof StatsOverrides;
+    return {
+      value: o[valueKey] ?? stat.value,
+      label: o[labelKey] ?? stat.label,
+    };
+  });
+
   return (
     <section
       aria-label="Vision LLC at a glance"
@@ -11,7 +35,7 @@ export default function StatsBar() {
 
       {/* Ticker on mobile, grid on desktop */}
       <div className="hidden md:grid md:grid-cols-4 divide-x divide-[rgba(74,222,128,0.1)]">
-        {STATS.map((stat) => (
+        {stats.map((stat) => (
           <div
             key={stat.label}
             className="flex flex-col items-center justify-center py-8 px-6 text-center"
@@ -29,7 +53,7 @@ export default function StatsBar() {
       {/* Mobile ticker */}
       <div className="md:hidden overflow-hidden py-5">
         <div className="ticker-track">
-          {[...STATS, ...STATS].map((stat, i) => (
+          {[...stats, ...stats].map((stat, i) => (
             <div
               key={i}
               className="flex items-center gap-2 px-8 flex-shrink-0"

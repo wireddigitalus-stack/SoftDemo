@@ -9,6 +9,7 @@ import FAQSection from "@/components/home/FAQSection";
 import CTASection from "@/components/home/CTASection";
 import CustomSearchCTA from "@/components/CustomSearchCTA";
 import { HOMEPAGE_FAQ_SCHEMA } from "@/lib/faq-data";
+import { getAllSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Vision LLC | Downtown Bristol's #1 Commercial Real Estate Company",
@@ -42,16 +43,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch all CMS overrides in one call (cached 60s)
+  const overrides = await getAllSiteContent();
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(HOMEPAGE_FAQ_SCHEMA) }}
       />
-      <HeroSection />
-      <StatsBar />
-      <ServicesSection />
+      <HeroSection overrides={overrides.hero} />
+      <StatsBar overrides={overrides.stats} />
+      <ServicesSection overrides={overrides.services} />
       <PropertiesSection />
       <CustomSearchCTA />
       <GeoMarketsSection />
@@ -61,3 +65,4 @@ export default function HomePage() {
     </>
   );
 }
+

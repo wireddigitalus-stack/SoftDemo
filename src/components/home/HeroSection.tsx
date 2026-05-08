@@ -47,7 +47,28 @@ const HERO_SLIDES = [
   },
 ];
 
-export default function HeroSection() {
+// ── CMS Overrides type ───────────────────────────────────────────────────────
+interface HeroOverrides {
+  trust_badge?: string;
+  headline_before?: string;
+  headline_highlight?: string;
+  headline_after?: string;
+  subtext?: string;
+  cta_primary?: string;
+  cta_secondary?: string;
+  micro_stat_1_value?: string;
+  micro_stat_1_label?: string;
+  micro_stat_2_value?: string;
+  micro_stat_2_label?: string;
+  micro_stat_3_value?: string;
+  micro_stat_3_label?: string;
+  micro_stat_4_value?: string;
+  micro_stat_4_label?: string;
+}
+
+export default function HeroSection({ overrides }: { overrides?: HeroOverrides }) {
+  const o = overrides || {};
+
   const [slides, setSlides] = useState(HERO_SLIDES);
   const [videoUrl, setVideoUrl] = useState<string|null>(null);
   const [videoEnabled, setVideoEnabled] = useState(false);
@@ -101,6 +122,25 @@ export default function HeroSection() {
 
   const activeSlide = slides[currentSlide] || HERO_SLIDES[0];
   const nextSlideData = slides[nextSlide] || HERO_SLIDES[0];
+
+  // CMS-editable values with defaults
+  const trustBadge = o.trust_badge ?? "#1 Commercial Property Owner in Downtown Bristol";
+  const headlineBefore = o.headline_before ?? "The Tri-Cities\u2019 ";
+  const headlineHighlight = o.headline_highlight ?? "Commercial";
+  const headlineAfter = o.headline_after ?? " Real Estate Leader";
+  const subtext = o.subtext ?? "Vision LLC has been building Downtown Bristol — and serving businesses across the entire Tri-Cities region — for over 20 years. Office. Retail. Warehouse. Development. Executive Advisement.\nOne team. One vision.";
+  const ctaPrimary = o.cta_primary ?? "Schedule a Tour";
+  const ctaSecondary = o.cta_secondary ?? COMPANY.phone;
+
+  const microStats = [
+    { value: o.micro_stat_1_value ?? "20+", label: o.micro_stat_1_label ?? "Years Invested in the Tri-Cities" },
+    { value: o.micro_stat_2_value ?? "50+", label: o.micro_stat_2_label ?? "Commercial Properties" },
+    { value: o.micro_stat_3_value ?? "3", label: o.micro_stat_3_label ?? "Integrated Divisions" },
+    { value: o.micro_stat_4_value ?? "Award-Winning", label: o.micro_stat_4_label ?? "Historic Developer" },
+  ];
+
+  // Split subtext on newlines to preserve <br /> rendering
+  const subtextParts = subtext.split("\n");
 
   return (
     <section
@@ -162,23 +202,26 @@ export default function HeroSection() {
               ))}
             </div>
             <span className="text-sm font-semibold text-[#4ADE80]">
-              #1 Commercial Property Owner in Downtown Bristol
+              {trustBadge}
             </span>
           </div>
 
           {/* H1 */}
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] mb-6 tracking-tight drop-shadow-2xl">
-            The Tri-Cities&apos;{" "}
+            {headlineBefore}
             <span className="gradient-text-green glow-green-text">
-              Commercial
-            </span>{" "}
-            Real Estate Leader
+              {headlineHighlight}
+            </span>
+            {headlineAfter}
           </h1>
 
           <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-8 max-w-2xl drop-shadow-lg">
-            Vision LLC has been building Downtown Bristol — and serving businesses across
-            the entire Tri-Cities region — for over 20 years. Office. Retail. Warehouse.
-            Development. Executive Advisement.<br />One team. One vision.
+            {subtextParts.map((part, i) => (
+              <span key={i}>
+                {part}
+                {i < subtextParts.length - 1 && <br />}
+              </span>
+            ))}
           </p>
 
           {/* City badges */}
@@ -194,7 +237,7 @@ export default function HeroSection() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/contact" id="hero-tour-cta" className="btn-primary-cta text-base px-7 py-4">
-              Schedule a Tour
+              {ctaPrimary}
               <ArrowRight size={18} />
             </Link>
             <a
@@ -203,18 +246,13 @@ export default function HeroSection() {
               className="btn-secondary text-base px-7 py-4 backdrop-blur-sm"
             >
               <Phone size={18} />
-              {COMPANY.phone}
+              {ctaSecondary}
             </a>
           </div>
 
           {/* Trust micro-stats */}
           <div className="flex flex-wrap gap-6 mt-12 pt-12 border-t border-[rgba(74,222,128,0.12)]">
-            {[
-              { value: "20+", label: "Years Invested in the Tri-Cities" },
-              { value: "50+", label: "Commercial Properties" },
-              { value: "3", label: "Integrated Divisions" },
-              { value: "Award-Winning", label: "Historic Developer" },
-            ].map((stat) => (
+            {microStats.map((stat) => (
               <div key={stat.label} className="flex-shrink-0">
                 <p className="text-2xl font-black text-white leading-none drop-shadow-lg">{stat.value}</p>
                 <p className="text-xs text-gray-400 mt-1 max-w-[120px] leading-snug">{stat.label}</p>

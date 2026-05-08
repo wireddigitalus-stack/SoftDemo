@@ -21,6 +21,7 @@ export type TabKey =
   | "marketing-social"
   | "one-sheet"
   | "archived"
+  | "content"
   | "settings"
   | "global";
 
@@ -327,6 +328,23 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "Configure email alerts so you're notified the moment a high-scoring lead submits an inquiry — no need to watch the dashboard constantly.",
     },
   ],
+  content: [
+    {
+      emoji: "📝",
+      title: "What Is the Content Editor?",
+      body: "The Content tab lets you edit the text on your homepage — headlines, descriptions, stats, and service cards — without touching any code. Changes go live within 60 seconds of saving.",
+    },
+    {
+      emoji: "↩️",
+      title: "Reverting to Defaults",
+      body: "Every field has a revert button (↩️). Click it to delete your customization and restore the original text. Great for undoing changes without remembering what the default was.",
+    },
+    {
+      emoji: "💾",
+      title: "Save Per Field or Per Section",
+      body: "You can save individual fields with their inline Save button, or scroll to the bottom of a section and hit 'Save All' to save every changed field at once.",
+    },
+  ],
 };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -402,6 +420,7 @@ export default function ProTips({ activeTab }: ProTipsProps) {
     "marketing-social": "Social Copy",
     "one-sheet": "One-Sheet",
     archived: "Archive",
+    content: "Content",
     settings: "Settings",
     global: "General",
   };
