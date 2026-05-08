@@ -10,6 +10,7 @@ import LeaseBotTrigger from "@/components/LeaseBotTrigger";
 import CustomSearchCTA from "@/components/CustomSearchCTA";
 import PropertyGallery from "@/components/PropertyGallery";
 import { fetchImageOverrides, resolveHeroImage, resolveAllImages } from "@/lib/property-image-overrides";
+import { getPropertyOverrides } from "@/lib/site-content";
 
 
 type Props = { params: Promise<{ id: string }> };
@@ -79,8 +80,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PropertyDetailPage({ params }: Props) {
   const { id } = await params;
-  const property = PROPERTIES.find((p) => p.id === id) || await getDynamicProperty(id);
+  let property = PROPERTIES.find((p) => p.id === id) || await getDynamicProperty(id);
   if (!property) notFound();
+
+  // ── Apply CMS text overrides (from admin Property Editor) ─────────────
+  const propOverrides = await getPropertyOverrides();
+  const po = propOverrides[id];
+  if (po) {
+    property = {
+      ...property,
+      name: po.name || property.name,
+      type: po.type || property.type,
+      city: po.city || property.city,
+      sqft: po.sqft || property.sqft,
+      status: po.status || property.status,
+      badge: po.badge ?? property.badge,
+      description: po.description || property.description,
+      features: po.features ? po.features.split("\n").filter(Boolean) : property.features,
+      ...(po.address ? { address: po.address } : {}),
+      ...(po.imageAlt ? { imageAlt: po.imageAlt } : {}),
+    };
+  }
 
   // ── Resolve images: override table wins over static data ─────────────────
   const overrides = await fetchImageOverrides();

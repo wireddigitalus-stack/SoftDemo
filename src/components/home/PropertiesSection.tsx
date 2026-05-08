@@ -5,6 +5,7 @@ import { Building2, Users, Warehouse, Briefcase, ArrowRight, MapPin } from "luci
 import { PROPERTIES } from "@/lib/data";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
 import { fetchImageOverrides, resolveHeroImage } from "@/lib/property-image-overrides";
+import { getPropertyOverrides } from "@/lib/site-content";
 
 
 const typeIcons: Record<string, React.ReactNode> = {
@@ -26,6 +27,26 @@ const badgeColors: Record<string, string> = {
 
 export default async function PropertiesSection() {
   const overrides = await fetchImageOverrides();
+  const propOverrides = await getPropertyOverrides();
+
+  // Apply CMS text overrides to each property
+  const properties = PROPERTIES.map((p) => {
+    const po = propOverrides[p.id];
+    if (!po) return p;
+    return {
+      ...p,
+      name: po.name || p.name,
+      type: po.type || p.type,
+      city: po.city || p.city,
+      sqft: po.sqft || p.sqft,
+      status: po.status || p.status,
+      badge: po.badge ?? p.badge,
+      description: po.description || p.description,
+      features: po.features ? po.features.split("\n").filter(Boolean) : p.features,
+      imageAlt: po.imageAlt || p.imageAlt,
+    };
+  });
+
   return (
     <section id="properties" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-[#0D1117]/50">
       <div className="max-w-7xl mx-auto">
@@ -53,7 +74,7 @@ export default async function PropertiesSection() {
 
         {/* Property Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {PROPERTIES.map((property) => (
+          {properties.map((property) => (
             <article
               key={property.id}
               className="group glass rounded-2xl overflow-hidden property-card border border-[rgba(74,222,128,0.1)]"

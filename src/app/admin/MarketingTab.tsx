@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Sparkles, Copy, Download, CheckCircle2, Trash2, FileText, Clock, ChevronDown, ImageIcon, BookOpen, Layout, Building2, Instagram } from "lucide-react";
+import { Loader2, Sparkles, Copy, Download, CheckCircle2, Trash2, FileText, Clock, ChevronDown, ImageIcon, BookOpen, Layout, Building2, Instagram, Pencil } from "lucide-react";
 import PropertyImageManager from "./PropertyImageManager";
 import BlogGenerator from "./BlogGenerator";
 import BannerManager from "./BannerManager";
 import PropertyCreator from "./PropertyCreator";
+import PropertyEditor from "./PropertyEditor";
 import PropertyOneSheet from "./PropertyOneSheet";
 import SocialStudio from "./SocialStudio";
 
@@ -52,9 +53,9 @@ function saveQueue(q: PressRelease[]) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub: string) => void }) {
-  const [subTab, setSubTab] = useState<"press" | "blog" | "photos" | "banner" | "properties" | "social" | "one-sheet">("properties");
+  const [subTab, setSubTab] = useState<"press" | "blog" | "photos" | "banner" | "properties" | "edit" | "social" | "one-sheet">("edit");
 
-  const switchSubTab = (key: "press" | "blog" | "photos" | "banner" | "properties" | "social" | "one-sheet") => {
+  const switchSubTab = (key: "press" | "blog" | "photos" | "banner" | "properties" | "edit" | "social" | "one-sheet") => {
     setSubTab(key);
     onSubTabChange?.(key);
   };
@@ -197,6 +198,16 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
             tag:   "Live",
           },
           {
+            key:   "edit",
+            label: "Edit Properties",
+            desc:  "Update existing listing text",
+            icon:  Pencil,
+            grad:  "from-[#F97316] to-[#EA580C]",
+            glow:  "rgba(249,115,22,0.2)",
+            border:"rgba(249,115,22,0.4)",
+            tag:   "Live",
+          },
+          {
             key:   "properties",
             label: "Add Property",
             desc:  "AI-enhanced new listings",
@@ -229,7 +240,7 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
         ] as const).map(({ key, label, desc, icon: Icon, grad, glow, border, tag }) => (
           <button
             key={key}
-            onClick={() => switchSubTab(key as "press"|"blog"|"photos"|"banner"|"properties"|"social"|"one-sheet")}
+            onClick={() => switchSubTab(key as "press"|"blog"|"photos"|"banner"|"properties"|"edit"|"social"|"one-sheet")}
             className={`relative text-left p-4 rounded-2xl border-2 transition-all duration-200 group overflow-hidden w-full ${
               subTab === key
                 ? "bg-[rgba(255,255,255,0.04)]"
@@ -258,7 +269,10 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
         ))}
       </div>
 
-      {/* ── Properties ── */}
+      {/* ── Edit Properties ── */}
+      {subTab === "edit" && <PropertyEditor />}
+
+      {/* ── Add Properties ── */}
       {subTab === "properties" && <PropertyCreator />}
 
       {/* ── Blog Articles ── */}

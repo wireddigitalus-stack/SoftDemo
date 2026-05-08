@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Building2, ArrowRight, Phone, Search, Users, Warehouse, Briefcase } from "lucide-react";
@@ -28,12 +28,49 @@ const badgeColors: Record<string, string> = {
 
 export default function CommercialRealEstatePage() {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [propOverrides, setPropOverrides] = useState<Record<string, Record<string, string>>>({});
+
+  // Fetch property overrides on mount
+  useEffect(() => {
+    fetch("/api/site-content")
+      .then(r => r.json())
+      .then(data => {
+        const items: { section: string; key: string; value: string }[] = data.items || [];
+        const result: Record<string, Record<string, string>> = {};
+        for (const item of items) {
+          if (!item.section.startsWith("property:")) continue;
+          const propId = item.section.replace("property:", "");
+          if (!result[propId]) result[propId] = {};
+          result[propId][item.key] = item.value;
+        }
+        setPropOverrides(result);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Apply CMS overrides to properties
+  const properties = useMemo(() => PROPERTIES.map(p => {
+    const po = propOverrides[p.id];
+    if (!po) return p;
+    return {
+      ...p,
+      name: po.name || p.name,
+      type: po.type || p.type,
+      city: po.city || p.city,
+      sqft: po.sqft || p.sqft,
+      status: po.status || p.status,
+      badge: po.badge ?? p.badge,
+      description: po.description || p.description,
+      features: po.features ? po.features.split("\n").filter(Boolean) : p.features,
+      imageAlt: po.imageAlt || p.imageAlt,
+    };
+  }), [propOverrides]);
 
   const filtered = activeFilter === "All"
-    ? PROPERTIES
-    : PROPERTIES.filter((p) => p.type === activeFilter);
+    ? properties
+    : properties.filter((p) => p.type === activeFilter);
 
-  const activeTypes = ["All", ...Array.from(new Set(PROPERTIES.map((p) => p.type)))];
+  const activeTypes = ["All", ...Array.from(new Set(properties.map((p) => p.type)))];
 
   return (
     <>

@@ -73,3 +73,37 @@ export async function getAllSiteContent(): Promise<Record<string, ContentMap>> {
     return {};
   }
 }
+
+/**
+ * Fetch all property-related overrides (sections starting with "property:").
+ * Returns { "city-centre": { name: "...", description: "..." }, ... }
+ */
+export async function getPropertyOverrides(): Promise<Record<string, ContentMap>> {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_content?section=like.property:*&select=section,key,value`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SERVICE_KEY,
+          Authorization: `Bearer ${SERVICE_KEY}`,
+        },
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!res.ok) return {};
+
+    const rows: { section: string; key: string; value: string }[] = await res.json();
+    const result: Record<string, ContentMap> = {};
+    for (const row of rows) {
+      // section is "property:city-centre" → extract "city-centre"
+      const propId = row.section.replace("property:", "");
+      if (!result[propId]) result[propId] = {};
+      result[propId][row.key] = row.value;
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
