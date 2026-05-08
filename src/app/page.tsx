@@ -59,9 +59,9 @@ export default async function HomePage() {
       <PropertiesSection />
       <CustomSearchCTA />
       <GeoMarketsSection />
-      <TestimonialsSection />
-      <FAQSection />
-      <CTASection />
+      <TestimonialsSection overrides={overrides.testimonials} />
+      <FAQSection overrides={overrides.faq} />
+      <CTASection overrides={overrides.cta} />
     </>
   );
 }

@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { Phone, ArrowRight, Award, Clock, Building2, TrendingUp } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
+import { getAllSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "About Vision LLC | J. Allen Hurley II — Bristol, TN CRE Leader",
@@ -54,7 +55,23 @@ const values = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const allContent = await getAllSiteContent();
+
+  // Extract about-section overrides
+  const o = allContent.about || {};
+
+  const heroHeading1 = o.hero_heading_1 ?? "20+ Years Building";
+  const heroHeading2 = o.hero_heading_2 ?? "Downtown Bristol";
+  const heroSubtext = o.hero_subtext ?? "Vision LLC is the largest private commercial property owner in Downtown Bristol, TN — and the most integrated commercial real estate firm in the Tri-Cities.";
+  const leaderHeading = o.leader_heading ?? "J. Allen Hurley II";
+  const leaderBio1 = o.leader_bio_1 ?? "J. Allen Hurley II is the CEO of Vision LLC and one of the most respected commercial real estate leaders in the Tri-Cities region. With 30+ years of executive experience spanning development, construction, and corporate strategy, Allen has shaped the commercial landscape of Downtown Bristol more than any other private individual.";
+  const leaderBio2 = o.leader_bio_2 ?? "Under his leadership, Vision LLC has reactivated millions of square feet of dormant commercial space, preserved some of Bristol's most iconic historic buildings, and delivered measurable economic impact across Northeast Tennessee and Southwest Virginia.";
+  const leaderBio3 = o.leader_bio_3 ?? "Beyond real estate, Allen serves as an executive advisor to C-suite leaders, boards, and government entities — bringing the same strategic rigor to Fortune 500 challenges that he applies to Main Street development.";
+  const leaderQuote = o.leader_quote ?? "We don't just own buildings. We invest in communities. Every block we restore is a statement that Downtown Bristol has a future worth fighting for.";
+  const ctaHeading = o.cta_heading ?? "Ready to Work With Vision?";
+  const ctaSubtext = o.cta_subtext ?? "Whether you need a lease, a development partner, or an executive advisor — our team is ready.";
+
   return (
     <>
       <Navigation />
@@ -65,12 +82,11 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto relative">
             <div className="section-line mb-4" />
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
-              20+ Years Building<br />
-              <span className="gradient-text-green">Downtown Bristol</span>
+              {heroHeading1}<br />
+              <span className="gradient-text-green">{heroHeading2}</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl">
-              Vision LLC is the largest private commercial property owner in Downtown Bristol, TN —
-              and the most integrated commercial real estate firm in the Tri-Cities.
+              {heroSubtext}
             </p>
           </div>
         </section>
@@ -98,23 +114,16 @@ export default function AboutPage() {
             <div>
               <div className="section-line mb-4" />
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-6">
-                Led by <span className="gradient-text-green">J. Allen Hurley II</span>
+                Led by <span className="gradient-text-green">{leaderHeading}</span>
               </h2>
               <p className="text-gray-300 text-lg mb-4">
-                J. Allen Hurley II is the CEO of Vision LLC and one of the most respected commercial
-                real estate leaders in the Tri-Cities region. With 30+ years of executive experience
-                spanning development, construction, and corporate strategy, Allen has shaped the
-                commercial landscape of Downtown Bristol more than any other private individual.
+                {leaderBio1}
               </p>
               <p className="text-gray-400 mb-4">
-                Under his leadership, Vision LLC has reactivated millions of square feet of dormant
-                commercial space, preserved some of Bristol's most iconic historic buildings, and
-                delivered measurable economic impact across Northeast Tennessee and Southwest Virginia.
+                {leaderBio2}
               </p>
               <p className="text-gray-400 mb-8">
-                Beyond real estate, Allen serves as an executive advisor to C-suite leaders, boards,
-                and government entities — bringing the same strategic rigor to Fortune 500 challenges
-                that he applies to Main Street development.
+                {leaderBio3}
               </p>
               <div className="flex gap-4">
                 <a href={COMPANY.phoneHref} className="btn-primary">
@@ -136,10 +145,9 @@ export default function AboutPage() {
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="glass rounded-xl p-4 border border-[rgba(74,222,128,0.2)]">
                   <p className="text-sm text-gray-300 italic">
-                    "We don't just own buildings. We invest in communities. Every block we restore
-                    is a statement that Downtown Bristol has a future worth fighting for."
+                    &quot;{leaderQuote}&quot;
                   </p>
-                  <p className="text-xs text-[#4ADE80] mt-2 font-semibold">— J. Allen Hurley II, CEO</p>
+                  <p className="text-xs text-[#4ADE80] mt-2 font-semibold">— {leaderHeading}, CEO</p>
                 </div>
               </div>
             </div>
@@ -197,10 +205,10 @@ export default function AboutPage() {
         <section className="py-16 px-4 bg-[rgba(74,222,128,0.04)] border-t border-[rgba(74,222,128,0.08)]">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-black text-white mb-4">
-              Ready to Work With Vision?
+              {ctaHeading}
             </h2>
             <p className="text-gray-400 mb-8">
-              Whether you need a lease, a development partner, or an executive advisor — our team is ready.
+              {ctaSubtext}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a href={COMPANY.phoneHref} className="btn-primary">

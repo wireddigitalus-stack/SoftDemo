@@ -2,7 +2,23 @@ import Link from "next/link";
 import { Phone, Mail, ArrowRight, MapPin } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 
-export default function CTASection() {
+interface CTAOverrides {
+  badge_text?: string;
+  heading_1?: string;
+  heading_2?: string;
+  subtext?: string;
+  cta_button?: string;
+}
+
+export default function CTASection({ overrides }: { overrides?: CTAOverrides }) {
+  const o = overrides || {};
+
+  const badgeText = o.badge_text ?? "Serving the Tri-Cities Since 2002";
+  const heading1 = o.heading_1 ?? "Ready to Find Your Space";
+  const heading2 = o.heading_2 ?? "in the Tri-Cities?";
+  const subtext = o.subtext ?? "Whether you\u2019re looking for a downtown office, retail storefront, or want to talk commercial strategy \u2014 the Vision team is ready.";
+  const ctaButton = o.cta_button ?? "Schedule a Tour";
+
   return (
     <section
       id="cta"
@@ -20,18 +36,17 @@ export default function CTASection() {
             <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-lg border border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.06)]">
               <MapPin size={13} className="text-[#4ADE80]" />
               <span className="text-sm font-semibold text-[#4ADE80]">
-                Serving the Tri-Cities Since 2002
+                {badgeText}
               </span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 leading-tight">
-              Ready to Find Your Space{" "}
+              {heading1}{" "}
               <br className="hidden sm:block" />
-              <span className="gradient-text-green">in the Tri-Cities?</span>
+              <span className="gradient-text-green">{heading2}</span>
             </h2>
             <p className="text-gray-400 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-              Whether you&apos;re looking for a downtown office, retail storefront, or want to talk
-              commercial strategy — the Vision team is ready.
+              {subtext}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -40,7 +55,7 @@ export default function CTASection() {
                 id="final-cta-contact"
                 className="btn-primary text-base px-8 py-4 w-full sm:w-auto justify-center"
               >
-                Schedule a Tour <ArrowRight size={18} />
+                {ctaButton} <ArrowRight size={18} />
               </Link>
               <a
                 href={COMPANY.phoneHref}

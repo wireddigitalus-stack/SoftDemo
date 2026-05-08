@@ -1,7 +1,37 @@
 import { Star, Quote } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/data";
 
-export default function TestimonialsSection() {
+interface TestimonialsOverrides {
+  section_heading_1?: string;
+  section_heading_2?: string;
+  section_subtext?: string;
+  quote_1?: string; author_1?: string; location_1?: string;
+  quote_2?: string; author_2?: string; location_2?: string;
+  quote_3?: string; author_3?: string; location_3?: string;
+  review_score?: string;
+  review_tagline?: string;
+}
+
+export default function TestimonialsSection({ overrides }: { overrides?: TestimonialsOverrides }) {
+  const o = overrides || {};
+
+  const heading1 = o.section_heading_1 ?? "What Our ";
+  const heading2 = o.section_heading_2 ?? "Clients Say";
+  const sectionSubtext = o.section_subtext ?? "Businesses across the Tri-Cities trust Vision LLC to put them in the right space and set them up for long-term success.";
+
+  const testimonials = TESTIMONIALS.map((t, idx) => {
+    const i = idx + 1;
+    return {
+      quote: o[`quote_${i}` as keyof TestimonialsOverrides] ?? t.quote,
+      author: o[`author_${i}` as keyof TestimonialsOverrides] ?? t.author,
+      location: o[`location_${i}` as keyof TestimonialsOverrides] ?? t.location,
+      rating: t.rating,
+    };
+  });
+
+  const reviewScore = o.review_score ?? "5.0 stars";
+  const reviewTagline = o.review_tagline ?? "Trusted by Tri-Cities businesses since 2002";
+
   return (
     <section
       id="testimonials"
@@ -12,17 +42,16 @@ export default function TestimonialsSection() {
         <div className="max-w-xl mb-12">
           <div className="section-line mb-4" />
           <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-            What Our{" "}
-            <span className="gradient-text-green">Clients Say</span>
+            {heading1}
+            <span className="gradient-text-green">{heading2}</span>
           </h2>
           <p className="text-gray-400 mt-3">
-            Businesses across the Tri-Cities trust Vision LLC to put them in the right space
-            and set them up for long-term success.
+            {sectionSubtext}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((t, idx) => (
+          {testimonials.map((t, idx) => (
             <blockquote
               key={idx}
               className="glass rounded-2xl p-7 border border-[rgba(74,222,128,0.1)] hover:border-[rgba(74,222,128,0.25)] transition-colors relative"
@@ -47,7 +76,7 @@ export default function TestimonialsSection() {
               <footer className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4ADE80]/20 to-[#22C55E]/20 border border-[rgba(74,222,128,0.3)] flex items-center justify-center">
                   <span className="text-[#4ADE80] font-bold text-sm">
-                    {t.author.charAt(0)}
+                    {(t.author as string).charAt(0)}
                   </span>
                 </div>
                 <div>
@@ -68,7 +97,7 @@ export default function TestimonialsSection() {
               ))}
             </div>
             <p className="text-sm text-gray-400">
-              <span className="text-white font-bold">5.0 stars</span> · Trusted by Tri-Cities businesses since 2002
+              <span className="text-white font-bold">{reviewScore}</span> · {reviewTagline}
             </p>
           </div>
           <a
