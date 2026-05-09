@@ -6,6 +6,7 @@ import {
   ChevronUp, ChevronDown, Flame, ArrowUpRight, Sparkles, Loader2, Copy, CheckCircle2,
 } from "lucide-react";
 import type { Tenant } from "./TenantsTab";
+import SiteTrafficPanel from "./SiteTrafficPanel";
 
 // Minimal lead shape needed for analytics
 export interface AnalyticsLead {
@@ -727,6 +728,9 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
           )}
         </div>
       </div>
+
+      {/* ── Site Traffic Intelligence (Internal Analytics) ───────── */}
+      <SiteTrafficPanel />
 
       {/* ── Market Demand Intelligence ──────────────────────────────── */}
       <LeadHealthDashboard leads={leads} />
