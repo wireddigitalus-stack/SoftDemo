@@ -1,4 +1,5 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { Phone, MessageSquare } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 
@@ -7,8 +8,11 @@ import { COMPANY } from "@/lib/data";
  * Shown only on mobile/tablet (hidden on lg+). Provides a persistent
  * "Call Now" and "Ask VISION" bar at the bottom of the screen —
  * the two highest-intent actions for mobile visitors.
+ * Hidden on admin and staff dashboards which have their own UI.
  */
 export default function MobileStickyBar() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/staff")) return null;
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-40 lg:hidden safe-bottom"
