@@ -26,23 +26,7 @@ export type TabKey =
   | "global";
 
 const TIPS: Record<TabKey, Tip[]> = {
-  global: [
-    {
-      emoji: "🔄",
-      title: "Auto-Refresh",
-      body: "The dashboard automatically refreshes every 30 seconds so you always have the latest lead data without lifting a finger.",
-    },
-    {
-      emoji: "📱",
-      title: "Works on Any Device",
-      body: "You can use the dashboard on your phone, tablet, or desktop — the layout adjusts automatically.",
-    },
-    {
-      emoji: "🔒",
-      title: "Secure Access",
-      body: "Only team members with an approved Vision LLC account can access this dashboard. All data is encrypted.",
-    },
-  ],
+  global: [],
   leads: [
     {
       emoji: "🌡️",
@@ -320,29 +304,49 @@ const TIPS: Record<TabKey, Tip[]> = {
     {
       emoji: "👤",
       title: "Team Access",
-      body: "In Settings, you can manage which team members have admin access vs. read-only access to the dashboard.",
+      body: "Manage which team members have admin access vs. read-only access to the dashboard. Each user gets their own login credentials.",
     },
     {
       emoji: "🔔",
-      title: "Notifications",
+      title: "Notification Alerts",
       body: "Configure email alerts so you're notified the moment a high-scoring lead submits an inquiry — no need to watch the dashboard constantly.",
+    },
+    {
+      emoji: "🏢",
+      title: "Property Defaults",
+      body: "Set default values for property listings like contact phone, office hours, and standard lease terms. These auto-fill when adding new properties.",
     },
   ],
   content: [
     {
+      emoji: "🗺️",
+      title: "Page Map Blueprint",
+      body: "Click the 'Page Map' header at the top to open an interactive wireframe of your homepage. Each section is drawn as a mini blueprint — click any block to instantly jump to that section's editor fields below.",
+    },
+    {
+      emoji: "🔗",
+      title: "Section ↔ Editor Sync",
+      body: "When you click a section on the Page Map, animated connector lines link the wireframe block to its editor. The active section glows green on both the map and the editor card so you always know exactly what you're editing.",
+    },
+    {
       emoji: "📝",
-      title: "What Is the Content Editor?",
-      body: "The Content tab lets you edit the text on your homepage — headlines, descriptions, stats, and service cards — without touching any code. Changes go live within 60 seconds of saving.",
+      title: "Editing Content",
+      body: "Expand any section to see its editable fields — headlines, descriptions, stats, button text. Type your changes and they're tracked instantly. The blue badge shows how many fields you've customized in each section.",
     },
     {
       emoji: "↩️",
       title: "Reverting to Defaults",
-      body: "Every field has a revert button (↩️). Click it to delete your customization and restore the original text. Great for undoing changes without remembering what the default was.",
+      body: "Every field has a revert button (↩️). Click it to delete your customization and restore the original text — no need to remember what the default was.",
     },
     {
       emoji: "💾",
-      title: "Save Per Field or Per Section",
-      body: "You can save individual fields with their inline Save button, or scroll to the bottom of a section and hit 'Save All' to save every changed field at once.",
+      title: "Saving Changes",
+      body: "Hit the green Save button at the top to push all your edits live. Changes appear on the website within 60 seconds — no deploy or code changes needed.",
+    },
+    {
+      emoji: "🎨",
+      title: "Color-Coded Sections",
+      body: "Each section on the Page Map has its own color: Hero=green, Stats=blue, Services=purple, Reviews=pink, FAQ=yellow, CTA=orange, Footer=slate. This makes it easy to identify sections at a glance.",
     },
   ],
 };
@@ -399,10 +403,9 @@ export default function ProTips({ activeTab }: ProTipsProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // Merge global tips with tab-specific tips
+  // Use only tab-specific tips — no global filler
   const tabTips = TIPS[activeTab] ?? [];
-  const globalTips = TIPS.global;
-  const allTips = [...tabTips, ...globalTips];
+  const allTips = tabTips.length > 0 ? tabTips : [{ emoji: "💡", title: "Tips Coming Soon", body: "Feature-specific tips for this section are being added. Check back soon!" }];
   const current = allTips[selectedIdx] ?? allTips[0];
 
   const tabLabel: Record<TabKey, string> = {
@@ -466,7 +469,7 @@ export default function ProTips({ activeTab }: ProTipsProps) {
                 <div>
                   <p className="text-sm font-black text-white leading-none">Pro Tips</p>
                   <p className="text-[10px] text-gray-500 mt-0.5">
-                    {tabLabel[activeTab]} tab · {tabTips.length} tips · {globalTips.length} general
+                    {tabLabel[activeTab]} · {allTips.length} tip{allTips.length !== 1 ? "s" : ""}
                   </p>
                 </div>
               </div>
@@ -486,13 +489,13 @@ export default function ProTips({ activeTab }: ProTipsProps) {
                   <p className="text-[10px] text-gray-600 px-4 py-3">No tips yet.</p>
                 )}
                 {tabTips.length > 0 && (
-                  <p className="text-[9px] font-black text-[#4ADE80] uppercase tracking-widest px-4 pb-1">
+                  <p className="text-[9px] font-black text-[#4ADE80] uppercase tracking-widest px-4 pb-1 pt-1">
                     {tabLabel[activeTab]}
                   </p>
                 )}
-                {tabTips.map((tip, i) => (
+                {allTips.map((tip, i) => (
                   <button
-                    key={`tab-${i}`}
+                    key={`tip-${i}`}
                     onClick={() => setSelectedIdx(i)}
                     className={`w-full text-left px-4 py-2.5 flex items-center gap-2 transition-all group ${
                       selectedIdx === i
@@ -507,30 +510,6 @@ export default function ProTips({ activeTab }: ProTipsProps) {
                   </button>
                 ))}
 
-                {globalTips.length > 0 && (
-                  <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest px-4 pt-3 pb-1">
-                    General
-                  </p>
-                )}
-                {globalTips.map((tip, i) => {
-                  const idx = tabTips.length + i;
-                  return (
-                    <button
-                      key={`global-${i}`}
-                      onClick={() => setSelectedIdx(idx)}
-                      className={`w-full text-left px-4 py-2.5 flex items-center gap-2 transition-all group ${
-                        selectedIdx === idx
-                          ? "bg-[rgba(74,222,128,0.1)] border-r-2 border-[#4ADE80]"
-                          : "hover:bg-[rgba(255,255,255,0.04)]"
-                      }`}
-                    >
-                      <span className="text-sm leading-none flex-shrink-0">{tip.emoji}</span>
-                      <span className={`text-[10px] font-semibold leading-tight line-clamp-2 ${selectedIdx === idx ? "text-[#4ADE80]" : "text-gray-400 group-hover:text-gray-300"}`}>
-                        {tip.title}
-                      </span>
-                    </button>
-                  );
-                })}
               </div>
 
               {/* Right: tip content */}
