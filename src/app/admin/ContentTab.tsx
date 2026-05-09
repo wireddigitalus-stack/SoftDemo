@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import PageMap from "./PageMap";
 import HeroBannerManager from "./HeroBannerManager";
+import PropertyEditor from "./PropertyEditor";
 
 // ── Default values (mirrors what's hardcoded in components) ──────────────────
 
@@ -133,7 +134,7 @@ export default function ContentTab() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ hero: true });
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [activeMapSection, setActiveMapSection] = useState<string | null>("hero");
   const [mapOpen, setMapOpen] = useState(false);
@@ -300,9 +301,6 @@ export default function ContentTab() {
         )}
       </div>
 
-      {/* ── Hero Banner Manager ── */}
-      <HeroBannerManager />
-
       {/* ── Top Bar: Title + Save Button ── */}
       <div className="flex items-center justify-between flex-wrap gap-4 p-5 sm:p-6 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
         <div>
@@ -451,6 +449,14 @@ export default function ContentTab() {
           </div>
         );
       })}
+
+      {/* ── Hero Banner Manager ── */}
+      <HeroBannerManager />
+
+      {/* ── Edit Properties ── */}
+      <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
+        <PropertyEditor />
+      </div>
 
       {/* Bottom Summary */}
       <div className="text-center pt-2 pb-4">
