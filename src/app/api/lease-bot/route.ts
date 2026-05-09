@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { name, email, phone, spaceType, budget, timeline, teamSize, additionalInfo,
-      utm_source, utm_medium, utm_campaign } = body;
+      utm_source, utm_medium, utm_campaign, sessionId } = body;
 
     if (!name || !spaceType || !budget) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -190,6 +190,7 @@ export async function POST(req: NextRequest) {
           source: lead.source,
           medium: lead.medium,
           campaign: lead.campaign,
+          session_id: sessionId || null,  // Link to analytics session
         }),
       });
       if (!insertRes.ok) {

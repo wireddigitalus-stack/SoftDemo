@@ -75,6 +75,8 @@ export async function POST(req: NextRequest) {
       // Anti-spam fields
       website,        // honeypot — bots fill this, humans don't
       formOpenedAt,   // timestamp set when form renders
+      // Analytics correlation
+      sessionId,      // anonymous browser session from useAnalytics
     } = body;
 
     // ── 1. Honeypot check — return silent 200 to fool bots ──────────────────
@@ -137,6 +139,7 @@ export async function POST(req: NextRequest) {
         city: cleanCity,
         message: cleanMessage,
         ip_hash: ip.split(".").slice(0, 3).join(".") + ".x", // partially mask IP
+        session_id: sessionId || null,  // Link to analytics session
       });
     } catch {
       console.warn("[contact] Supabase audit insert skipped (table may not exist)");
@@ -184,6 +187,7 @@ export async function POST(req: NextRequest) {
         source: "contact-form",
         medium: "web",
         campaign: "",
+        session_id: sessionId || null,  // Link to analytics session
       };
 
       await fetch(`${SUPABASE_URL}/rest/v1/leads`, {

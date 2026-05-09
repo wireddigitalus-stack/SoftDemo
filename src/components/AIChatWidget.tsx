@@ -14,6 +14,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { COMPANY } from "@/lib/data";
+import { trackEvent, getAnalyticsSessionId } from "@/hooks/useAnalytics";
 
 // ─── Property URL map (id → individual property page) ───────────────────────
 const PROPERTY_URLS: Record<string, string> = {
@@ -393,6 +394,7 @@ export default function LeaseBotWidget() {
           utm_source: utmSource || "organic",
           utm_medium: utmMedium || "direct",
           utm_campaign: utmCampaign || "",
+          sessionId: getAnalyticsSessionId(),  // Link lead to browsing session
         }),
       });
       clearTimeout(timeout);
@@ -402,6 +404,7 @@ export default function LeaseBotWidget() {
         saveLiveLeadToStorage(finalLead, data.lead);
         setResult(data.lead);
         setStage("result");
+        trackEvent("form_submit", { form: "lease-bot", spaceType: finalLead.spaceType, score: data.lead.score });
       } else {
         throw new Error(data.error || "No result returned");
       }

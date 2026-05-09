@@ -7,6 +7,7 @@ import {
   CheckCircle, Loader2, AlertCircle,
 } from "lucide-react";
 import { COMPANY } from "@/lib/data";
+import { getAnalyticsSessionId, trackEvent } from "@/hooks/useAnalytics";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -39,6 +40,8 @@ export default function ContactPage() {
       // Anti-spam
       website:      fd.get("website"),        // honeypot
       formOpenedAt: formOpenedAt.current,     // timing check
+      // Analytics correlation
+      sessionId:    getAnalyticsSessionId(),  // link this lead to their browsing session
     };
     // Capture email before the form unmounts so we can show it on the success screen
     setSubmittedEmail((fd.get("email") as string) || "");
@@ -59,6 +62,7 @@ export default function ContactPage() {
       }
 
       setStatus("success");
+      trackEvent("form_submit", { form: "contact", interest: fd.get("interest") as string });
     } catch {
       setErrorMsg("Network error. Please check your connection and try again.");
       setStatus("error");
