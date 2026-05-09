@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Save, CheckCircle2, Loader2, RotateCcw, AlertCircle,
   Type, Hash, Pencil, ChevronDown, ChevronRight,
   Eye, Building2, BarChart3, Briefcase, Phone, MapPin,
 } from "lucide-react";
+import PageMap from "./PageMap";
 
 // ── Default values (mirrors what's hardcoded in components) ──────────────────
 
@@ -133,6 +134,18 @@ export default function ContentTab() {
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ hero: true });
   const [loading, setLoading] = useState(true);
+  const [activeMapSection, setActiveMapSection] = useState<string | null>("hero");
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Scroll to and expand a section when selected from the PageMap
+  const handleMapSectionSelect = useCallback((sectionKey: string) => {
+    setActiveMapSection(sectionKey);
+    setExpandedSections(prev => ({ ...prev, [sectionKey]: true }));
+    // Small delay to allow expansion before scrolling
+    setTimeout(() => {
+      sectionRefs.current[sectionKey]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }, []);
 
   const fetchContent = useCallback(async () => {
     try {
@@ -256,6 +269,13 @@ export default function ContentTab() {
   return (
     <div className="space-y-5">
 
+      {/* ── Blueprint Page Map ── */}
+      <PageMap
+        activeSection={activeMapSection}
+        onSectionSelect={handleMapSectionSelect}
+        activePage={activeMapSection === "about" ? "about" : "home"}
+      />
+
       {/* ── Top Bar: Title + Save Button ── */}
       <div className="flex items-center justify-between flex-wrap gap-4 p-5 sm:p-6 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
         <div>
@@ -315,10 +335,18 @@ export default function ContentTab() {
         const customized = Object.keys(fields).filter(k => isOverridden(sectionKey, k)).length;
 
         return (
-          <div key={sectionKey} className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
+          <div
+            key={sectionKey}
+            ref={el => { sectionRefs.current[sectionKey] = el; }}
+            className={`glass rounded-2xl border overflow-hidden transition-all duration-300 ${
+              activeMapSection === sectionKey
+                ? "border-[rgba(74,222,128,0.25)] shadow-[0_0_20px_rgba(74,222,128,0.08)]"
+                : "border-[rgba(255,255,255,0.06)]"
+            }`}
+          >
             {/* Section Header */}
             <button
-              onClick={() => toggleSection(sectionKey)}
+              onClick={() => { toggleSection(sectionKey); setActiveMapSection(sectionKey); }}
               className="w-full flex items-center justify-between p-5 hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
             >
               <div className="flex items-center gap-3">
