@@ -7,6 +7,7 @@ import {
   Eye, Building2, BarChart3, Briefcase, Phone, MapPin,
 } from "lucide-react";
 import PageMap from "./PageMap";
+import HeroBannerManager from "./HeroBannerManager";
 
 // ── Default values (mirrors what's hardcoded in components) ──────────────────
 
@@ -298,6 +299,9 @@ export default function ContentTab() {
           </div>
         )}
       </div>
+
+      {/* ── Hero Banner Manager ── */}
+      <HeroBannerManager />
 
       {/* ── Top Bar: Title + Save Button ── */}
       <div className="flex items-center justify-between flex-wrap gap-4 p-5 sm:p-6 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
