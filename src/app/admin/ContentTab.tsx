@@ -115,15 +115,15 @@ const DEFAULTS: Record<string, Record<string, { label: string; value: string; ty
   },
 };
 
-const SECTION_META: Record<string, { label: string; icon: React.ReactNode; description: string }> = {
-  hero: { label: "Hero Section", icon: <Eye size={18} />, description: "Main banner at the top of the homepage" },
-  stats: { label: "Stats Bar", icon: <BarChart3 size={18} />, description: "Statistics strip below the hero" },
-  services: { label: "Services Cards", icon: <Briefcase size={18} />, description: "Three service division cards" },
-  cta: { label: "CTA Banner", icon: <Phone size={18} />, description: "Bottom call-to-action section" },
-  testimonials: { label: "Testimonials", icon: <Building2 size={18} />, description: "Client reviews on the homepage" },
-  faq: { label: "FAQ", icon: <Hash size={18} />, description: "Frequently asked questions" },
-  about: { label: "About Page", icon: <Eye size={18} />, description: "About page content & leadership bio" },
-  footer: { label: "Footer", icon: <MapPin size={18} />, description: "Footer tagline & social links" },
+const SECTION_META: Record<string, { label: string; icon: React.ReactNode; description: string; color: string }> = {
+  hero:         { label: "Hero Section",    icon: <Eye size={18} />,      description: "Main banner at the top of the homepage",   color: "#4ADE80" },
+  stats:        { label: "Stats Bar",       icon: <BarChart3 size={18} />, description: "Statistics strip below the hero",         color: "#60A5FA" },
+  services:     { label: "Services Cards",  icon: <Briefcase size={18} />, description: "Three service division cards",            color: "#A78BFA" },
+  testimonials: { label: "Testimonials",    icon: <Building2 size={18} />, description: "Client reviews on the homepage",          color: "#F472B6" },
+  faq:          { label: "FAQ",             icon: <Hash size={18} />,      description: "Frequently asked questions",              color: "#FACC15" },
+  cta:          { label: "CTA Banner",      icon: <Phone size={18} />,     description: "Bottom call-to-action section",           color: "#FB923C" },
+  about:        { label: "About Page",      icon: <Eye size={18} />,       description: "About page content & leadership bio",     color: "#38BDF8" },
+  footer:       { label: "Footer",          icon: <MapPin size={18} />,    description: "Footer tagline & social links",           color: "#94A3B8" },
 };
 
 interface ContentItem { section: string; key: string; value: string }
@@ -363,11 +363,11 @@ export default function ContentTab() {
           <div
             key={sectionKey}
             ref={el => { sectionRefs.current[sectionKey] = el; }}
-            className={`glass rounded-2xl border overflow-hidden transition-all duration-300 ${
-              activeMapSection === sectionKey
-                ? "border-[rgba(74,222,128,0.25)] shadow-[0_0_20px_rgba(74,222,128,0.08)]"
-                : "border-[rgba(255,255,255,0.06)]"
-            }`}
+            className="glass rounded-2xl border overflow-hidden transition-all duration-300"
+            style={activeMapSection === sectionKey
+              ? { borderColor: `${meta.color}40`, boxShadow: `0 0 20px ${meta.color}14` }
+              : { borderColor: "rgba(255,255,255,0.06)" }
+            }
           >
             {/* Section Header */}
             <button
@@ -375,14 +375,32 @@ export default function ContentTab() {
               className="w-full flex items-center justify-between p-5 hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.2)] flex items-center justify-center text-[#4ADE80]">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${meta.color}18`,
+                    borderWidth: 1,
+                    borderStyle: "solid",
+                    borderColor: `${meta.color}33`,
+                    color: meta.color,
+                  }}
+                >
                   {meta.icon}
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     {meta.label}
                     {customized > 0 && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.25)] text-[#4ADE80] font-semibold">
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                        style={{
+                          backgroundColor: `${meta.color}18`,
+                          borderWidth: 1,
+                          borderStyle: "solid",
+                          borderColor: `${meta.color}40`,
+                          color: meta.color,
+                        }}
+                      >
                         {customized} edited
                       </span>
                     )}
@@ -402,7 +420,10 @@ export default function ContentTab() {
 
             {/* Fields */}
             {isExpanded && (
-              <div className="border-t border-[rgba(255,255,255,0.05)] p-5 space-y-4">
+              <div
+                className="border-t border-[rgba(255,255,255,0.05)] p-5 space-y-4"
+                style={{ borderLeft: `3px solid ${meta.color}50` }}
+              >
                 {Object.entries(fields).map(([fieldKey, fieldMeta]) => {
                   const val = getValue(sectionKey, fieldKey);
                   const dirty = isDirty(sectionKey, fieldKey);
