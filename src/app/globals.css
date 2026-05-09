@@ -206,7 +206,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 14px 28px;
-  background: linear-gradient(135deg, #4ADE80, #22C55E);
+  background: linear-gradient(135deg, #4ADE80 0%, #22C55E 40%, #FACC15 100%);
   color: #080B0F;
   font-weight: 700;
   font-size: 15px;
@@ -220,8 +220,8 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(74, 222, 128, 0.35);
-  background: linear-gradient(135deg, #6EF4A0, #4ADE80);
+  box-shadow: 0 12px 30px rgba(74, 222, 128, 0.3), 0 4px 12px rgba(250, 204, 21, 0.2);
+  background: linear-gradient(135deg, #6EF4A0 0%, #4ADE80 40%, #FBBF24 100%);
 }
 
 /* ── Secondary button: hover reveals animated gold border ── */
