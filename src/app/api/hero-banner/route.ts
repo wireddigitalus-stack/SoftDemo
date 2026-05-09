@@ -59,7 +59,9 @@ function resolve(config: HeroConfig, overrides: Record<string, string>) {
       if (s.type === "property" && s.propertyId) {
         const p = PROPERTIES.find(p => p.id === s.propertyId);
         if (!p) return null;
-        return { src: overrides[s.propertyId] || p.image, label: s.label || p.name, location: s.location || `${p.city}, TN` };
+        const override = overrides[s.propertyId];
+        const imgSrc = (override && override.trim()) ? override : p.image;
+        return { src: imgSrc, label: s.label || p.name, location: s.location || `${p.city}, TN` };
       }
       if (s.type === "custom" && s.imageUrl) {
         return { src: s.imageUrl, label: s.label || "Banner", location: s.location || "Bristol, TN" };

@@ -163,10 +163,14 @@ export default function HeroSection({ overrides }: { overrides?: HeroOverrides }
           <>
             <div className="absolute inset-0">
               <Image key={`cur-${currentSlide}`} src={activeSlide.src} alt={activeSlide.label}
-                fill priority className="object-cover md:scale-[1.03] md:transition-transform md:duration-[10000ms] md:ease-linear" sizes="100vw"/>
+                fill priority className="object-cover md:scale-[1.03] md:transition-transform md:duration-[10000ms] md:ease-linear" sizes="100vw"
+                onError={(e) => { (e.target as HTMLImageElement).src = HERO_SLIDES[currentSlide % HERO_SLIDES.length]?.src || HERO_SLIDES[0].src; }}
+              />
             </div>
             <div className="absolute inset-0 transition-opacity" style={{ opacity: isTransitioning ? 1 : 0, transitionDuration: `${TRANSITION_DURATION}ms`, transitionTimingFunction:"ease-in-out" }}>
-              <Image key={`nxt-${nextSlide}`} src={nextSlideData.src} alt={nextSlideData.label} fill className="object-cover" sizes="100vw"/>
+              <Image key={`nxt-${nextSlide}`} src={nextSlideData.src} alt={nextSlideData.label} fill className="object-cover" sizes="100vw"
+                onError={(e) => { (e.target as HTMLImageElement).src = HERO_SLIDES[nextSlide % HERO_SLIDES.length]?.src || HERO_SLIDES[0].src; }}
+              />
             </div>
           </>
         )}
