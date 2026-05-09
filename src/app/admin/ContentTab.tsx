@@ -359,7 +359,7 @@ export default function ContentTab() {
         const dirtyCount = sectionDirtyCount(sectionKey);
         const customized = Object.keys(fields).filter(k => isOverridden(sectionKey, k)).length;
 
-        return (
+        const card = (
           <div
             key={sectionKey}
             ref={el => { sectionRefs.current[sectionKey] = el; }}
@@ -469,12 +469,21 @@ export default function ContentTab() {
             )}
           </div>
         );
+
+        // Render Hero Banner Manager right after the Hero text editor
+        if (sectionKey === "hero") {
+          return (
+            <React.Fragment key={sectionKey}>
+              {card}
+              <HeroBannerManager />
+            </React.Fragment>
+          );
+        }
+
+        return card;
       })}
 
-      {/* ── Hero Banner Manager ── */}
-      <HeroBannerManager />
 
-      {/* ── Edit Properties ── */}
       <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
         <PropertyEditor />
       </div>
