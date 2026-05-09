@@ -1751,9 +1751,7 @@ export default function AdminPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center shadow-[0_0_20px_rgba(74,222,128,0.25)]">
-              <Zap size={18} className="text-black" />
-            </div>
+            <img src="/NEW-ICON-512x512.png" alt="Vision" className="w-10 h-10 rounded-xl shadow-[0_0_20px_rgba(74,222,128,0.25)] object-cover" />
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-white font-black text-xl tracking-tight">VISION</h1>
