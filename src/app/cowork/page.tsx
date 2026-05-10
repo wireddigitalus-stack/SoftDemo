@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { Phone, ArrowRight, Check, Wifi, Coffee, Users, Clock, Monitor, Lock } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
+import CoWorkHeroCarousel from "@/components/CoWorkHeroCarousel";
 
 export const metadata: Metadata = {
   title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN",
@@ -220,24 +221,8 @@ export default function CoWorkPage() {
                 </Link>
               </div>
             </div>
-            {/* Hero image */}
-            <div className="relative h-80 lg:h-[500px] rounded-2xl overflow-hidden">
-              <Image
-                src="/property-images/cowork-shared-office.jpg"
-                alt="Bristol CoWork interior workspace"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117]/40 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 flex gap-2">
-                {gallery.slice(1).map((img) => (
-                  <div key={img.src} className="relative flex-1 h-16 rounded-lg overflow-hidden">
-                    <Image src={img.src} alt={img.alt} fill className="object-cover" />
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Hero carousel */}
+            <CoWorkHeroCarousel gallery={gallery} />
           </div>
         </section>
 
