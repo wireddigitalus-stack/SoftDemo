@@ -157,8 +157,9 @@ export default function RootLayout({
               currenciesAccepted: "USD",
               paymentAccepted: "Cash, Check, Wire Transfer",
               sameAs: [
-                "https://www.facebook.com/teamvisionllc",
-                "https://www.linkedin.com/company/vision-llc",
+                "https://www.facebook.com/profile.php?id=100063475843769",
+                "https://www.linkedin.com/company/visionllc/posts/?feedView=all",
+                "https://www.youtube.com/@visionllc204",
               ],
               hasMap: "https://maps.google.com/?q=100+5th+St+Bristol+TN+37620",
               openingHoursSpecification: {

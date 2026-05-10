@@ -109,9 +109,9 @@ const DEFAULTS: Record<string, Record<string, { label: string; value: string; ty
   },
   footer: {
     tagline: { label: "Footer Tagline", value: "The Tri-Cities' premier commercial real estate, development & executive advisement firm — rooted in Bristol for 20+ years.", type: "textarea" },
-    facebook_url: { label: "Facebook URL", value: "https://www.facebook.com/teamvisionllc", type: "text" },
-    linkedin_url: { label: "LinkedIn URL", value: "https://www.linkedin.com/company/vision-llc", type: "text" },
-    youtube_url: { label: "YouTube URL", value: "https://www.youtube.com/@teamvisionllc", type: "text" },
+    facebook_url: { label: "Facebook URL", value: "https://www.facebook.com/profile.php?id=100063475843769", type: "text" },
+    linkedin_url: { label: "LinkedIn URL", value: "https://www.linkedin.com/company/visionllc/posts/?feedView=all", type: "text" },
+    youtube_url: { label: "YouTube URL", value: "https://www.youtube.com/@visionllc204", type: "text" },
   },
 };
 

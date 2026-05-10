@@ -33,9 +33,9 @@ export default function Footer() {
   }, []);
 
   const tagline = overrides.tagline ?? "The Tri-Cities\u2019 premier commercial real estate, development & executive advisement firm — rooted in Bristol for 20+ years.";
-  const facebookUrl = overrides.facebook_url ?? "https://www.facebook.com/teamvisionllc";
-  const linkedinUrl = overrides.linkedin_url ?? "https://www.linkedin.com/company/vision-llc";
-  const youtubeUrl = overrides.youtube_url ?? "https://www.youtube.com/@teamvisionllc";
+  const facebookUrl = overrides.facebook_url ?? "https://www.facebook.com/profile.php?id=100063475843769";
+  const linkedinUrl = overrides.linkedin_url ?? "https://www.linkedin.com/company/visionllc/posts/?feedView=all";
+  const youtubeUrl = overrides.youtube_url ?? "https://www.youtube.com/@visionllc204";
 
   return (
     <footer className="bg-[#080B0F] border-t border-[rgba(74,222,128,0.1)]">
