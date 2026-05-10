@@ -4,11 +4,12 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Save, CheckCircle2, Loader2, RotateCcw, AlertCircle,
   Type, Hash, Pencil, ChevronDown, ChevronRight,
-  Eye, Building2, BarChart3, Briefcase, Phone, MapPin,
+  Eye, Building2, BarChart3, Briefcase, Phone, MapPin, UploadCloud
 } from "lucide-react";
 import PageMap from "./PageMap";
 import HeroBannerManager from "./HeroBannerManager";
 import PropertyEditor from "./PropertyEditor";
+import MlsImportMock from "@/components/MlsImportMock";
 
 // ── Default values (mirrors what's hardcoded in components) ──────────────────
 
@@ -311,6 +312,15 @@ export default function ContentTab() {
           <p className="text-xs text-gray-500 mt-1">
             Edit any text on your website. Make changes below, then click <strong className="text-gray-300">Save Changes</strong>.
           </p>
+          <button 
+            onClick={() => { 
+              setExpandedSections(prev => ({ ...prev, mls: true })); 
+              setTimeout(() => document.getElementById('mls-import-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+            }} 
+            className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#4ADE80]/10 border border-[#4ADE80]/20 text-[#4ADE80] text-xs font-medium hover:bg-[#4ADE80]/20 transition-colors"
+          >
+             <UploadCloud size={14} /> Add New Property (MLS Import)
+          </button>
         </div>
 
         <button
@@ -486,6 +496,37 @@ export default function ContentTab() {
 
       <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
         <PropertyEditor />
+      </div>
+
+      {/* ── MLS Auto-Import (Collapsed by default) ── */}
+      <div id="mls-import-card" className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden transition-all duration-300">
+        <button
+          onClick={() => setExpandedSections(prev => ({ ...prev, mls: !prev.mls }))}
+          className="w-full flex items-center justify-between p-5 hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#4ADE80]/10 border border-[#4ADE80]/20 text-[#4ADE80] flex items-center justify-center">
+              <UploadCloud size={18} />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                Add New Property
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 font-semibold">
+                  Beta
+                </span>
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">Import directly from MLS database</p>
+            </div>
+          </div>
+          <div className="text-gray-600">
+            {expandedSections["mls"] ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+          </div>
+        </button>
+        {expandedSections["mls"] && (
+          <div className="border-t border-[rgba(255,255,255,0.05)] p-5 bg-[#080B0F]/50">
+            <MlsImportMock />
+          </div>
+        )}
       </div>
 
       {/* Bottom Summary */}
