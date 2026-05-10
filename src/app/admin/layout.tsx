@@ -4,7 +4,19 @@ import AdminHeader from "@/components/AdminHeader";
 
 export const metadata: Metadata = {
   title: "VISION | Property Intelligence Platform",
+  description: "Internal admin dashboard for VISION LLC — real-time property analytics, lead management, content editing, and marketing tools.",
   robots: { index: false, follow: false },
+  openGraph: {
+    title: "VISION — Admin Dashboard",
+    description: "Property Intelligence Platform · Lead management, content editing, analytics & marketing tools.",
+    siteName: "VISION LLC",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VISION — Admin Dashboard",
+    description: "Property Intelligence Platform · Internal admin tools.",
+  },
 };
 
 export default function AdminLayout({
