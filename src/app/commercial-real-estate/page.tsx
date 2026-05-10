@@ -30,8 +30,9 @@ const badgeColors: Record<string, string> = {
 export default function CommercialRealEstatePage() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [propOverrides, setPropOverrides] = useState<Record<string, Record<string, string>>>({});
+  const [imageOverrides, setImageOverrides] = useState<Record<string, { hero_url: string | null; all_urls: string[] }>>({});
 
-  // Fetch property overrides on mount
+  // Fetch property text overrides on mount
   useEffect(() => {
     fetch("/api/site-content")
       .then(r => r.json())
@@ -49,11 +50,31 @@ export default function CommercialRealEstatePage() {
       .catch(() => {});
   }, []);
 
-  // Apply CMS overrides to properties
+  // Fetch property image overrides on mount
+  useEffect(() => {
+    fetch("/api/property-images")
+      .then(r => r.json())
+      .then(data => {
+        const map: Record<string, { hero_url: string | null; all_urls: string[] }> = {};
+        if (Array.isArray(data.overrides)) {
+          for (const row of data.overrides) {
+            if (!row.property_id) continue;
+            map[row.property_id] = {
+              hero_url: row.hero_url || row.image_url || null,
+              all_urls: Array.isArray(row.all_urls) ? row.all_urls : (row.image_url ? [row.image_url] : []),
+            };
+          }
+        }
+        setImageOverrides(map);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Apply CMS text + image overrides to properties
   const properties = useMemo(() => PROPERTIES.map(p => {
     const po = propOverrides[p.id];
-    if (!po) return p;
-    return {
+    const io = imageOverrides[p.id];
+    const base = po ? {
       ...p,
       name: po.name || p.name,
       type: po.type || p.type,
@@ -64,8 +85,13 @@ export default function CommercialRealEstatePage() {
       description: po.description || p.description,
       features: po.features ? po.features.split("\n").filter(Boolean) : p.features,
       imageAlt: po.imageAlt || p.imageAlt,
-    };
-  }), [propOverrides]);
+    } : p;
+    // Merge image overrides — admin uploads win over static data
+    if (io?.all_urls?.length) {
+      return { ...base, images: io.all_urls, image: io.hero_url || io.all_urls[0] };
+    }
+    return base;
+  }), [propOverrides, imageOverrides]);
 
   const filtered = activeFilter === "All"
     ? properties
