@@ -6,6 +6,7 @@ import { MapPin, Building2, ArrowRight, Phone, Search, Users, Warehouse, Briefca
 import { PROPERTIES, COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
+import PropertyCardCarousel from "@/components/PropertyCardCarousel";
 
 
 const ALL_TYPES = ["All", "Mixed-Use", "Office", "CoWorking", "Retail / Office", "Event Space / Commercial", "Industrial"];
@@ -158,8 +159,14 @@ export default function CommercialRealEstatePage() {
                   className="group glass rounded-2xl overflow-hidden property-card border border-[rgba(74,222,128,0.1)] flex flex-col"
                 >
                   {/* Image */}
+                  {/* Image carousel */}
                   <div className="relative h-64 bg-gradient-to-br from-[#111827] to-[#0D1117] overflow-hidden flex-shrink-0">
-                    {(property as any).image ? (
+                    {((property as any).images && (property as any).images.length > 1) ? (
+                      <PropertyCardCarousel
+                        images={(property as any).images}
+                        alt={property.imageAlt || property.name}
+                      />
+                    ) : (property as any).image ? (
                       <Image
                         src={(property as any).image}
                         alt={property.imageAlt || property.name}
@@ -172,20 +179,20 @@ export default function CommercialRealEstatePage() {
                         <Building2 size={56} className="text-[rgba(74,222,128,0.08)]" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117]/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117]/80 via-transparent to-transparent pointer-events-none" />
                     {/* Badges */}
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-3 z-20 pointer-events-none">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border ${badgeColors[property.badgeColor]}`}>
                         {property.badge}
                       </span>
                     </div>
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-3 right-3 z-20 pointer-events-none">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm text-[11px] font-semibold text-white">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] pulse-green" />
                         {property.status}
                       </span>
                     </div>
-                    <div className="absolute bottom-3 left-3">
+                    <div className="absolute bottom-3 left-3 z-20 pointer-events-none">
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/50 backdrop-blur-sm text-[11px] text-gray-300">
                         {typeIcons[property.type] || <Building2 size={12} />}
                         {property.type}
