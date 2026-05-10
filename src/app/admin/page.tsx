@@ -479,7 +479,13 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
 
 // ─── Settings Panel ────────────────────────────────────────────────────────────
 
-function SettingsPanel({ leads }: { leads: Lead[] }) {
+function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
+  leads: Lead[];
+  deletingAll: boolean;
+  deleteAllConfirm: string;
+  setDeleteAllConfirm: (v: string) => void;
+  deleteAllLeads: () => void;
+}) {
   const [adminUsers,  setAdminUsers]  = useState<AllowedUser[]>([]);
   const [maintUsers,  setMaintUsers]  = useState<AllowedUser[]>([]);
   const [cleanUsers,  setCleanUsers]  = useState<AllowedUser[]>([]);
@@ -653,6 +659,54 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
             <ImportPanel />
           </div>
 
+        </div>
+      </div>
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
+      {/* ── Danger Zone: Clear All Leads ── */}
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#EF4444] to-[#DC2626] flex items-center justify-center flex-shrink-0">
+            <AlertCircle size={13} className="text-white" />
+          </div>
+          <h2 className="text-sm font-black text-white uppercase tracking-widest">Danger Zone</h2>
+        </div>
+        <p className="text-xs text-gray-500 mb-5">
+          Permanently delete all leads from the database. This is useful for clearing test data before launch. This action cannot be undone.
+        </p>
+
+        <div className="rounded-2xl border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.03)] p-5"
+          style={{ boxShadow: "0 0 22px rgba(239,68,68,0.06)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Trash2 size={15} className="text-red-400" />
+            <p className="text-xs font-black text-white uppercase tracking-widest">Clear All Leads</p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] text-red-400 font-bold ml-auto">
+              {leads.length} lead{leads.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+          <p className="text-[11px] text-gray-500 leading-relaxed mb-4">
+            This will permanently remove <strong className="text-red-400">{leads.length}</strong> lead{leads.length !== 1 ? "s" : ""} from Supabase.
+            Type <code className="text-red-400 bg-[rgba(239,68,68,0.1)] px-1.5 py-0.5 rounded text-[10px] font-bold">DELETE</code> below to confirm.
+          </p>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={deleteAllConfirm}
+              onChange={e => setDeleteAllConfirm(e.target.value)}
+              placeholder='Type "DELETE" to confirm'
+              className="flex-1 px-3 py-2 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(239,68,68,0.15)] text-white text-xs placeholder:text-gray-600 outline-none focus:border-[rgba(239,68,68,0.4)] transition-colors font-mono"
+            />
+            <button
+              onClick={deleteAllLeads}
+              disabled={deleteAllConfirm !== "DELETE" || deletingAll || leads.length === 0}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.35)] text-red-400 text-xs font-bold hover:bg-[rgba(239,68,68,0.25)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              {deletingAll ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+              {deletingAll ? "Deleting…" : "Delete All"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1507,8 +1561,45 @@ export default function AdminPage() {
   const [callLogs, setCallLogs] = useState<CallLog[]>([]);
   const [activeCallLog, setActiveCallLog] = useState<{ leadId: string; leadName: string; phone: string } | null>(null);
   const [coldPipelineOpen, setColdPipelineOpen] = useState(false);
+  const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
+  const [deletingAll, setDeletingAll] = useState(false);
+  const [deleteAllConfirm, setDeleteAllConfirm] = useState("");
   const seenIdsRef = useRef<Set<string>>(new Set(DEMO_LEADS.map(d => d.id)));
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Delete a single lead ──
+  const deleteLead = async (id: string) => {
+    try {
+      const res = await fetch("/api/lease-bot", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        setLeads(prev => prev.filter(l => l.id !== id));
+        seenIdsRef.current.delete(id);
+      }
+    } catch { /* silent */ }
+    setDeletingLeadId(null);
+  };
+
+  // ── Delete ALL leads ──
+  const deleteAllLeads = async () => {
+    setDeletingAll(true);
+    try {
+      const res = await fetch("/api/lease-bot", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+      if (res.ok) {
+        setLeads([]);
+        seenIdsRef.current.clear();
+      }
+    } catch { /* silent */ }
+    setDeletingAll(false);
+    setDeleteAllConfirm("");
+  };
 
   // Fetch call logs on mount
   useEffect(() => {
@@ -2293,7 +2384,7 @@ export default function AdminPage() {
                           )}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 items-center">
                           {lead.phone && (
                             <a href={`tel:${lead.phone}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] text-[#4ADE80] text-xs font-bold hover:bg-[rgba(74,222,128,0.14)] transition-colors">
                               <Phone size={11} /> Call Now
@@ -2303,6 +2394,32 @@ export default function AdminPage() {
                             <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgba(96,165,250,0.08)] border border-[rgba(96,165,250,0.2)] text-[#60A5FA] text-xs font-bold hover:bg-[rgba(96,165,250,0.14)] transition-colors">
                               <Mail size={11} /> Email
                             </a>
+                          )}
+                          {/* Delete lead */}
+                          {deletingLeadId === lead.id ? (
+                            <div className="flex items-center gap-1.5 ml-auto">
+                              <span className="text-[10px] text-red-400 font-semibold">Delete?</span>
+                              <button
+                                onClick={() => deleteLead(lead.id)}
+                                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.35)] text-red-400 text-[10px] font-bold hover:bg-[rgba(239,68,68,0.2)] transition-colors"
+                              >
+                                <Trash2 size={10} /> Yes
+                              </button>
+                              <button
+                                onClick={() => setDeletingLeadId(null)}
+                                className="px-2 py-1 rounded-lg border border-[rgba(255,255,255,0.08)] text-gray-500 text-[10px] font-bold hover:text-gray-300 transition-colors"
+                              >
+                                No
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setDeletingLeadId(lead.id)}
+                              className="ml-auto flex items-center gap-1 px-2 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-[rgba(239,68,68,0.06)] transition-colors"
+                              title="Delete lead"
+                            >
+                              <Trash2 size={12} />
+                            </button>
                           )}
                         </div>
                       </div>
@@ -2550,7 +2667,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {activeTab === "settings" && <SettingsPanel leads={activeLeads} />}
+        {activeTab === "settings" && <SettingsPanel leads={activeLeads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />}
 
         <p className="text-center text-[11px] text-gray-700 mt-10">
           VISION Property Intelligence Platform · AI-Powered by Gemini · Auto-refreshes every 30s

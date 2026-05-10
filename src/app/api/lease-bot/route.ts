@@ -234,3 +234,44 @@ export async function GET() {
     return NextResponse.json({ leads: LEADS_STORE });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, all } = body as { id?: string; all?: boolean };
+
+    if (all) {
+      // Bulk delete: remove ALL leads
+      const { error } = await supabaseAdmin
+        .from("leads")
+        .delete()
+        .neq("id", "00000000-0000-0000-0000-000000000000"); // match all rows
+      if (error) throw error;
+      LEADS_STORE.length = 0;
+      return NextResponse.json({ success: true, deleted: "all" });
+    }
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing lead id" }, { status: 400 });
+    }
+
+    // Single delete
+    const { error } = await supabaseAdmin
+      .from("leads")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+
+    // Remove from memory store
+    const idx = LEADS_STORE.findIndex(l => l.id === id);
+    if (idx !== -1) LEADS_STORE.splice(idx, 1);
+
+    return NextResponse.json({ success: true, deleted: id });
+  } catch (err) {
+    console.error("Delete lead error:", err);
+    return NextResponse.json(
+      { error: "Failed to delete lead" },
+      { status: 500 }
+    );
+  }
+}
