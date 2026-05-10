@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { GEO_PAGES } from "@/lib/data";
+import CustomSearchCTA from "@/components/CustomSearchCTA";
 
 export const metadata: Metadata = {
   title: "Tri-Cities Commercial Real Estate | Bristol, Kingsport & Johnson City | Vision LLC",
@@ -88,6 +89,7 @@ export default function MarketsPage() {
           ))}
         </div>
       </div>
+      <CustomSearchCTA />
     </div>
   );
 }

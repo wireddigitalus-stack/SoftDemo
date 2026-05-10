@@ -7,6 +7,7 @@ import { PROPERTIES, COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
 import PropertyCardCarousel from "@/components/PropertyCardCarousel";
+import CustomSearchCTA from "@/components/CustomSearchCTA";
 
 
 const ALL_TYPES = ["All", "Mixed-Use", "Office", "CoWorking", "Retail / Office", "Event Space / Commercial", "Industrial"];
@@ -269,26 +270,7 @@ export default function CommercialRealEstatePage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="py-16 px-4 bg-[rgba(74,222,128,0.04)] border-t border-[rgba(74,222,128,0.08)]">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-black text-white mb-4">
-              Don't See the Right Fit?
-            </h2>
-            <p className="text-gray-400 mb-8">
-              Vision LLC manages 50+ commercial properties across the Tri-Cities. 
-              Tell us what you need — we'll find or build it.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <a href={COMPANY.phoneHref} className="btn-primary">
-                <Phone size={16} /> {COMPANY.phone}
-              </a>
-              <Link href="/contact" className="btn-secondary">
-                Send a Message <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </section>
+        <CustomSearchCTA />
       </main>
     </>
   );

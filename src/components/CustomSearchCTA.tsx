@@ -83,7 +83,7 @@ export default function CustomSearchCTA() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-white bg-gradient-to-r from-[#4ADE80] to-[#22C55E] hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-black bg-gradient-to-r from-[#4ADE80] to-[#22C55E] hover:opacity-90 transition-opacity"
                   style={{ boxShadow: "0 4px 20px rgba(74,222,128,0.3)" }}
                 >
                   Tell Us What You Need <ArrowRight size={15} />
