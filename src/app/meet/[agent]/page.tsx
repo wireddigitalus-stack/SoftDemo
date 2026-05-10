@@ -1,16 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Phone, User, Building2, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
-
-// ── Team member registry — update names/titles as team grows ──────────────────
-const TEAM_MEMBERS: Record<string, { name: string; title: string }> = {
-  allen:  { name: "Allen Hurley",   title: "Principal Broker" },
-  team:   { name: "Vision LLC",     title: "Commercial Real Estate" },
-  robert: { name: "Robert Neilson", title: "Vision LLC Team" },
-};
 
 const SPACE_OPTIONS = [
   "Office Space",
@@ -34,7 +27,20 @@ function formatPhoneMeet(raw: string): string {
 export default function MeetPage() {
   const params = useParams();
   const agent = ((params.agent as string) ?? "team").toLowerCase();
-  const member = TEAM_MEMBERS[agent] ?? { name: "Vision LLC", title: "Commercial Real Estate" };
+
+  // ── Resolve team member name dynamically from Supabase ──────────────────
+  const [member, setMember] = useState({ name: "Vision LLC", title: "Commercial Real Estate" });
+  const [memberLoaded, setMemberLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/team-member?slug=${encodeURIComponent(agent)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.name) setMember({ name: data.name, title: data.title || "Vision LLC Team" });
+      })
+      .catch(() => {})
+      .finally(() => setMemberLoaded(true));
+  }, [agent]);
 
   const [form, setForm] = useState({
     name: "", phone: "", email: "", spaceType: "", notes: "",
@@ -79,6 +85,11 @@ export default function MeetPage() {
     }
   }
 
+  // Derive the first name for friendly copy
+  const firstName = member.name.split(" ")[0];
+  // Only show the personal "You met <name>" when it's actually a person, not "Vision LLC"
+  const isPersonal = member.name !== "Vision LLC";
+
   return (
     <div className="min-h-screen bg-[#080C14] flex flex-col items-center justify-center px-5 py-12">
       {/* Background glow */}
@@ -104,13 +115,21 @@ export default function MeetPage() {
             {/* Header */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.2)] text-[#4ADE80] text-xs font-bold mb-4 tracking-wider uppercase">
-                🤝 You met {member.name}
+                {memberLoaded
+                  ? isPersonal
+                    ? `🤝 You met ${member.name}`
+                    : "🤝 You met our team"
+                  : "🤝 Welcome"
+                }
               </div>
               <h1 className="text-2xl font-black text-white mb-2">
                 Let&apos;s Stay Connected
               </h1>
               <p className="text-sm text-gray-400">
-                Drop your info and {member.name.split(" ")[0]} will be in touch about the right space for you.
+                {isPersonal
+                  ? `Drop your info and ${firstName} will be in touch about the right space for you.`
+                  : "Drop your info and our team will be in touch about the right space for you."
+                }
               </p>
             </div>
 
@@ -203,7 +222,10 @@ export default function MeetPage() {
             </div>
             <h2 className="text-2xl font-black text-white mb-3">You&apos;re Connected! 🎉</h2>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
-              {member.name.split(" ")[0]} has your info and will be in touch shortly about the perfect space for you.
+              {isPersonal
+                ? `${firstName} has your info and will be in touch shortly about the perfect space for you.`
+                : "Our team has your info and will be in touch shortly about the perfect space for you."
+              }
             </p>
             <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.05)] p-4">
               <p className="text-xs text-gray-500 mb-1">You connected with</p>
