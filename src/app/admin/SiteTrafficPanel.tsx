@@ -77,7 +77,7 @@ function TrafficStat({ label, value, sub, color, icon: Icon }: {
         </div>
       </div>
       <p className="text-2xl font-black text-white tabular-nums leading-none relative">{value}</p>
-      {sub && <p className="text-[11px] text-gray-600 mt-1 relative">{sub}</p>}
+      {sub && <p className="text-[11px] text-gray-400 mt-1 relative">{sub}</p>}
     </div>
   );
 }
@@ -201,9 +201,9 @@ function SessionDrawer({ sessionId, onClose }: { sessionId: string; onClose: () 
                         style={{ borderColor: info.color, backgroundColor: `${info.color}30` }} />
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-bold" style={{ color: info.color }}>{info.label}</span>
-                        <span className="text-[10px] text-gray-600">{friendlyPage(evt.page)}</span>
+                        <span className="text-[10px] text-gray-400">{friendlyPage(evt.page)}</span>
                       </div>
-                      <p className="text-[9px] text-gray-700 mt-0.5">
+                      <p className="text-[9px] text-gray-400 mt-0.5">
                         {new Date(evt.time).toLocaleTimeString()}
                         {evt.duration_ms ? ` · ${Math.round(evt.duration_ms / 1000)}s` : ""}
                         {evt.data?.scroll_pct ? ` · ${evt.data.scroll_pct}% scroll` : ""}
@@ -320,8 +320,8 @@ export default function SiteTrafficPanel() {
               </p>
               <Sparkline data={dailyArr} color="#60A5FA" />
               <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-gray-700">{Object.keys(data.daily_views)[0]}</span>
-                <span className="text-[9px] text-gray-700">{Object.keys(data.daily_views).slice(-1)[0]}</span>
+                <span className="text-[10px] text-gray-400 font-medium">{Object.keys(data.daily_views)[0]}</span>
+                <span className="text-[10px] text-gray-400 font-medium">{Object.keys(data.daily_views).slice(-1)[0]}</span>
               </div>
             </div>
           )}
@@ -339,7 +339,7 @@ export default function SiteTrafficPanel() {
                   return (
                     <div key={pg.path} className="group">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[10px] font-bold text-gray-600 w-4 flex-shrink-0">#{i + 1}</span>
+                        <span className="text-[10px] font-bold text-gray-400 w-4 flex-shrink-0">#{i + 1}</span>
                         <span className="text-xs text-gray-300 truncate flex-1">{friendlyPage(pg.path)}</span>
                         <span className="text-xs font-bold text-[#60A5FA] tabular-nums flex-shrink-0">{pg.views}</span>
                       </div>

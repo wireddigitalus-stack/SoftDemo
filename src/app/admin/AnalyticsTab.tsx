@@ -82,7 +82,7 @@ function StatCard({ label, value, sub, color = "#4ADE80", icon: Icon }:
         </div>
       </div>
       <p className="text-2xl font-black text-white tabular-nums leading-none relative">{value}</p>
-      {sub && <p className="text-[11px] text-gray-600 mt-1 relative">{sub}</p>}
+      {sub && <p className="text-[11px] text-gray-400 mt-1 relative">{sub}</p>}
     </div>
   );
 }
@@ -95,7 +95,7 @@ function BarRow({ label, value, max, color, sub }: { label: string; value: numbe
         <span className="text-xs text-gray-300 truncate max-w-[60%]">{label}</span>
         <div className="text-right">
           <span className="text-xs font-bold tabular-nums" style={{ color }}>{fmtMoney(value, true)}</span>
-          {sub && <span className="text-[10px] text-gray-600 ml-1">{sub}</span>}
+          {sub && <span className="text-[10px] text-gray-400 ml-1">{sub}</span>}
         </div>
       </div>
       <div className="h-1.5 rounded-full bg-[rgba(255,255,255,0.05)] overflow-hidden">
@@ -230,11 +230,11 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
                       <div className="flex items-center gap-3 mb-1.5">
                         <span className="text-sm">{palette.emoji}</span>
                         {/* Rank */}
-                        <span className="text-[10px] font-black text-gray-600 w-4 text-center flex-shrink-0">#{i+1}</span>
+                        <span className="text-[10px] font-black text-gray-400 w-4 text-center flex-shrink-0">#{i+1}</span>
                         <span className="text-sm font-bold text-white flex-shrink-0">{type}</span>
                         <span className="text-[11px] font-black ml-auto flex-shrink-0" style={{ color: palette.color }}>{sharePct}%</span>
-                        <span className="text-[11px] text-gray-600 flex-shrink-0">{data.count} lead{data.count !== 1 ? "s" : ""}</span>
-                        <span className="text-[11px] text-gray-600 flex-shrink-0 hidden sm:block">Avg ${avgBudget.toLocaleString()}/mo</span>
+                        <span className="text-[11px] text-gray-400 flex-shrink-0">{data.count} lead{data.count !== 1 ? "s" : ""}</span>
+                        <span className="text-[11px] text-gray-400 flex-shrink-0 hidden sm:block">Avg ${avgBudget.toLocaleString()}/mo</span>
                         <span className="text-[10px] px-1.5 py-0.5 rounded-lg font-bold flex-shrink-0 hidden sm:block"
                           style={{ color: palette.color, backgroundColor: palette.bg, border: `1px solid ${palette.border}` }}>
                           Score {avgScore}
@@ -291,22 +291,43 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
               </p>
               <div className="grid grid-cols-6 gap-2">
                 {trendData.map(({ month, year, total, byType: bt }) => (
-                  <div key={`${month}-${year}`} className="flex flex-col items-center gap-1.5">
+                  <div key={`${month}-${year}`} className="flex flex-col items-center gap-1.5 group relative">
+                    {/* Hover tooltip card */}
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-20 w-36 bg-[#0A0F1A] border border-[rgba(255,255,255,0.12)] rounded-xl p-3 shadow-2xl pointer-events-none">
+                      <p className="text-[11px] font-black text-white mb-1.5">{MONTH_NAMES[month]} {year}</p>
+                      <p className="text-[11px] text-gray-300 mb-2">{total} total lead{total !== 1 ? "s" : ""}</p>
+                      <div className="space-y-1">
+                        {topTypes.map(t => {
+                          const count = bt[t] || 0;
+                          if (count === 0) return null;
+                          const p = SPACE_PALETTE[t] || SPACE_PALETTE["Other"];
+                          return (
+                            <div key={t} className="flex items-center justify-between gap-2">
+                              <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-sm inline-block flex-shrink-0" style={{ backgroundColor: p.color }} />
+                                {t}
+                              </span>
+                              <span className="text-[10px] font-bold" style={{ color: p.color }}>{count}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                     {/* Stacked bar */}
-                    <div className="w-full flex flex-col-reverse rounded-lg overflow-hidden h-16 bg-[rgba(255,255,255,0.04)]">
+                    <div className="w-full flex flex-col-reverse rounded-lg overflow-hidden h-16 bg-[rgba(255,255,255,0.04)] cursor-pointer group-hover:bg-[rgba(255,255,255,0.08)] transition-colors">
                       {topTypes.map(t => {
                         const count = bt[t] || 0;
                         const h = total > 0 ? Math.max(count > 0 ? 4 : 0, Math.round((count / trendMax) * 64)) : 0;
                         const p = SPACE_PALETTE[t] || SPACE_PALETTE["Other"];
                         return (
                           <div key={t} style={{ height: h, backgroundColor: p.color, opacity: 0.8 }}
-                            title={`${t}: ${count}`} className="flex-shrink-0 transition-all duration-700" />
+                            className="flex-shrink-0 transition-all duration-700" />
                         );
                       })}
                     </div>
                     {/* Total count */}
                     <span className="text-[10px] font-bold text-white">{total}</span>
-                    <span className="text-[9px] text-gray-600">{MONTH_NAMES[month]}</span>
+                    <span className="text-[10px] text-gray-400 font-medium">{MONTH_NAMES[month]}</span>
                   </div>
                 ))}
               </div>
@@ -315,7 +336,7 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
                 {topTypes.map(t => {
                   const p = SPACE_PALETTE[t] || SPACE_PALETTE["Other"];
                   return (
-                    <div key={t} className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                    <div key={t} className="flex items-center gap-1.5 text-[10px] text-gray-400">
                       <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: p.color }} />
                       {p.emoji} {t}
                     </div>
@@ -400,7 +421,7 @@ function RevenueForecast({ tenants }: { tenants: Tenant[] }) {
           </span>
         )}
       </div>
-      <p className="text-[11px] text-gray-600 mb-4">Projections include scheduled rent escalations and lease expirations</p>
+      <p className="text-[11px] text-gray-400 mb-4">Projections include scheduled rent escalations and lease expirations</p>
 
       {activeTenants.length === 0 ? (
         <p className="text-sm text-gray-600 italic text-center py-6">Add tenants to see revenue forecast</p>
@@ -433,22 +454,22 @@ function RevenueForecast({ tenants }: { tenants: Tenant[] }) {
           <div className="flex gap-1">
             {months.map((m, i) => (
               <div key={i} className="flex-1 text-center">
-                <span className="text-[9px] text-gray-700">{m.label}</span>
+                <span className="text-[10px] text-gray-400 font-medium">{m.label}</span>
               </div>
             ))}
           </div>
           {/* Summary */}
           <div className="flex gap-4 mt-3 pt-3 border-t border-[rgba(255,255,255,0.05)]">
             <div>
-              <p className="text-[10px] text-gray-600">Today MRR</p>
+              <p className="text-[10px] text-gray-400">Today MRR</p>
               <p className="text-sm font-black text-white">{fmtMoney(baselineMRR)}</p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-600">12mo MRR</p>
+              <p className="text-[10px] text-gray-400">12mo MRR</p>
               <p className="text-sm font-black" style={{ color: finalMRR >= baselineMRR ? "#4ADE80" : "#F97316" }}>{fmtMoney(finalMRR)}</p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-600">12mo ARR</p>
+              <p className="text-[10px] text-gray-400">12mo ARR</p>
               <p className="text-sm font-black text-white">{fmtMoney(monthlyRevenue.reduce((a, b) => a + b, 0))}</p>
             </div>
           </div>
@@ -796,7 +817,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
           <div className="flex items-center gap-2 mb-4">
             <Users size={13} className="text-[#C4B5FD]" />
             <p className="text-xs font-black text-white uppercase tracking-widest">Rep Leaderboard</p>
-            <span className="text-[10px] text-gray-600 ml-1">(by revenue closed)</span>
+            <span className="text-[10px] text-gray-400 ml-1">(by revenue closed)</span>
           </div>
           {repList.length === 0 ? (
             <p className="text-sm text-gray-600 italic">Assign reps to tenants to see leaderboard</p>
@@ -814,7 +835,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
                 <div className="h-1 rounded-full bg-[rgba(255,255,255,0.05)] overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${pct(mrr, repList[0][1].mrr)}%`, backgroundColor: "#C4B5FD", opacity: 0.7 }} />
                 </div>
-                <p className="text-[10px] text-gray-600 mt-0.5">{count} active lease{count !== 1 ? "s" : ""} · {fmtMoney(mrr * 12, true)}/yr</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{count} active lease{count !== 1 ? "s" : ""} · {fmtMoney(mrr * 12, true)}/yr</p>
               </div>
             </div>
           ))}
