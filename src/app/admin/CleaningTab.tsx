@@ -114,6 +114,17 @@ function fmtShortDay(d: Date) {
   return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric" });
 }
 
+/** Convert "HH:MM" (24h) → "H:MM AM/PM" */
+function fmtTime(t: string | null): string {
+  if (!t) return "";
+  const [hStr, mStr] = t.split(":");
+  let h = parseInt(hStr, 10);
+  const suffix = h >= 12 ? "PM" : "AM";
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${mStr} ${suffix}`;
+}
+
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const STATUS_ICON: Record<string, React.ReactNode> = {
   pending:     <Circle size={9} className="text-gray-500" />,
@@ -506,7 +517,7 @@ function TodayView({ assignments, today, workerIndex, onDelete }:
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold" style={{ color: c.text }}>{a.workerName}</span>
                         {(a.startTime || a.endTime) && (
-                          <span className="text-[10px] text-gray-600">{a.startTime}–{a.endTime}</span>
+                          <span className="text-[10px] text-gray-600">{fmtTime(a.startTime)}–{fmtTime(a.endTime)}</span>
                         )}
                       </div>
                       <p className="text-xs text-gray-400 truncate">{a.area}</p>

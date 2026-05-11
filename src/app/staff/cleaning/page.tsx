@@ -38,6 +38,18 @@ function rowToAssignment(r: Record<string, unknown>): Assignment {
   };
 }
 
+
+/** Convert "HH:MM" (24h) → "H:MM AM/PM" */
+function fmtTime(t: string | null): string {
+  if (!t) return "";
+  const [hStr, mStr] = t.split(":");
+  let h = parseInt(hStr, 10);
+  const suffix = h >= 12 ? "PM" : "AM";
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${mStr} ${suffix}`;
+}
+
 // ─── Checklist Config ─────────────────────────────────────────────────────────
 
 function getChecklist(area: string): string[] {
@@ -206,7 +218,7 @@ function AssignmentCard({ a, savedChecks, onSaveChecks, onComplete }: {
           <p className="text-gray-400 text-sm ml-5 font-semibold">{a.area}</p>
           {(a.startTime || a.endTime) && (
             <p className="text-gray-600 text-xs ml-5 mt-1 flex items-center gap-1">
-              <Clock size={10} /> {a.startTime || "—"}{a.endTime ? ` → ${a.endTime}` : ""}
+              <Clock size={10} /> {fmtTime(a.startTime) || "—"}{a.endTime ? ` → ${fmtTime(a.endTime)}` : ""}
             </p>
           )}
           {isDone && completedTime && (
