@@ -9,6 +9,7 @@ import {
 import PageMap from "./PageMap";
 import HeroBannerManager from "./HeroBannerManager";
 import PropertyEditor from "./PropertyEditor";
+import PropertyCreator from "./PropertyCreator";
 import MlsImportMock from "@/components/MlsImportMock";
 
 // ── Default values (mirrors what's hardcoded in components) ──────────────────
@@ -139,6 +140,7 @@ export default function ContentTab() {
   const [loading, setLoading] = useState(true);
   const [activeMapSection, setActiveMapSection] = useState<string | null>("hero");
   const [mapOpen, setMapOpen] = useState(false);
+  const [activeView, setActiveView] = useState<"content" | "properties">("content");
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Scroll to and expand a section when selected from the PageMap
@@ -273,6 +275,43 @@ export default function ContentTab() {
   return (
     <div className="space-y-5">
 
+      {/* ── Segmented View Toggle ── */}
+      <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-2">
+        <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1">
+          <button
+            onClick={() => setActiveView("content")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${
+              activeView === "content"
+                ? "bg-[#4ADE80] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"
+                : "text-gray-500 hover:text-gray-300 hover:bg-[rgba(255,255,255,0.03)]"
+            }`}
+          >
+            <Pencil size={15} />
+            Website Content
+            {totalDirty > 0 && activeView !== "content" && (
+              <span className="w-2 h-2 rounded-full bg-[#FACC15] animate-pulse" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveView("properties")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${
+              activeView === "properties"
+                ? "bg-[#4ADE80] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"
+                : "text-gray-500 hover:text-gray-300 hover:bg-[rgba(255,255,255,0.03)]"
+            }`}
+          >
+            <Building2 size={15} />
+            Property Management
+          </button>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* ══  WEBSITE CONTENT VIEW                                ══ */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      {activeView === "content" && (
+        <>
+
       {/* ── Blueprint Page Map (collapsible) ── */}
       <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
         <button
@@ -312,15 +351,6 @@ export default function ContentTab() {
           <p className="text-xs text-gray-500 mt-1">
             Edit any text on your website. Make changes below, then click <strong className="text-gray-300">Save Changes</strong>.
           </p>
-          <button 
-            onClick={() => { 
-              setExpandedSections(prev => ({ ...prev, mls: true })); 
-              setTimeout(() => document.getElementById('mls-import-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-            }} 
-            className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#4ADE80]/10 border border-[#4ADE80]/20 text-[#4ADE80] text-xs font-medium hover:bg-[#4ADE80]/20 transition-colors"
-          >
-             <UploadCloud size={14} /> Add New Property (MLS Import)
-          </button>
         </div>
 
         <button
@@ -493,48 +523,91 @@ export default function ContentTab() {
         return card;
       })}
 
-
-      <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
-        <PropertyEditor />
-      </div>
-
-      {/* ── MLS Auto-Import (Collapsed by default) ── */}
-      <div id="mls-import-card" className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden transition-all duration-300">
-        <button
-          onClick={() => setExpandedSections(prev => ({ ...prev, mls: !prev.mls }))}
-          className="w-full flex items-center justify-between p-5 hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#4ADE80]/10 border border-[#4ADE80]/20 text-[#4ADE80] flex items-center justify-center">
-              <UploadCloud size={18} />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                Add New Property
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 font-semibold">
-                  Beta
-                </span>
-              </h3>
-              <p className="text-xs text-gray-500 mt-0.5">Import directly from MLS database</p>
-            </div>
-          </div>
-          <div className="text-gray-600">
-            {expandedSections["mls"] ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-          </div>
-        </button>
-        {expandedSections["mls"] && (
-          <div className="border-t border-[rgba(255,255,255,0.05)] p-5 bg-[#080B0F]/50">
-            <MlsImportMock />
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Summary */}
+      {/* Bottom Summary for Content View */}
       <div className="text-center pt-2 pb-4">
         <p className="text-xs text-gray-600">
           {overrides.length} field{overrides.length !== 1 ? "s" : ""} customized · Changes appear on the live site within 60 seconds after saving
         </p>
       </div>
+
+        </>
+      )}
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* ══  PROPERTY MANAGEMENT VIEW                            ══ */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      {activeView === "properties" && (
+        <>
+
+      {/* ── Add New Property Card ── */}
+      <div className="glass rounded-2xl border border-[rgba(74,222,128,0.15)] overflow-hidden">
+        <div className="p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center">
+                <Building2 size={17} className="text-black" />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-white">Add New Property</h2>
+                <p className="text-[11px] text-gray-500">Choose a method to add a new property listing</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Mode Toggle: Manual vs MLS */}
+          <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1 mb-6">
+            <button
+              onClick={() => setExpandedSections(prev => ({ ...prev, addMode: false }))}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all duration-200 ${
+                !expandedSections["addMode"]
+                  ? "bg-[rgba(255,255,255,0.08)] text-white border border-[rgba(255,255,255,0.1)]"
+                  : "text-gray-600 hover:text-gray-400"
+              }`}
+            >
+              <Pencil size={12} />
+              Manual Entry
+            </button>
+            <button
+              onClick={() => setExpandedSections(prev => ({ ...prev, addMode: true }))}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all duration-200 ${
+                expandedSections["addMode"]
+                  ? "bg-[rgba(255,255,255,0.08)] text-white border border-[rgba(255,255,255,0.1)]"
+                  : "text-gray-600 hover:text-gray-400"
+              }`}
+            >
+              <UploadCloud size={12} />
+              MLS Import
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 font-semibold">Beta</span>
+            </button>
+          </div>
+
+          {/* Manual Entry Mode */}
+          {!expandedSections["addMode"] && (
+            <PropertyCreator />
+          )}
+
+          {/* MLS Import Mode */}
+          {expandedSections["addMode"] && (
+            <MlsImportMock />
+          )}
+        </div>
+      </div>
+
+      {/* ── Existing Properties Editor ── */}
+      <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
+        <PropertyEditor />
+      </div>
+
+      {/* Bottom Summary for Properties View */}
+      <div className="text-center pt-2 pb-4">
+        <p className="text-xs text-gray-600">
+          Manage all property listings from this view · New properties save as drafts until published
+        </p>
+      </div>
+
+        </>
+      )}
+
     </div>
   );
 }
