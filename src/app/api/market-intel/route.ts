@@ -136,33 +136,65 @@ ${items.map((item, i) => `[${i}] "${item.title}" — ${item.snippet.slice(0, 150
     if (!res.ok) {
       const errText = await res.text();
       console.error("[MarketIntel] Gemini API HTTP error:", res.status, errText.slice(0, 500));
-      throw new Error(`Gemini ${res.status}`);
+      throw new Error(`Gemini HTTP ${res.status}`);
     }
 
     const data = await res.json();
 
-    // Gemini 2.5 may return multiple parts (thinking + response)
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    // Grab the LAST text part (skip thinking parts)
-    const textParts = parts.filter((p: { text?: string }) => p.text).map((p: { text: string }) => p.text);
-    const raw = textParts[textParts.length - 1] || "[]";
+    // Debug: log the full response structure (keys only)
+    const candidate = data?.candidates?.[0];
+    if (!candidate) {
+      console.error("[MarketIntel] No candidates in response. Full response keys:", Object.keys(data || {}));
+      console.error("[MarketIntel] Possible content filter block:", JSON.stringify(data?.promptFeedback || {}).slice(0, 300));
+      throw new Error("No candidates returned");
+    }
 
-    console.log("[MarketIntel] Raw AI response (first 300 chars):", raw.slice(0, 300));
+    // Gemini 2.5 may return parts with { thought: true, text: "..." } for thinking
+    // and { text: "..." } for actual response. We want the non-thought parts.
+    const parts = candidate.content?.parts || [];
+    console.log("[MarketIntel] Parts count:", parts.length, "Part types:", parts.map((p: Record<string, unknown>) => p.thought ? "thought" : "text").join(", "));
 
-    // Extract JSON array from the response — handle code fences, preamble text, etc.
+    // Collect text from non-thought parts; fall back to all parts if no non-thought parts
+    const responseParts = parts.filter((p: Record<string, unknown>) => !p.thought && typeof p.text === "string");
+    const fallbackParts = parts.filter((p: Record<string, unknown>) => typeof p.text === "string");
+    const usableParts = responseParts.length > 0 ? responseParts : fallbackParts;
+    const raw = usableParts.map((p: Record<string, unknown>) => p.text as string).join("\n");
+
+    if (!raw.trim()) {
+      console.error("[MarketIntel] No text content in parts. Full parts:", JSON.stringify(parts).slice(0, 500));
+      throw new Error("Empty response text");
+    }
+
+    console.log("[MarketIntel] Raw AI response (first 400 chars):", raw.slice(0, 400));
+
+    // Extract JSON array from the response
     let jsonStr = raw;
     // Remove markdown code fences
     jsonStr = jsonStr.replace(/```json\s*/gi, "").replace(/```\s*/g, "");
-    // Find the JSON array in the text (look for first [ to last ])
+    // Find the JSON array
     const startBracket = jsonStr.indexOf("[");
     const endBracket = jsonStr.lastIndexOf("]");
     if (startBracket !== -1 && endBracket !== -1 && endBracket > startBracket) {
       jsonStr = jsonStr.slice(startBracket, endBracket + 1);
     }
-    // Fix trailing commas before ] which is invalid JSON
+    // Fix trailing commas
     jsonStr = jsonStr.replace(/,\s*]/g, "]");
 
-    const scores: { index: number; score: string; reason: string }[] = JSON.parse(jsonStr);
+    let scores: { index: number; score: string; reason: string }[];
+    try {
+      scores = JSON.parse(jsonStr);
+    } catch (parseErr) {
+      console.error("[MarketIntel] JSON parse failed. Attempting regex fallback. Parse error:", parseErr);
+      console.error("[MarketIntel] jsonStr (first 500):", jsonStr.slice(0, 500));
+      // Regex fallback: extract individual objects
+      scores = [];
+      const objRegex = /\{\s*"index"\s*:\s*(\d+)\s*,\s*"score"\s*:\s*"(hot|warm|cold|skip)"\s*,\s*"reason"\s*:\s*"([^"]*)"/g;
+      let m;
+      while ((m = objRegex.exec(raw)) !== null) {
+        scores.push({ index: parseInt(m[1], 10), score: m[2], reason: m[3] });
+      }
+      console.log("[MarketIntel] Regex fallback extracted", scores.length, "scores");
+    }
 
     return items.map((item, i) => {
       const s = scores.find(sc => sc.index === i);
