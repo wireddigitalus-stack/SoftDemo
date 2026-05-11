@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       // 1. Recent events count by type
       supabaseQuery(
         "site_analytics",
-        `select=event_type&created_at=gte.${since}&order=created_at.desc&limit=10000`
+        `select=event_type,session_id,device_type&created_at=gte.${since}&order=created_at.desc&limit=10000`
       ),
       // 2. Page views for sparkline (last N days)
       supabaseQuery(
