@@ -8,6 +8,7 @@ import Navigation from "@/components/Navigation";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
 import PropertyCardCarousel from "@/components/PropertyCardCarousel";
 import CustomSearchCTA from "@/components/CustomSearchCTA";
+import { TrackedPropertyLink, TrackedCTALink } from "@/components/TrackedPropertyLink";
 
 
 const ALL_TYPES = ["All", "Mixed-Use", "Office", "CoWorking", "Retail / Office", "Event Space / Commercial", "Industrial"];
@@ -134,12 +135,12 @@ export default function CommercialRealEstatePage() {
               Office suites, retail storefronts, coworking, industrial — all in one trusted portfolio.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href={COMPANY.phoneHref} className="btn-primary">
+              <TrackedCTALink href={COMPANY.phoneHref} label="Call CTA" context="CRE Hero" className="btn-primary">
                 <Phone size={16} /> Call {COMPANY.phone}
-              </a>
-              <Link href="/contact" className="btn-secondary">
+              </TrackedCTALink>
+              <TrackedCTALink href="/contact" label="Request a Tour" context="CRE Hero" className="btn-secondary">
                 Request a Tour <ArrowRight size={16} />
-              </Link>
+              </TrackedCTALink>
             </div>
           </div>
         </section>
@@ -249,18 +250,22 @@ export default function CommercialRealEstatePage() {
                       ))}
                     </div>
                     <div className="flex gap-3 mt-auto mb-0">
-                      <Link
+                      <TrackedPropertyLink
                         href={`/properties/${property.id}`}
+                        propertyId={property.id}
+                        propertyName={property.name}
                         className="flex-1 btn-primary text-center text-sm py-2.5 justify-center"
                       >
                         View Details
-                      </Link>
-                      <Link
+                      </TrackedPropertyLink>
+                      <TrackedCTALink
                         href="/contact"
+                        label="Inquire"
+                        context={property.name}
                         className="flex-1 btn-secondary text-center text-sm py-2.5 justify-center"
                       >
                         Inquire
-                      </Link>
+                      </TrackedCTALink>
                     </div>
                     <LeaseBotTrigger propertyName={property.name} />
                   </div>

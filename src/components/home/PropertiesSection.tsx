@@ -6,6 +6,7 @@ import { PROPERTIES } from "@/lib/data";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
 import { fetchImageOverrides, resolveHeroImage } from "@/lib/property-image-overrides";
 import { getPropertyOverrides } from "@/lib/site-content";
+import { TrackedPropertyLink } from "@/components/TrackedPropertyLink";
 
 
 const typeIcons: Record<string, React.ReactNode> = {
@@ -159,13 +160,15 @@ export default async function PropertiesSection() {
                   ))}
                 </div>
 
-                <Link
+                <TrackedPropertyLink
                   href={`/properties/${property.id}`}
+                  propertyId={property.id}
+                  propertyName={property.name}
                   id={`property-cta-${property.id}`}
                   className="flex items-center gap-2 text-sm font-semibold text-[#4ADE80] hover:text-white transition-colors group-hover:gap-3 mb-3"
                 >
                   Inquire About This Space <ArrowRight size={14} />
-                </Link>
+                </TrackedPropertyLink>
                 <LeaseBotTrigger propertyName={property.name} />
               </div>
             </article>
