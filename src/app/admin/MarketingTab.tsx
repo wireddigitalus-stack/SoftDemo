@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Sparkles, Copy, Download, CheckCircle2, Trash2, FileText, Clock, ChevronDown, ImageIcon, BookOpen, Building2, Instagram } from "lucide-react";
+import { Loader2, Sparkles, Copy, Download, CheckCircle2, Trash2, FileText, Clock, ChevronDown, ImageIcon, BookOpen, Building2, Instagram, Radar } from "lucide-react";
 import PropertyImageManager from "./PropertyImageManager";
 import BlogGenerator from "./BlogGenerator";
 // BannerManager removed — hero slideshow is now managed in Content tab via HeroBannerManager
@@ -9,6 +9,7 @@ import PropertyCreator from "./PropertyCreator";
 // PropertyEditor moved to Content tab
 import PropertyOneSheet from "./PropertyOneSheet";
 import SocialStudio from "./SocialStudio";
+import MarketIntel from "./MarketIntel";
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -53,9 +54,9 @@ function saveQueue(q: PressRelease[]) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub: string) => void }) {
-  const [subTab, setSubTab] = useState<"press" | "blog" | "photos" | "properties" | "social" | "one-sheet">("press");
+  const [subTab, setSubTab] = useState<"press" | "blog" | "photos" | "properties" | "social" | "one-sheet" | "intel">("press");
 
-  const switchSubTab = (key: "press" | "blog" | "photos" | "properties" | "social" | "one-sheet") => {
+  const switchSubTab = (key: "press" | "blog" | "photos" | "properties" | "social" | "one-sheet" | "intel") => {
     setSubTab(key);
     onSubTabChange?.(key);
   };
@@ -219,10 +220,20 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
             border:"rgba(249,115,22,0.4)",
             tag:   "PDF",
           },
+          {
+            key:   "intel",
+            label: "Market Intel",
+            desc:  "AI relocation radar",
+            icon:  Radar,
+            grad:  "from-[#EF4444] to-[#F97316]",
+            glow:  "rgba(239,68,68,0.2)",
+            border:"rgba(239,68,68,0.4)",
+            tag:   "Beta",
+          },
         ] as const).map(({ key, label, desc, icon: Icon, grad, glow, border, tag }) => (
           <button
             key={key}
-            onClick={() => switchSubTab(key as "press"|"blog"|"photos"|"properties"|"social"|"one-sheet")}
+            onClick={() => switchSubTab(key as "press"|"blog"|"photos"|"properties"|"social"|"one-sheet"|"intel")}
             className={`relative text-left p-4 rounded-2xl border-2 transition-all duration-200 group overflow-hidden w-full ${
               subTab === key
                 ? "bg-[rgba(255,255,255,0.04)]"
@@ -504,6 +515,9 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
           <SocialStudio />
         </div>
       )}{/* end social tab */}
+
+      {/* ── Market Intel ── */}
+      {subTab === "intel" && <MarketIntel />}
 
     </div>
   );
