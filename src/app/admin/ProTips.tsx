@@ -19,6 +19,7 @@ export type TabKey =
   | "marketing-banner"
   | "marketing-properties"
   | "marketing-social"
+  | "marketing-intel"
   | "one-sheet"
   | "archived"
   | "content"
@@ -266,6 +267,43 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "After generating, copy the Facebook and Instagram posts into Meta Business Suite (business.facebook.com) to schedule both platforms at the same time. Best times: Tuesday–Thursday 9am–1pm for FB, 11am–1pm for IG.",
     },
   ],
+  "marketing-intel": [
+    {
+      emoji: "📡",
+      title: "What the Radar Scans",
+      body: "Market Intel scans Google News, BusinessWire, and PR Newswire in real-time for keywords like 'office relocation,' 'expanding operations,' 'new headquarters,' and 'commercial lease' — focused on Virginia, Tennessee, the Tri-Cities, and Bristol specifically.",
+    },
+    {
+      emoji: "🔥",
+      title: "Understanding Scores",
+      body: "Gemini AI reads every headline and rates it: 🔥 Hot = company actively relocating or expanding near us, 🟡 Warm = expansion that could target our area, ❄️ Cold = CRE-related but unlikely prospect. Irrelevant items are auto-filtered out entirely.",
+    },
+    {
+      emoji: "🎯",
+      title: "Actioning a Hot Lead",
+      body: "When you see a 🔥 Hot signal, click to expand it and read the AI analysis. Then click 'Read Article' for the full story. If it's legit, note the company name and reach out directly — you now know they're in the market before your competitors do.",
+    },
+    {
+      emoji: "⏱️",
+      title: "How Often to Scan",
+      body: "Click 'Scan Now' once daily — ideally Monday and Wednesday mornings. News feeds update throughout the day, so morning scans catch the previous day's press releases and announcements.",
+    },
+    {
+      emoji: "📋",
+      title: "Pair with Google Alerts",
+      body: "For 24/7 coverage, set up free Google Alerts for phrases like: 'relocating headquarters Tennessee', 'new office Tri-Cities', 'expanding operations Bristol.' Alerts go to your inbox so you catch signals even between dashboard scans.",
+    },
+    {
+      emoji: "🧠",
+      title: "Why Warm Signals Matter",
+      body: "Don't ignore 🟡 Warm signals — a company expanding anywhere in the Southeast could be persuaded to choose Bristol. Track warm companies over weeks; if the same name appears multiple times, that's a pattern worth a cold outreach.",
+    },
+    {
+      emoji: "🚀",
+      title: "Phase 3 Roadmap",
+      body: "This is Phase 2 (RSS + AI scoring). Phase 3 will add job posting monitoring (companies posting roles in Tri-Cities = expansion signal), SEC filing analysis for lease expirations, and automatic weekly email digests of hot leads.",
+    },
+  ],
   "one-sheet": [
     {
       emoji: "🏢",
@@ -421,6 +459,7 @@ export default function ProTips({ activeTab }: ProTipsProps) {
     "marketing-banner": "Homepage Banner",
     "marketing-properties": "Add Property",
     "marketing-social": "Social Copy",
+    "marketing-intel": "Market Intel",
     "one-sheet": "One-Sheet",
     archived: "Archive",
     content: "Content",
