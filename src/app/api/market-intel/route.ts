@@ -87,14 +87,14 @@ async function fetchFeed(url: string, source: string): Promise<FeedItem[]> {
 // ── AI scoring ────────────────────────────────────────────────────────────
 async function scoreWithAI(items: FeedItem[]): Promise<{ title: string; link: string; source: string; pubDate: string; score: string; reason: string }[]> {
   if (!GEMINI_API_KEY || items.length === 0) {
-    // Return unscored items
+    console.warn("[MarketIntel] No GEMINI_API_KEY or empty items — skipping AI scoring");
     return items.map(i => ({
       title: i.title,
       link: i.link,
       source: i.source,
       pubDate: i.pubDate,
       score: "unknown",
-      reason: "AI scoring unavailable",
+      reason: GEMINI_API_KEY ? "No items to score" : "AI key not configured — add GEMINI_API_KEY to .env",
     }));
   }
 
@@ -108,7 +108,7 @@ Score each item:
 - "cold" = Not relevant to our commercial leasing business
 - "skip" = Completely irrelevant (sports, politics, residential, etc.)
 
-Return ONLY a JSON array (no markdown, no backticks). Each object: {"index": number, "score": "hot"|"warm"|"cold"|"skip", "reason": "one sentence why"}
+Return ONLY a valid JSON array. Each object: {"index": number, "score": "hot"|"warm"|"cold"|"skip", "reason": "one sentence why"}
 
 Items to analyze:
 ${items.map((item, i) => `[${i}] "${item.title}" — ${item.snippet.slice(0, 150)}`).join("\n")}`;
@@ -121,15 +121,41 @@ ${items.map((item, i) => `[${i}] "${item.title}" — ${item.snippet.slice(0, 150
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 2048 },
+          generationConfig: { temperature: 0.1, maxOutputTokens: 4096 },
         }),
       }
     );
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("[MarketIntel] Gemini API HTTP error:", res.status, errText.slice(0, 500));
+      throw new Error(`Gemini ${res.status}`);
+    }
+
     const data = await res.json();
-    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-    // Strip markdown code fences if present
-    const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-    const scores: { index: number; score: string; reason: string }[] = JSON.parse(cleaned);
+
+    // Gemini 2.5 may return multiple parts (thinking + response)
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    // Grab the LAST text part (skip thinking parts)
+    const textParts = parts.filter((p: { text?: string }) => p.text).map((p: { text: string }) => p.text);
+    const raw = textParts[textParts.length - 1] || "[]";
+
+    console.log("[MarketIntel] Raw AI response (first 300 chars):", raw.slice(0, 300));
+
+    // Extract JSON array from the response — handle code fences, preamble text, etc.
+    let jsonStr = raw;
+    // Remove markdown code fences
+    jsonStr = jsonStr.replace(/```json\s*/gi, "").replace(/```\s*/g, "");
+    // Find the JSON array in the text (look for first [ to last ])
+    const startBracket = jsonStr.indexOf("[");
+    const endBracket = jsonStr.lastIndexOf("]");
+    if (startBracket !== -1 && endBracket !== -1 && endBracket > startBracket) {
+      jsonStr = jsonStr.slice(startBracket, endBracket + 1);
+    }
+    // Fix trailing commas before ] which is invalid JSON
+    jsonStr = jsonStr.replace(/,\s*]/g, "]");
+
+    const scores: { index: number; score: string; reason: string }[] = JSON.parse(jsonStr);
 
     return items.map((item, i) => {
       const s = scores.find(sc => sc.index === i);
@@ -142,14 +168,15 @@ ${items.map((item, i) => `[${i}] "${item.title}" — ${item.snippet.slice(0, 150
         reason: s?.reason || "",
       };
     });
-  } catch {
+  } catch (err) {
+    console.error("[MarketIntel] AI scoring failed:", err);
     return items.map(i => ({
       title: i.title,
       link: i.link,
       source: i.source,
       pubDate: i.pubDate,
       score: "unknown",
-      reason: "AI scoring failed",
+      reason: "AI scoring temporarily unavailable",
     }));
   }
 }
