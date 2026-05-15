@@ -23,6 +23,10 @@ export type TabKey =
   | "one-sheet"
   | "archived"
   | "content"
+  | "content-homepage"
+  | "content-markets"
+  | "content-pages"
+  | "content-properties"
   | "settings"
   | "global";
 
@@ -387,6 +391,129 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "Each section on the Page Map has its own color: Hero=green, Stats=blue, Services=purple, Reviews=pink, FAQ=yellow, CTA=orange, Footer=slate. This makes it easy to identify sections at a glance.",
     },
   ],
+  "content-homepage": [
+    {
+      emoji: "🗺️",
+      title: "Page Map Blueprint",
+      body: "Click the 'Page Map' header at the top to open an interactive wireframe of your homepage. Each section is drawn as a mini blueprint — click any block to instantly jump to that section's editor fields below.",
+    },
+    {
+      emoji: "📝",
+      title: "Editing Content",
+      body: "Expand any section to see its editable fields — headlines, descriptions, stats, button text. Type your changes and they're tracked instantly. The blue badge shows how many fields you've customized in each section.",
+    },
+    {
+      emoji: "💾",
+      title: "Saving Changes",
+      body: "Hit the green Save button at the top to push all your edits live. Changes appear on the website within 60 seconds — no deploy or code changes needed.",
+    },
+    {
+      emoji: "🎨",
+      title: "Color-Coded Sections",
+      body: "Each section on the Page Map has its own color: Hero=green, Stats=blue, Services=purple, Reviews=pink, FAQ=yellow, CTA=orange, Footer=slate. This makes it easy to identify sections at a glance.",
+    },
+  ],
+  "content-markets": [
+    {
+      emoji: "🔴",
+      title: "SEO Importance Badges",
+      body: "Every field has a colored badge: 🔴 Critical SEO = changes here directly affect Google rankings. 🟡 Important = helps SEO but less risky. 🟢 Safe to Edit = change freely without SEO impact.",
+    },
+    {
+      emoji: "📏",
+      title: "Character Counters",
+      body: "SEO titles should be 50–60 characters. Meta descriptions should be 140–160 characters. The counter turns green when you're in the ideal range, yellow when close, and red when too short or too long.",
+    },
+    {
+      emoji: "🔑",
+      title: "Keyword Checker",
+      body: "For critical fields (H1, SEO Title, Meta Description), the system checks if your key SEO keywords are still present. If you accidentally delete a keyword like 'Bristol TN' or 'commercial real estate' — you'll see a red warning immediately.",
+    },
+    {
+      emoji: "🔍",
+      title: "Google Search Preview",
+      body: "On meta description fields, you'll see a live preview of exactly how your page will look in Google search results. If the title gets cut off or the description is too long, you'll see it happen in real-time.",
+    },
+    {
+      emoji: "👁️",
+      title: "View SEO Original",
+      body: "If you change a field, a 'View SEO Original' button appears. Click it to see the professionally written original text — perfect for reference if you want to keep the same keyword structure.",
+    },
+    {
+      emoji: "🛡️",
+      title: "Safe Fields to Edit Freely",
+      body: "Fields marked 🟢 Safe to Edit — like population, median income, employers, highways — have zero SEO impact. Change these any time without worrying about rankings.",
+    },
+    {
+      emoji: "❓",
+      title: "FAQ Best Practices",
+      body: "FAQ questions should match how real people search on Google (e.g., 'How much does office space cost in Bristol TN?'). Google can display these directly in search results as rich snippets — powerful free exposure.",
+    },
+    {
+      emoji: "↩️",
+      title: "One-Click Reset",
+      body: "Made a mistake? Every field has a Reset button that instantly restores the SEO-optimized original text. No guessing what it used to say.",
+    },
+  ],
+  "content-pages": [
+    {
+      emoji: "🔴",
+      title: "SEO Importance Badges",
+      body: "Every field has a colored badge: 🔴 Critical SEO = changes here directly affect Google rankings. 🟡 Important = helps SEO but less risky. 🟢 Safe to Edit = change freely without SEO impact.",
+    },
+    {
+      emoji: "📏",
+      title: "Character Counters",
+      body: "SEO titles should be 50–60 characters. Meta descriptions should be 140–160 characters. The counter turns green when you're in the ideal range, yellow when close, and red when too short or too long.",
+    },
+    {
+      emoji: "🔑",
+      title: "Keyword Checker",
+      body: "For critical fields (H1, SEO Title, Meta Description), the system checks if your key SEO keywords are still present. A red warning appears if important keywords like 'coworking,' 'Bristol,' or 'Tri-Cities' are removed.",
+    },
+    {
+      emoji: "🔍",
+      title: "Google Search Preview",
+      body: "On meta description fields, you'll see a live preview of exactly how your page will look in Google search results. Watch in real-time as you type to ensure your listing looks professional.",
+    },
+    {
+      emoji: "💡",
+      title: "Benefit & FAQ Editing",
+      body: "Benefits and FAQ answers are marked 🟡 Important — they support SEO but won't break rankings if you adjust them. Keep the general topic and keywords, but feel free to rewrite the phrasing.",
+    },
+    {
+      emoji: "📋",
+      title: "CoWork & Executive Pages",
+      body: "The CoWork and Executive Advisement pages have many fields because they're content-rich pages. Focus on the 🔴 Critical fields first (hero heading, descriptions). The 🟢 Safe fields like pricing plans and client types can be edited freely.",
+    },
+    {
+      emoji: "👁️",
+      title: "View SEO Original",
+      body: "Changed something and not sure if it's better? Click 'View SEO Original' to compare your edit against the professionally optimized original text.",
+    },
+    {
+      emoji: "↩️",
+      title: "One-Click Reset",
+      body: "Made a mistake? Every field has a Reset button that instantly restores the original text. Your edit history is tracked until you save — so nothing is lost.",
+    },
+  ],
+  "content-properties": [
+    {
+      emoji: "📸",
+      title: "Property Photos",
+      body: "Upload and manage photos for each property. Set a hero image that appears on listing cards and one-sheet PDFs. Changes go live instantly.",
+    },
+    {
+      emoji: "⭐",
+      title: "Setting the Hero Image",
+      body: "The hero image is shown on listing cards and the homepage. Hover over a photo and click the star icon to set it as the hero.",
+    },
+    {
+      emoji: "🔢",
+      title: "Photo Count",
+      body: "The blue number badge shows how many photos each property has. Aim for 4–6 strong photos per property for the best gallery experience.",
+    },
+  ],
 };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -463,6 +590,10 @@ export default function ProTips({ activeTab }: ProTipsProps) {
     "one-sheet": "One-Sheet",
     archived: "Archive",
     content: "Content",
+    "content-homepage": "Homepage Editor",
+    "content-markets": "Market Pages",
+    "content-pages": "Space & Pages",
+    "content-properties": "Properties",
     settings: "Settings",
     global: "General",
   };

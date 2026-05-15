@@ -132,7 +132,11 @@ const SECTION_META: Record<string, { label: string; icon: React.ReactNode; descr
 
 interface ContentItem { section: string; key: string; value: string }
 
-export default function ContentTab() {
+interface ContentTabProps {
+  onSubViewChange?: (view: string) => void;
+}
+
+export default function ContentTab({ onSubViewChange }: ContentTabProps) {
   const [overrides, setOverrides] = useState<ContentItem[]>([]);
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
@@ -143,6 +147,18 @@ export default function ContentTab() {
   const [activeMapSection, setActiveMapSection] = useState<string | null>("hero");
   const [mapOpen, setMapOpen] = useState(false);
   const [activeView, setActiveView] = useState<"content" | "markets" | "pages" | "properties">("content");
+
+  // Propagate sub-view changes to parent for ProTips context
+  const handleViewChange = (view: "content" | "markets" | "pages" | "properties") => {
+    setActiveView(view);
+    const viewMap: Record<string, string> = {
+      content: "content-homepage",
+      markets: "content-markets",
+      pages: "content-pages",
+      properties: "content-properties",
+    };
+    onSubViewChange?.(viewMap[view] || "content");
+  };
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Scroll to and expand a section when selected from the PageMap
@@ -288,7 +304,7 @@ export default function ContentTab() {
           ] as const).map(tab => (
             <button
               key={tab.key}
-              onClick={() => setActiveView(tab.key)}
+              onClick={() => handleViewChange(tab.key)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all duration-300 whitespace-nowrap ${
                 activeView === tab.key
                   ? "bg-[#4ADE80] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"

@@ -6,6 +6,7 @@ import {
   Type, Pencil, ChevronDown, ChevronRight, MapPin,
 } from "lucide-react";
 import { GEO_PAGES } from "@/lib/data";
+import SeoFieldGuard, { getSeoConfig, buildMarketKeywords } from "./SeoFieldGuard";
 
 // ── Auto-generate defaults from GEO_PAGES ──────────────────────────────────
 
@@ -271,6 +272,11 @@ export default function MarketEditor() {
                   const val = getValue(sectionKey, fieldKey);
                   const dirty = isDirty(sectionKey, fieldKey);
                   const custom = isOverridden(sectionKey, fieldKey);
+                  const seoConfig = getSeoConfig(fieldKey);
+                  const marketKw = buildMarketKeywords(geo.city, geo.state);
+                  const isTitle = fieldKey === "metaTitle";
+                  const isDesc = fieldKey === "metaDescription";
+                  const isH1 = fieldKey === "h1";
 
                   return (
                     <div key={fieldKey}>
@@ -303,6 +309,22 @@ export default function MarketEditor() {
                           value={val}
                           onChange={e => handleChange(sectionKey, fieldKey, e.target.value)}
                           className={`${inputClass} ${dirty ? "border-[rgba(250,204,21,0.3)]" : ""}`}
+                        />
+                      )}
+                      {/* SEO Guardrail */}
+                      {seoConfig && (
+                        <SeoFieldGuard
+                          value={val}
+                          defaultValue={fieldMeta.value}
+                          seoLevel={seoConfig.seoLevel}
+                          charRange={seoConfig.charRange}
+                          hint={seoConfig.hint}
+                          keywords={(isH1 || isTitle || isDesc) ? marketKw : undefined}
+                          googlePreview={isDesc ? {
+                            title: getValue(sectionKey, "metaTitle"),
+                            description: val,
+                            url: `teamvisionllc.com/markets/${geo.slug}`,
+                          } : undefined}
                         />
                       )}
                     </div>

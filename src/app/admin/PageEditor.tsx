@@ -6,6 +6,7 @@ import {
   Type, ChevronDown, ChevronRight, FileText,
 } from "lucide-react";
 import { SPACE_TYPE_PAGES } from "@/lib/data";
+import SeoFieldGuard, { getSeoConfig } from "./SeoFieldGuard";
 
 // ── Build editable defaults for Space Type pages + standalone pages ──────────
 
@@ -366,6 +367,18 @@ export default function PageEditor() {
                   const val = getValue(sectionKey, fieldKey);
                   const dirty = isDirty(sectionKey, fieldKey);
                   const custom = isOverridden(sectionKey, fieldKey);
+                  const seoConfig = getSeoConfig(fieldKey);
+                  const isDesc = fieldKey === "metaDescription";
+                  // Build slug-specific keywords for critical SEO fields
+                  const isH1 = fieldKey === "h1";
+                  const isTitle = fieldKey === "metaTitle";
+                  const pageKeywords = (isH1 || isTitle || isDesc)
+                    ? sectionKey.startsWith("space:")
+                      ? ["commercial real estate", "Bristol", "Tri-Cities"]
+                      : sectionKey === "page:cowork"
+                      ? ["coworking", "Bristol", "workspace"]
+                      : ["executive", "consulting", "Vision LLC"]
+                    : undefined;
 
                   return (
                     <div key={fieldKey}>
@@ -398,6 +411,22 @@ export default function PageEditor() {
                           value={val}
                           onChange={e => handleChange(sectionKey, fieldKey, e.target.value)}
                           className={`${inputClass} ${dirty ? "border-[rgba(250,204,21,0.3)]" : ""}`}
+                        />
+                      )}
+                      {/* SEO Guardrail */}
+                      {seoConfig && (
+                        <SeoFieldGuard
+                          value={val}
+                          defaultValue={fieldMeta.value}
+                          seoLevel={seoConfig.seoLevel}
+                          charRange={seoConfig.charRange}
+                          hint={seoConfig.hint}
+                          keywords={pageKeywords}
+                          googlePreview={isDesc ? {
+                            title: getValue(sectionKey, "metaTitle") || getValue(sectionKey, "hero_heading") || "",
+                            description: val,
+                            url: sectionKey.startsWith("space:") ? `teamvisionllc.com/spaces/${sectionKey.replace("space:", "")}` : `teamvisionllc.com/${sectionKey.replace("page:", "")}`,
+                          } : undefined}
                         />
                       )}
                     </div>

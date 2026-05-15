@@ -1546,6 +1546,7 @@ export default function AdminPage() {
     router.replace(`/admin?tab=${tab}`, { scroll: false });
   };
   const [marketingSubTab, setMarketingSubTab] = useState("properties");
+  const [contentSubView, setContentSubView] = useState("content-homepage");
 
   // Always start at the very top — prevents browser scroll-restoration from
   // loading the dashboard mid-page and hiding the tab nav under the site nav
@@ -2663,7 +2664,7 @@ export default function AdminPage() {
 
         {activeTab === "content" && (
           <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8">
-            <ContentTab />
+            <ContentTab onSubViewChange={setContentSubView} />
           </div>
         )}
 
@@ -2678,7 +2679,7 @@ export default function AdminPage() {
       </div>
 
       {/* ─ PRO TIPS floating button (always visible, context-aware) ─────────── */}
-      <ProTips activeTab={(activeTab === "marketing" ? `marketing-${marketingSubTab}` : activeTab) as import("./ProTips").TabKey} />
+      <ProTips activeTab={(activeTab === "marketing" ? `marketing-${marketingSubTab}` : activeTab === "content" ? contentSubView : activeTab) as import("./ProTips").TabKey} />
 
     </div>
   );
