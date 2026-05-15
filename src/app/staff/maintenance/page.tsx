@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Wrench, CheckCircle2, Clock, AlertTriangle, ChevronRight,
-  Loader2, Plus, X, Send, ArrowLeft, User, Building2, Flame,
+  Loader2, Plus, X, Send, ArrowLeft, Building2, Flame,
 } from "lucide-react";
 
 
@@ -225,47 +225,138 @@ function FieldTicketCard({ ticket, onUpdate }: { ticket: Ticket; onUpdate: (id: 
   );
 }
 
-// ─── Name Selector ────────────────────────────────────────────────────────────
+// ─── PIN Keypad ───────────────────────────────────────────────────────────────
 
-const FALLBACK_WORKERS = ["Mike D.", "James R.", "Carlos M.", "Tom B.", "Other"];
+function PinKeypad({ onAuth }: { onAuth: (name: string) => void }) {
+  const [digits, setDigits] = useState("");
+  const [error, setError] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [shake, setShake] = useState(false);
+  const [welcome, setWelcome] = useState("");
 
+  const handleDigit = (d: string) => {
+    if (digits.length >= 6) return;
+    const next = digits + d;
+    setDigits(next);
+    setError("");
+    if (next.length === 6) submitPin(next);
+  };
 
-function NameSelector({ onSelect }: { onSelect: (name: string) => void }) {
-  const [workers, setWorkers] = useState<string[]>(FALLBACK_WORKERS);
-  const [custom, setCustom] = useState("");
-  const [showCustom, setShowCustom] = useState(false);
+  const handleBackspace = () => {
+    setDigits(d => d.slice(0, -1));
+    setError("");
+  };
 
-  useEffect(() => {
-    fetch("/api/allowed-users?role=maintenance")
-      .then(r => r.json())
-      .then(d => {
-        const names = (d.users || []).map((u: { name: string }) => u.name).filter(Boolean) as string[];
-        if (names.length > 0) setWorkers([...names, "Other"]);
-      })
-      .catch(() => {});
-  }, []);
+  const submitPin = async (pin: string) => {
+    setChecking(true);
+    try {
+      const res = await fetch("/api/staff-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setWelcome(data.name);
+        setTimeout(() => onAuth(data.name), 1200);
+      } else {
+        setShake(true);
+        setError("Invalid PIN");
+        setDigits("");
+        setTimeout(() => setShake(false), 500);
+      }
+    } catch {
+      setError("Network error");
+      setDigits("");
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
+
+  // Welcome state
+  if (welcome) {
+    return (
+      <div className="min-h-screen bg-[#080C14] flex flex-col items-center justify-center px-6">
+        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#FACC15] to-[#F97316] flex items-center justify-center mb-6 animate-bounce">
+          <Wrench size={36} className="text-black" />
+        </div>
+        <h1 className="text-3xl font-black text-white mb-2">Welcome, {welcome}!</h1>
+        <p className="text-gray-500">Loading your portal…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#080C14] flex flex-col items-center justify-center px-6 py-12">
-      <div className="text-5xl mb-4">🔧</div>
-      <h1 className="text-3xl font-black text-white text-center mb-2">Maintenance Portal</h1>
-      <p className="text-gray-500 text-center mb-10">Who are you?</p>
-      <div className="w-full max-w-sm space-y-3">
-        {workers.map(w => (
-          <button key={w} onClick={() => w === "Other" ? setShowCustom(true) : onSelect(w)}
-            className="w-full py-5 rounded-2xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.09)] text-white text-lg font-bold text-left px-6 flex items-center gap-3 hover:bg-[rgba(255,255,255,0.09)] transition-all active:scale-95">
-            <User size={20} className="text-[#FACC15]" /> {w}
-          </button>
-        ))}
-        {showCustom && (
-          <div className="flex gap-2">
-            <input value={custom} onChange={e => setCustom(e.target.value)} placeholder="Your name"
-              className="flex-1 bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] rounded-2xl px-4 py-4 text-white outline-none text-lg focus:border-[rgba(250,204,21,0.5)]" />
-            <button onClick={() => custom.trim() && onSelect(custom.trim())}
-              className="px-5 py-4 rounded-2xl bg-[#FACC15] text-black font-black">Go</button>
-          </div>
-        )}
+      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FACC15] to-[#F97316] flex items-center justify-center mb-6">
+        <Wrench size={28} className="text-black" />
       </div>
+      <h1 className="text-3xl font-black text-white text-center mb-1">Maintenance Portal</h1>
+      <p className="text-gray-500 text-center mb-8">Enter your 6-digit PIN</p>
+
+      {/* PIN dots */}
+      <div className={`flex gap-3 mb-8 ${shake ? "animate-shake" : ""}`}
+        style={shake ? { animation: "shake 0.4s ease-in-out" } : {}}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="w-4 h-4 rounded-full transition-all duration-200"
+            style={{
+              backgroundColor: i < digits.length ? "#FACC15" : "rgba(255,255,255,0.1)",
+              boxShadow: i < digits.length ? "0 0 12px rgba(250,204,21,0.4)" : "none",
+              transform: i < digits.length ? "scale(1.2)" : "scale(1)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Error */}
+      {error && (
+        <p className="text-red-400 text-sm font-bold mb-4 animate-pulse">{error}</p>
+      )}
+
+      {/* Keypad */}
+      <div className="grid grid-cols-3 gap-3 w-full max-w-xs">
+        {KEYS.map((k, i) => {
+          if (k === "") return <div key={i} />;
+          if (k === "⌫") {
+            return (
+              <button key={i} onClick={handleBackspace} disabled={checking || digits.length === 0}
+                className="h-16 rounded-2xl flex items-center justify-center text-2xl text-gray-500 active:bg-[rgba(255,255,255,0.05)] transition-all disabled:opacity-30">
+                <ArrowLeft size={24} />
+              </button>
+            );
+          }
+          return (
+            <button key={i} onClick={() => handleDigit(k)} disabled={checking}
+              className="h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white active:scale-90 transition-all"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}>
+              {k}
+            </button>
+          );
+        })}
+      </div>
+
+      {checking && (
+        <div className="mt-6 flex items-center gap-2 text-gray-500">
+          <Loader2 size={16} className="animate-spin" />
+          <span className="text-sm">Verifying…</span>
+        </div>
+      )}
+
+      {/* Shake keyframe */}
+      <style jsx>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-10px); }
+          40% { transform: translateX(10px); }
+          60% { transform: translateX(-6px); }
+          80% { transform: translateX(6px); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -320,7 +411,7 @@ export default function MaintenanceStaffPage() {
     setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
   };
 
-  if (!workerName) return <NameSelector onSelect={handleSelectName} />;
+  if (!workerName) return <PinKeypad onAuth={handleSelectName} />;
 
   const open = tickets.filter(t => t.status !== "complete");
   const done = tickets.filter(t => t.status === "complete");

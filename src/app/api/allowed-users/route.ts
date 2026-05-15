@@ -29,19 +29,26 @@ export async function GET(req: NextRequest) {
   if (role)  url += `&role=eq.${encodeURIComponent(role)}`;
   if (email) url += `&email=eq.${encodeURIComponent(email.toLowerCase())}`;
 
+  const includePins = req.nextUrl.searchParams.get("include_pins") === "true";
+
   const res = await fetch(url, { headers: H });
   if (!res.ok) return NextResponse.json({ users: [], allowed: false });
-  const users = await res.json();
+  const raw = await res.json();
+
+  // Strip PINs from responses unless admin explicitly requests them
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const stripPin = (u: any) => { const { pin: _pin, ...rest } = u; return rest; };
+  const users = Array.isArray(raw) ? (includePins ? raw : raw.map(stripPin)) : [];
 
   // Single-email access check (used by auth guard)
   if (email) {
-    const allowed = Array.isArray(users) && users.some(
+    const allowed = users.some(
       (u: { email: string; active: boolean }) =>
         u.email.toLowerCase() === email.toLowerCase() && u.active !== false
     );
     return NextResponse.json({ users, allowed });
   }
-  return NextResponse.json({ users: Array.isArray(users) ? users : [] });
+  return NextResponse.json({ users });
 }
 
 // POST — add a user
@@ -49,14 +56,23 @@ export async function POST(req: NextRequest) {
   const guard = requireServerContext();
   if (guard) return guard;
 
-  const { email, name, role } = await req.json();
-  if (!email || !role) return NextResponse.json({ error: "email and role required" }, { status: 400 });
+  const { email, name, role, pin } = await req.json();
+  // For staff roles, email is optional (they use PIN). For admin, email is required.
+  if (role === "admin" && !email) return NextResponse.json({ error: "email required for admin" }, { status: 400 });
+  if (!role) return NextResponse.json({ error: "role is required" }, { status: 400 });
+  // For maintenance/cleaning, default PIN to 123456 if not provided
+  const staffPin = (role === "maintenance" || role === "cleaning") ? (pin || "123456") : undefined;
 
   const id = `user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const payload: Record<string, unknown> = {
+    id, name: name?.trim() || "", role, active: true,
+  };
+  if (email) payload.email = email.toLowerCase().trim();
+  if (staffPin) payload.pin = staffPin;
   const res = await fetch(`${SUPABASE_URL}/rest/v1/allowed_users`, {
     method: "POST",
     headers: { ...H, "Prefer": "return=representation" },
-    body: JSON.stringify({ id, email: email.toLowerCase().trim(), name: name?.trim() || "", role, active: true }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) return NextResponse.json({ error: await res.text() }, { status: res.status });
   return NextResponse.json({ success: true });

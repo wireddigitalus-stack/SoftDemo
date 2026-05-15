@@ -51,6 +51,7 @@ interface AllowedUser {
   name: string;
   role: "admin" | "maintenance" | "cleaning";
   active: boolean;
+  pin?: string;
   created_at?: string;
 }
 
@@ -334,24 +335,35 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
 }) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [pin, setPin] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const isStaffRole = role === "maintenance" || role === "cleaning";
+
+  const generatePin = () => {
+    const p = Math.floor(100000 + Math.random() * 900000).toString();
+    setPin(p);
+  };
 
   const FIELD = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-sm text-white focus:border-[rgba(74,222,128,0.4)] outline-none placeholder:text-gray-600";
 
   const addUser = async () => {
-    if (!email.trim()) { setError("Email is required."); return; }
+    if (!isStaffRole && !email.trim()) { setError("Email is required."); return; }
+    if (isStaffRole && !name.trim()) { setError("Name is required."); return; }
     setSaving(true); setError("");
     try {
+      const payload: Record<string, string> = { name: name.trim(), role };
+      if (email.trim()) payload.email = email.trim();
+      if (isStaffRole) payload.pin = pin || "123456";
       const res = await fetch("/api/allowed-users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), name: name.trim(), role }),
+        body: JSON.stringify(payload),
       });
       const d = await res.json();
       if (!res.ok) { setError(d.error || "Failed — email may already exist."); }
-      else { setEmail(""); setName(""); setShowAdd(false); onRefresh(); }
+      else { setEmail(""); setName(""); setPin(""); setShowAdd(false); onRefresh(); }
     } catch { setError("Network error."); }
     finally { setSaving(false); }
   };
@@ -393,17 +405,41 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
       {/* Add form */}
       {showAdd && (
         <div className="mb-4 p-3 rounded-xl border border-[rgba(255,255,255,0.07)] bg-[rgba(0,0,0,0.2)] space-y-2">
-          <div className="grid grid-cols-2 gap-2">
+          <div className={`grid ${isStaffRole ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}>
             <div>
-              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Full Name</label>
+              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Full Name {isStaffRole && '*'}</label>
               <input value={name} onChange={e => setName(e.target.value)} placeholder="Mike D." className={FIELD} />
             </div>
-            <div>
-              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Gmail Address *</label>
-              <input value={email} onChange={e => setEmail(e.target.value)} placeholder="mike@gmail.com" type="email" className={FIELD}
-                onKeyDown={e => { if (e.key === "Enter") addUser(); }} />
-            </div>
+            {!isStaffRole && (
+              <div>
+                <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Gmail Address *</label>
+                <input value={email} onChange={e => setEmail(e.target.value)} placeholder="mike@gmail.com" type="email" className={FIELD}
+                  onKeyDown={e => { if (e.key === "Enter") addUser(); }} />
+              </div>
+            )}
           </div>
+          {isStaffRole && (
+            <div>
+              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">6-Digit PIN</label>
+              <div className="flex gap-2">
+                <input value={pin} onChange={e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); setPin(v); }}
+                  placeholder="123456" maxLength={6} inputMode="numeric" pattern="[0-9]*"
+                  className={FIELD + " font-mono tracking-[0.3em] text-center"}
+                  onKeyDown={e => { if (e.key === "Enter") addUser(); }} />
+                <button onClick={generatePin} type="button"
+                  className="px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.1)] text-[10px] font-bold text-gray-400 hover:text-white hover:border-[rgba(255,255,255,0.25)] transition-all whitespace-nowrap">
+                  🎲 Random
+                </button>
+              </div>
+              <p className="text-[10px] text-gray-600 mt-1">Leave empty for default PIN: 123456</p>
+            </div>
+          )}
+          {isStaffRole && (
+            <div>
+              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Email (optional)</label>
+              <input value={email} onChange={e => setEmail(e.target.value)} placeholder="mike@gmail.com" type="email" className={FIELD} />
+            </div>
+          )}
           {error && <p className="text-xs text-red-400">{error}</p>}
           <div className="flex gap-2">
             <button onClick={addUser} disabled={saving}
@@ -412,7 +448,7 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
               {saving ? <Loader2 size={11} className="animate-spin" /> : <Save size={11} />}
               {saving ? "Adding…" : "Add User"}
             </button>
-            <button onClick={() => { setShowAdd(false); setError(""); setEmail(""); setName(""); }}
+            <button onClick={() => { setShowAdd(false); setError(""); setEmail(""); setName(""); setPin(""); }}
               className="px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)] text-gray-500 text-xs hover:text-white transition-colors">
               Cancel
             </button>
@@ -422,8 +458,8 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
 
       {/* User list */}
       <div className="space-y-2">
-        {users.length === 0 && (
-          <p className="text-xs text-gray-600 text-center py-4">No users yet — add a Gmail address above.</p>
+      {users.length === 0 && (
+          <p className="text-xs text-gray-600 text-center py-4">{isStaffRole ? "No staff yet — add a name and PIN above." : "No users yet — add a Gmail address above."}</p>
         )}
         {users.map(u => {
             const isOwner = OWNER_EMAILS.has(u.email.toLowerCase());
@@ -442,7 +478,15 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
                   </Tooltip>
                 )}
               </div>
-              <p className="text-[11px] text-gray-500 truncate">{u.email}</p>
+              <p className="text-[11px] text-gray-500 truncate">{u.email || "(PIN-only)"}</p>
+              {isStaffRole && u.pin && (
+                <button onClick={() => { navigator.clipboard.writeText(u.pin!); }}
+                  title="Copy PIN"
+                  className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-white transition-colors mt-0.5">
+                  <span className="font-mono tracking-wider bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 rounded">PIN: {u.pin}</span>
+                  📋
+                </button>
+              )}
             </div>
             {!isOwner && (
               <button onClick={() => toggleActive(u.id, u.active)}
@@ -521,8 +565,8 @@ function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfi
     try {
       const [ar, mr, cr] = await Promise.all([
         fetch("/api/allowed-users?role=admin").then(r => r.json()),
-        fetch("/api/allowed-users?role=maintenance").then(r => r.json()),
-        fetch("/api/allowed-users?role=cleaning").then(r => r.json()),
+        fetch("/api/allowed-users?role=maintenance&include_pins=true").then(r => r.json()),
+        fetch("/api/allowed-users?role=cleaning&include_pins=true").then(r => r.json()),
       ]);
       setAdminUsers(ar.users || []);
       setMaintUsers(mr.users || []);
@@ -543,7 +587,7 @@ function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfi
           <h2 className="text-sm font-black text-white uppercase tracking-widest">Portal Access</h2>
         </div>
         <p className="text-[11px] text-gray-500 mb-5">
-          Add Gmail addresses to grant instant access to each portal. Changes take effect immediately — no redeployment required.
+          Admin access uses Gmail sign-in. Staff portals (Maintenance & Cleaning) use a 6-digit PIN — no Gmail required. Changes take effect immediately.
         </p>
 
         {/* Setup SQL banner */}
@@ -553,15 +597,20 @@ function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfi
             <p className="text-[11px] text-gray-400 mb-2">Run this SQL in your <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-[#4ADE80] underline">Supabase SQL Editor</a>, then click Refresh:</p>
             <pre className="text-[10px] text-gray-300 bg-[rgba(0,0,0,0.5)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">{`CREATE TABLE IF NOT EXISTS allowed_users (
   id TEXT PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE,
   name TEXT DEFAULT '',
   role TEXT DEFAULT 'admin',
+  pin TEXT DEFAULT NULL,
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 ALTER TABLE allowed_users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "anon_all_allowed_users" ON allowed_users
   FOR ALL TO anon USING (true) WITH CHECK (true);
+
+-- If upgrading from an older schema, add the pin column:
+-- ALTER TABLE allowed_users ADD COLUMN IF NOT EXISTS pin TEXT DEFAULT NULL;
+-- ALTER TABLE allowed_users ALTER COLUMN email DROP NOT NULL;
 
 -- Seed your own email as first admin:
 INSERT INTO allowed_users (id, email, name, role, active)
