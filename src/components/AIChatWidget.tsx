@@ -471,7 +471,7 @@ export default function LeaseBotWidget() {
       {/* ── Chat Window ──────────────────────────────────────────────────── */}
       <div
         id="vision-chat-panel"
-        className={`fixed bottom-[14.5rem] right-4 sm:bottom-40 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm transition-all duration-300 ${
+        className={`fixed bottom-[16.25rem] right-4 sm:bottom-40 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm transition-all duration-300 ${
           isOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-4 pointer-events-none"
@@ -828,7 +828,7 @@ export default function LeaseBotWidget() {
         }}
         id="lease-bot-toggle"
         aria-label="Ask VISION — Vision LLC"
-        className={`fixed bottom-[10.5rem] right-4 sm:bottom-24 sm:right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+        className={`fixed bottom-[12.25rem] right-4 sm:bottom-24 sm:right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? "bg-[#111827] border border-[rgba(74,222,128,0.3)] shadow-lg"
             : "bot-breathe bg-gradient-to-br from-[#FACC15] via-[#4ADE80] to-[#22C55E] hover:scale-110 cursor-pointer"
