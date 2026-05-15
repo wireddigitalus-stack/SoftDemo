@@ -462,12 +462,12 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
           <p className="text-xs text-gray-600 text-center py-4">{isStaffRole ? "No staff yet — add a name and PIN above." : "No users yet — add a Gmail address above."}</p>
         )}
         {users.map(u => {
-            const isOwner = OWNER_EMAILS.has(u.email.toLowerCase());
+            const isOwner = u.email ? OWNER_EMAILS.has(u.email.toLowerCase()) : false;
             return (
           <div key={u.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${u.active ? "border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)]" : "border-[rgba(255,255,255,0.03)] opacity-40"}`}>
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0"
               style={{ backgroundColor: `${color}15`, color, border: `1px solid ${color}30` }}>
-              {initials(u.name || u.email)}
+              {initials(u.name || u.email || "?")}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
