@@ -24,7 +24,7 @@ export const HOMEPAGE_FAQS = [
   {
     q: "Does Vision LLC serve Johnson City and Kingsport?",
     a: "Yes. While our primary portfolio is centered in Downtown Bristol, Vision LLC provides commercial real estate leasing, executive advisement, and development consulting across the entire Tri-Cities region including Kingsport, Johnson City, and Sullivan and Washington counties.",
-    link: { label: "View Tri-Cities Markets", href: "/markets/tri-cities-tn" },
+    link: { label: "View Tri-Cities Markets", href: "/markets" },
   },
   {
     q: "What is the minimum lease term for commercial space with Vision LLC?",

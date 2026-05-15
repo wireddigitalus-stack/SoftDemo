@@ -6,12 +6,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/", "/auth/", "/staff/", "/l/"],
+        disallow: ["/admin", "/api/", "/auth/", "/staff/", "/meet/", "/l/"],
       },
       {
         userAgent: "Googlebot",
         allow: "/",
-        disallow: ["/admin", "/api/", "/auth/", "/staff/", "/l/"],
+        disallow: ["/admin", "/api/", "/auth/", "/staff/", "/meet/", "/l/"],
       },
     ],
     sitemap: "https://www.teamvisionllc.com/sitemap.xml",

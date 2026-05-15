@@ -300,6 +300,26 @@ body {
   }
 }
 
+/* ── Mobile bar auto-hide: reposition floating chat elements ──────────────── */
+/* When MobileStickyBar hides (scroll down), the AI chat toggle and panel
+   slide to the bottom of the screen. Only applies on mobile/tablet (< lg). */
+@media (max-width: 1023px) {
+  #lease-bot-toggle,
+  #vision-chat-panel {
+    transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                transform 0.3s ease;
+  }
+
+  html.mobile-bar-hidden #lease-bot-toggle {
+    bottom: 1.5rem !important;
+  }
+
+  html.mobile-bar-hidden #vision-chat-panel {
+    bottom: 5rem !important;
+  }
+}
+
 /* Pulse animation for live indicator */
 @keyframes pulse-green {
   0%, 100% { opacity: 1; }

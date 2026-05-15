@@ -470,6 +470,7 @@ export default function LeaseBotWidget() {
       `}</style>
       {/* ── Chat Window ──────────────────────────────────────────────────── */}
       <div
+        id="vision-chat-panel"
         className={`fixed bottom-44 right-4 sm:bottom-40 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm transition-all duration-300 ${
           isOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
