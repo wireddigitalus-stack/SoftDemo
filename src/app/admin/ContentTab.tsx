@@ -11,6 +11,8 @@ import HeroBannerManager from "./HeroBannerManager";
 import PropertyEditor from "./PropertyEditor";
 import PropertyCreator from "./PropertyCreator";
 import MlsImportMock from "@/components/MlsImportMock";
+import MarketEditor from "./MarketEditor";
+import PageEditor from "./PageEditor";
 
 // ── Default values (mirrors what's hardcoded in components) ──────────────────
 
@@ -140,7 +142,7 @@ export default function ContentTab() {
   const [loading, setLoading] = useState(true);
   const [activeMapSection, setActiveMapSection] = useState<string | null>("hero");
   const [mapOpen, setMapOpen] = useState(false);
-  const [activeView, setActiveView] = useState<"content" | "properties">("content");
+  const [activeView, setActiveView] = useState<"content" | "markets" | "pages" | "properties">("content");
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Scroll to and expand a section when selected from the PageMap
@@ -277,32 +279,29 @@ export default function ContentTab() {
 
       {/* ── Segmented View Toggle ── */}
       <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-2">
-        <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1">
-          <button
-            onClick={() => setActiveView("content")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${
-              activeView === "content"
-                ? "bg-[#4ADE80] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"
-                : "text-gray-500 hover:text-gray-300 hover:bg-[rgba(255,255,255,0.03)]"
-            }`}
-          >
-            <Pencil size={15} />
-            Website Content
-            {totalDirty > 0 && activeView !== "content" && (
-              <span className="w-2 h-2 rounded-full bg-[#FACC15] animate-pulse" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveView("properties")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${
-              activeView === "properties"
-                ? "bg-[#4ADE80] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"
-                : "text-gray-500 hover:text-gray-300 hover:bg-[rgba(255,255,255,0.03)]"
-            }`}
-          >
-            <Building2 size={15} />
-            Property Management
-          </button>
+        <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1 overflow-x-auto">
+          {([
+            { key: "content" as const, label: "Homepage", icon: <Pencil size={14} /> },
+            { key: "markets" as const, label: "Markets", icon: <MapPin size={14} /> },
+            { key: "pages" as const, label: "Pages", icon: <Type size={14} /> },
+            { key: "properties" as const, label: "Properties", icon: <Building2 size={14} /> },
+          ] as const).map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveView(tab.key)}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all duration-300 whitespace-nowrap ${
+                activeView === tab.key
+                  ? "bg-[#4ADE80] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"
+                  : "text-gray-500 hover:text-gray-300 hover:bg-[rgba(255,255,255,0.03)]"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+              {tab.key === "content" && totalDirty > 0 && activeView !== "content" && (
+                <span className="w-2 h-2 rounded-full bg-[#FACC15] animate-pulse" />
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -532,6 +531,16 @@ export default function ContentTab() {
 
         </>
       )}
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* ══  MARKET PAGES VIEW                                   ══ */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      {activeView === "markets" && <MarketEditor />}
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* ══  SPACE TYPE + STANDALONE PAGES VIEW                  ══ */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      {activeView === "pages" && <PageEditor />}
 
       {/* ════════════════════════════════════════════════════════════ */}
       {/* ══  PROPERTY MANAGEMENT VIEW                            ══ */}
