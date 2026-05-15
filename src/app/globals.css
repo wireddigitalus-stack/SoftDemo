@@ -312,11 +312,11 @@ body {
   }
 
   html.mobile-bar-hidden #lease-bot-toggle {
-    bottom: 1.5rem !important;
+    bottom: 5rem !important;
   }
 
   html.mobile-bar-hidden #vision-chat-panel {
-    bottom: 5rem !important;
+    bottom: 8.5rem !important;
   }
 }
 
