@@ -17,7 +17,7 @@ import { COMPANY } from "@/lib/data";
  */
 export default function MobileStickyBar() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const lastScrollY = useRef(0);
   const scrollDelta = useRef(0);
   const ticking = useRef(false);
@@ -36,8 +36,8 @@ export default function MobileStickyBar() {
         window.innerHeight + currentY >=
         document.documentElement.scrollHeight - 50;
 
-      if (atTop || atBottom) {
-        // Always show at page top/bottom — highest intent zones
+      if (atBottom) {
+        // Always show at page bottom — user reached end, show CTA
         setIsVisible(true);
         scrollDelta.current = 0;
       } else if (diff > 0) {
