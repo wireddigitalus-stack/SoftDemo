@@ -600,7 +600,9 @@ function NotificationsCard() {
         </div>
         <h2 className="text-sm font-black text-white uppercase tracking-widest">Notifications</h2>
         <span className="text-[9px] px-2 py-0.5 rounded-full bg-gradient-to-r from-[rgba(250,204,21,0.15)] to-[rgba(245,158,11,0.15)] border border-[rgba(250,204,21,0.3)] text-[#FACC15] font-black tracking-wider">BETA</span>
-        <ChevronRight size={14} className={`ml-auto text-gray-600 transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+        <div className="ml-auto w-6 h-6 rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center">
+          <ChevronRight size={16} className={`text-[#FACC15] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+        </div>
       </button>
       <p className="text-[11px] text-gray-500 mb-3">
         Configure how you get notified about new leads, emergencies, and activity.
