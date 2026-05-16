@@ -24,14 +24,14 @@ const PROPERTY_DETAILS: Record<string, {
   },
   "city-centre": {
     label: "💼 City Centre Suites", sub: "Flexible offices · 1,200–18k sqft", href: "/properties/city-centre", emoji: "💼",
-    image: "/property-images/commercial-citycentre-hero.jpg",
+    image: "/property-images/commercial-city-centre-exterior.jpg",
     headline: "City Centre — Flexible Office Suites",
     desc: "Modern professional office space in the heart of Bristol. Scalable suites from 1,200 to 18,000 sqft with premium finishes and all-inclusive options.",
     tags: ["Flexible Terms", "Premium Finishes", "1.2k–18k sqft"],
   },
   "bristol-cowork": {
     label: "☕ Bristol CoWork", sub: "620 State St · All-inclusive", href: "/properties/bristol-cowork", emoji: "☕",
-    image: "/property-images/commercial-cowork-hero.jpg",
+    image: "/property-images/cowork-shared-office.jpg",
     headline: "Bristol CoWork — All-Inclusive Workspace",
     desc: "Move-in ready coworking at 620 State Street. Private offices, dedicated desks, high-speed internet, and a creative community — all included.",
     tags: ["All-Inclusive", "Move-In Ready", "620 State St"],
@@ -45,14 +45,14 @@ const PROPERTY_DETAILS: Record<string, {
   },
   "foundation-event-facility": {
     label: "🎉 Event Facility", sub: "Foundation Event Center", href: "/properties/foundation-event-facility", emoji: "🎉",
-    image: "/property-images/commercial-foundation-hero.jpg",
+    image: "/property-images/development-event-space-after.jpg",
     headline: "Foundation — Premier Event Facility",
     desc: "Versatile event venue in Bristol with full catering kitchen, AV systems, and flexible floor plans. Perfect for corporate events, weddings, and community gatherings.",
     tags: ["Full Kitchen", "AV Equipped", "Flexible Layout"],
   },
   "warehouse": {
     label: "🏭 Warehouse", sub: "2,000–25,000 sqft · Bristol Metro", href: "/properties/warehouse", emoji: "🏭",
-    image: "/property-images/commercial-warehouse-hero.jpg",
+    image: "/property-images/815-Shelby-St.jpg",
     headline: "Industrial Warehouse Space",
     desc: "Functional warehouse and industrial space in Bristol Metro. Drive-in access, high ceilings, and scalable units from 2,000 to 25,000 sqft.",
     tags: ["Drive-In Access", "High Ceilings", "2k–25k sqft"],
