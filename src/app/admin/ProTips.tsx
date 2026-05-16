@@ -63,6 +63,26 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Starring a Lead",
       body: "Click the star ⭐ icon to mark a lead as high priority. Starred leads float to the top so they're easy to find.",
     },
+    {
+      emoji: "🤖",
+      title: "AI Chat Leads",
+      body: "When a visitor chats with the AI Space Advisor and shares contact info, it auto-creates a lead in your dashboard tagged 'ai-chat.' These visitors have already engaged with your property info — they're warm by default.",
+    },
+    {
+      emoji: "📍",
+      title: "Lead Source Tracking",
+      body: "Every lead is tagged with its source: website form, AI chat, QR code (in-person), Facebook, or Instagram. Use these tags to see which channels bring the most qualified prospects. Check Analytics for a full breakdown.",
+    },
+    {
+      emoji: "📦",
+      title: "Archiving Old Leads",
+      body: "Don't delete dead leads — archive them. Click the archive icon to move them off your active list. They're kept forever in the Archive tab and can be restored any time if they come back.",
+    },
+    {
+      emoji: "💬",
+      title: "Lead Comments & Notes",
+      body: "Click 'Add Note' on any lead to log internal team commentary — follow-up outcomes, showing feedback, or pricing discussions. Notes are timestamped and visible to all admins.",
+    },
   ],
   tenants: [
     {
@@ -97,6 +117,21 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Marking Complete",
       body: "When a job is done, click the green checkmark on the work order to mark it complete. Completed orders move off the active list automatically.",
     },
+    {
+      emoji: "📱",
+      title: "Staff Portal Access",
+      body: "Your maintenance team has a dedicated portal at /staff/maintenance. They log in with a 6-digit PIN (no email needed) and see only their work orders. Manage PINs in Settings > Portal Access.",
+    },
+    {
+      emoji: "📸",
+      title: "Photo Documentation",
+      body: "Staff can attach photos to work orders from their portal — perfect for documenting issues before and after repair. Photos sync to the admin dashboard in real-time.",
+    },
+    {
+      emoji: "🚨",
+      title: "Priority Levels Matter",
+      body: "Set priority correctly: Urgent = safety hazard or water leak (respond same-day), High = tenant can't operate normally, Medium = cosmetic or minor, Low = scheduled improvement. Your team should tackle Urgent first — always.",
+    },
   ],
   cleaning: [
     {
@@ -114,12 +149,27 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Checking Off Tasks",
       body: "Click any task cell to mark it as completed. The dashboard keeps a running log so you can review what was cleaned and when.",
     },
+    {
+      emoji: "📱",
+      title: "Staff Portal Access",
+      body: "Cleaning staff have their own portal at /staff/cleaning. They log in with a 6-digit PIN and see only their tasks. No email or app download required — it works on any phone browser.",
+    },
+    {
+      emoji: "🏢",
+      title: "Cleaning Areas",
+      body: "Tasks are organized by property area: lobbies, restrooms, common areas, offices, and exteriors. Each area can have different frequencies (daily, weekly, bi-weekly) so you can customize the schedule to each building.",
+    },
+    {
+      emoji: "📊",
+      title: "Completion History",
+      body: "The dashboard tracks every cleaning task completion with timestamps and the staff member who marked it done. Use this for accountability reviews and tenant reporting.",
+    },
   ],
   analytics: [
     {
       emoji: "📊",
-      title: "What You're Looking At",
-      body: "The Analytics tab shows lead trends, conversion rates, and pipeline health over time. Use it in team meetings to report on the month's activity.",
+      title: "Dashboard Overview",
+      body: "The Analytics tab shows lead trends, conversion rates, pipeline health, and source breakdowns over time. Use it in team meetings to report on the month's activity — no manual spreadsheet work needed.",
     },
     {
       emoji: "🤖",
@@ -131,12 +181,42 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Reading the Charts",
       body: "Hover over any bar or data point on the charts for an exact number. The charts auto-scale based on your current lead volume.",
     },
+    {
+      emoji: "📍",
+      title: "Lead Source Breakdown",
+      body: "See which channels (website, AI chat, QR codes, Facebook, Instagram) are generating the most leads. Use this to double down on what's working and adjust spend on what isn't.",
+    },
+    {
+      emoji: "🔄",
+      title: "Pipeline Health",
+      body: "The pipeline breakdown shows how many leads are Hot, Warm, or Nurture. A healthy pipeline has leads across all stages. If everything is Nurture, your qualification criteria may be too strict. If everything is Hot, you might not be capturing enough top-of-funnel.",
+    },
+    {
+      emoji: "📥",
+      title: "Export for Meetings",
+      body: "Screenshot or print the Analytics view for team meetings. The AI Market Brief at the top gives you a ready-to-read executive summary — no prep needed.",
+    },
   ],
   marketing: [
     {
       emoji: "📣",
       title: "Marketing Hub",
       body: "The Marketing tab is your content command center. Pick a sub-tab to create press releases, blog articles, manage photos, update the homepage banner, add properties, or generate AI social copy.",
+    },
+    {
+      emoji: "📲",
+      title: "Social Capture Links",
+      body: "Need links for social posts? Go to Settings > Social Capture Links to copy property-specific URLs for FB and IG. Each link highlights the featured property on the landing page — great for cohesive campaigns.",
+    },
+    {
+      emoji: "🎯",
+      title: "The Content Pipeline",
+      body: "Best workflow: 1) Add/update a property in Properties tab → 2) Upload photos in Photos → 3) Generate social copy in Social → 4) Create a blog post in Blog → 5) Update the banner in Banner. Each step builds on the previous one.",
+    },
+    {
+      emoji: "📡",
+      title: "Market Intel Radar",
+      body: "Don't forget the Market Intel sub-tab. It scans real-time news for companies expanding, relocating, or signing leases in the Tri-Cities — giving you leads before they even start looking.",
     },
   ],
   "marketing-press": [
@@ -341,22 +421,57 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Restoring a Lead",
       body: "Click the restore icon on any archived lead to move them back to the active Leads tab. Useful when a cold lead re-engages after a few months.",
     },
+    {
+      emoji: "🔎",
+      title: "Mining the Archive",
+      body: "Review archived leads monthly. Market conditions change — someone who said 'not now' 3 months ago might be ready today. A quick call to archived leads costs nothing and can surface hidden revenue.",
+    },
+    {
+      emoji: "📊",
+      title: "Archive Tells a Story",
+      body: "Your archive size shows how many prospects you've engaged total. Use this number in meetings: 'We've engaged 200+ commercial prospects this quarter' — even if most didn't convert, it proves pipeline activity.",
+    },
   ],
   settings: [
     {
       emoji: "👤",
-      title: "Team Access",
-      body: "Manage which team members have admin access vs. read-only access to the dashboard. Each user gets their own login credentials.",
+      title: "Managing Team Access",
+      body: "The Portal Access section manages who can log into the Admin, Maintenance, and Cleaning portals. Each person gets a 6-digit PIN — no email/password needed for staff portals. Add or remove team members, regenerate PINs, and copy PINs to share with your crew.",
+    },
+    {
+      emoji: "🔑",
+      title: "Staff PIN System",
+      body: "Maintenance and cleaning staff log in using a 6-digit PIN on a keypad — no Gmail required. You can generate random PINs for each person from the settings panel. Click the copy icon next to any PIN to send it via text. Default PIN for new staff is 123456 — change it immediately.",
+    },
+    {
+      emoji: "📲",
+      title: "Social Capture Links",
+      body: "The Social Capture Links card gives you ready-to-copy URLs for Facebook and Instagram posts. Each link can feature a specific property — so when you post about The Executive, the landing page highlights The Executive with a hero card, photo, and CTA. Just click the 📘 FB or 📷 IG button next to the property to copy the link.",
+    },
+    {
+      emoji: "🔗",
+      title: "How Featured Links Work",
+      body: "When you copy a link like '/l/fb?feature=the-executive', anyone clicking that link from your Facebook post sees a branded page with The Executive front and center — big hero image, description, tags, and a 'View This Property' button. Other properties still appear below. No feature param = all properties shown equally.",
     },
     {
       emoji: "🔔",
-      title: "Notification Alerts",
-      body: "Configure email alerts so you're notified the moment a high-scoring lead submits an inquiry — no need to watch the dashboard constantly.",
+      title: "Notification Preferences (Beta)",
+      body: "The Notifications card lets you toggle email alerts for new leads, maintenance emergencies, AI chat escalations, cleaning completions, and weekly digests. Set quiet hours so you're not pinged overnight. SMS via Twilio is coming soon — the toggle is visible but locked until post-launch.",
     },
     {
-      emoji: "🏢",
-      title: "Property Defaults",
-      body: "Set default values for property listings like contact phone, office hours, and standard lease terms. These auto-fill when adding new properties.",
+      emoji: "🤝",
+      title: "QR Meet Pages",
+      body: "Each team member has a personal QR code page at vision-llc.vercel.app/meet/[name]. When scanned in person, prospects fill out a quick form and the lead is auto-captured in your dashboard tagged 'qr / in-person' with the team member's name as the campaign source.",
+    },
+    {
+      emoji: "📊",
+      title: "Data Export",
+      body: "Download all leads as a CSV file from the Data Import/Export section. The export includes every field: name, email, phone, score, source, status, notes, and timestamps. Great for importing into a CRM or sharing with partners.",
+    },
+    {
+      emoji: "🗑️",
+      title: "Danger Zone",
+      body: "The red 'Delete All Leads' button permanently removes every lead from the database. You must type the exact confirmation phrase to proceed. This cannot be undone — always export a CSV backup first.",
     },
   ],
   content: [

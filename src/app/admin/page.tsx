@@ -20,7 +20,7 @@ import {
   Settings, Plus, Trash2, Save, CheckCircle2, Loader2,
   Bell, Mail, Shield, X, Radio, Smartphone, Lock, BellRing, Moon,
   Sparkles, Brain, Send, ChevronRight, ChevronDown, Archive, MessageSquare, BarChart3, Wrench,
-  FileSpreadsheet, Download, Upload, FileText, Flame, Pencil,
+  FileSpreadsheet, Download, Upload, FileText, Flame, Pencil, Share2,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -760,6 +760,87 @@ function NotificationsCard() {
 }
 
 
+// ─── Social Capture Links Card ──────────────────────────────────────────────
+
+function SocialLinksCard() {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState("");
+  const BASE = "https://vision-llc.vercel.app";
+
+  const LINKS = [
+    { slug: "", label: "All Properties", emoji: "🏠", desc: "Default — shows all properties equally" },
+    { slug: "the-executive", label: "The Executive", emoji: "🏢", desc: "Premier office suites · Downtown" },
+    { slug: "city-centre", label: "City Centre", emoji: "💼", desc: "Flexible offices · 1.2k–18k sqft" },
+    { slug: "bristol-cowork", label: "Bristol CoWork", emoji: "☕", desc: "All-inclusive · 620 State St" },
+    { slug: "centre-point-suites", label: "Centre Point", emoji: "🏪", desc: "Casino adjacent · Retail & office" },
+    { slug: "foundation-event-facility", label: "Foundation Events", emoji: "🎉", desc: "Premier event facility" },
+    { slug: "warehouse", label: "Warehouse", emoji: "🏭", desc: "2k–25k sqft · Bristol Metro" },
+  ];
+
+  function copy(platform: "fb" | "ig", slug: string) {
+    const url = slug ? `${BASE}/l/${platform}?feature=${slug}` : `${BASE}/l/${platform}`;
+    navigator.clipboard.writeText(url);
+    setCopied(`${platform}-${slug}`);
+    setTimeout(() => setCopied(""), 2000);
+  }
+
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2 mb-1 group">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#3B82F6] to-[#EC4899] flex items-center justify-center flex-shrink-0">
+          <Share2 size={13} className="text-white" />
+        </div>
+        <h2 className="text-sm font-black text-white uppercase tracking-widest">Social Capture Links</h2>
+        <div className="ml-auto w-6 h-6 rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center">
+          <ChevronRight size={16} className={`text-[#60A5FA] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+        </div>
+      </button>
+      <p className="text-[11px] text-gray-500 mb-3">
+        Copy ready-to-use links for Facebook & Instagram posts. Feature a specific property to match your social content.
+      </p>
+
+      {!expanded ? null : (<>
+        <div className="space-y-2">
+          {LINKS.map(({ slug, label, emoji, desc }) => (
+            <div key={slug || "all"} className="flex items-center gap-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] px-3 py-2.5">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white truncate">{emoji} {label}</p>
+                <p className="text-[10px] text-gray-600 truncate">{desc}</p>
+              </div>
+              <button
+                onClick={() => copy("fb", slug)}
+                className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                  copied === `fb-${slug}`
+                    ? "bg-[#4ADE80] text-black"
+                    : "bg-[rgba(59,130,246,0.12)] border border-[rgba(59,130,246,0.25)] text-[#60A5FA] hover:bg-[rgba(59,130,246,0.2)]"
+                }`}
+              >
+                {copied === `fb-${slug}` ? "✓ Copied" : "📘 FB"}
+              </button>
+              <button
+                onClick={() => copy("ig", slug)}
+                className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                  copied === `ig-${slug}`
+                    ? "bg-[#4ADE80] text-black"
+                    : "bg-[rgba(236,72,153,0.12)] border border-[rgba(236,72,153,0.25)] text-[#F472B6] hover:bg-[rgba(236,72,153,0.2)]"
+                }`}
+              >
+                {copied === `ig-${slug}` ? "✓ Copied" : "📷 IG"}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-3 rounded-xl bg-[rgba(74,222,128,0.04)] border border-[rgba(74,222,128,0.12)] px-3 py-2.5">
+          <p className="text-[10px] text-gray-500 leading-relaxed">
+            <span className="text-[#4ADE80] font-bold">How it works:</span> Paste the link into your Facebook/Instagram post. When someone clicks, they land on a branded page that highlights the featured property with a hero card, photo, and CTA — the rest of your properties show below.
+          </p>
+        </div>
+      </>)}
+    </div>
+  );
+}
+
 // ─── Settings Panel ────────────────────────────────────────────────────────────
 
 function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
@@ -901,6 +982,12 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
 
       {/* ── Notifications (Beta) ── */}
       <NotificationsCard />
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
+      {/* ── Social Capture Links ── */}
+      <SocialLinksCard />
 
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
