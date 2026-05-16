@@ -51,8 +51,8 @@ const PROPERTY_DETAILS: Record<string, {
     tags: ["Full Kitchen", "AV Equipped", "Flexible Layout"],
   },
   "warehouse": {
-    label: "🏭 Warehouse", sub: "2,000–25,000 sqft · Bristol Metro", href: "/properties/warehouse", emoji: "🏭",
-    image: "/property-images/815-Shelby-St.jpg",
+    label: "🏭 Warehouse", sub: "2,000–25,000 sqft · Bristol Metro", href: "/spaces/industrial-space-tri-cities-tn", emoji: "🏭",
+    image: "/property-images/1913-W--state- Exterior.jpg",
     headline: "Industrial Warehouse Space",
     desc: "Functional warehouse and industrial space in Bristol Metro. Drive-in access, high ceilings, and scalable units from 2,000 to 25,000 sqft.",
     tags: ["Drive-In Access", "High Ceilings", "2k–25k sqft"],
