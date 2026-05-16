@@ -2967,8 +2967,7 @@ export default function AdminPage() {
         <p className="text-center text-[11px] text-gray-700 mt-10">
           VISION Property Intelligence Platform · AI-Powered by Gemini · Auto-refreshes every 30s
           <br />
-          <span className="text-gray-600">🟢 Supabase connected · </span>
-          <span className="text-gray-800">Monday.com sync — ready to activate on API connection</span>
+          <span className="text-gray-600">🟢 Database connected</span>
         </p>
       </div>
 
