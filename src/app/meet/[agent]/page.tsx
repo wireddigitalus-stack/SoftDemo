@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import { Phone, User, Building2, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 
 const SPACE_OPTIONS = [
@@ -98,17 +97,7 @@ export default function MeetPage() {
       </div>
 
       <div className="w-full max-w-sm relative">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <Image
-            src="/vision-logo.png"
-            alt="Vision LLC"
-            width={140}
-            height={50}
-            className="h-10 w-auto"
-            priority
-          />
-        </div>
+
 
         {!done ? (
           <>

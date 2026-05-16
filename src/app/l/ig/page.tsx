@@ -30,17 +30,7 @@ export default function InstagramLandingPage() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-4 py-12 text-center">
 
-        {/* Vision logo */}
-        <div className="mb-8">
-          <Image
-            src="/vision-logo.png"
-            alt="Vision LLC"
-            width={160}
-            height={60}
-            className="h-10 w-auto object-contain"
-            priority
-          />
-        </div>
+
 
         {/* Source tag */}
         <div className="flex items-center gap-2 text-[11px] font-bold text-[#F472B6] bg-[rgba(236,72,153,0.1)] border border-[rgba(236,72,153,0.25)] px-3 py-1.5 rounded-full mb-6">
