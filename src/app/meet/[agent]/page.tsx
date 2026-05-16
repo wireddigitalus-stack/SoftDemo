@@ -90,7 +90,7 @@ export default function MeetPage() {
   const isPersonal = member.name !== "Vision LLC";
 
   return (
-    <div className="min-h-screen bg-[#080C14] flex flex-col items-center justify-center px-5 py-12">
+    <div className="min-h-screen bg-[#080C14] flex flex-col items-center justify-center px-5 pt-24 pb-12">
       {/* Background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#4ADE80] opacity-[0.05] blur-[120px]" />
