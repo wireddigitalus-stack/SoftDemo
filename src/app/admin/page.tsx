@@ -18,7 +18,7 @@ import {
   Zap, RefreshCw, Phone, Clock, Building2, TrendingUp,
   Users, Filter, AlertCircle, DollarSign, Calendar,
   Settings, Plus, Trash2, Save, CheckCircle2, Loader2,
-  Bell, Mail, Shield, X, Radio,
+  Bell, Mail, Shield, X, Radio, Smartphone, Lock, BellRing, Moon,
   Sparkles, Brain, Send, ChevronRight, ChevronDown, Archive, MessageSquare, BarChart3, Wrench,
   FileSpreadsheet, Download, Upload, FileText, Flame, Pencil,
 } from "lucide-react";
@@ -521,6 +521,236 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
 }
 
 
+// ─── Notifications Card (Beta) ────────────────────────────────────────────────
+
+const NOTIF_KEY = "vision_notif_prefs";
+
+interface NotifPrefs {
+  emailEnabled: boolean;
+  emailAddress: string;
+  smsEnabled: boolean;
+  smsPhone: string;
+  alerts: {
+    newLead: boolean;
+    maintenanceEmergency: boolean;
+    chatRequest: boolean;
+    cleaningComplete: boolean;
+    weeklyDigest: boolean;
+  };
+  quietHoursEnabled: boolean;
+  quietStart: string;
+  quietEnd: string;
+}
+
+const DEFAULT_PREFS: NotifPrefs = {
+  emailEnabled: false,
+  emailAddress: "",
+  smsEnabled: false,
+  smsPhone: "",
+  alerts: {
+    newLead: true,
+    maintenanceEmergency: true,
+    chatRequest: false,
+    cleaningComplete: false,
+    weeklyDigest: true,
+  },
+  quietHoursEnabled: false,
+  quietStart: "22:00",
+  quietEnd: "07:00",
+};
+
+function NotificationsCard() {
+  const [prefs, setPrefs] = useState<NotifPrefs>(() => {
+    if (typeof window === "undefined") return DEFAULT_PREFS;
+    try {
+      const saved = localStorage.getItem(NOTIF_KEY);
+      return saved ? { ...DEFAULT_PREFS, ...JSON.parse(saved) } : DEFAULT_PREFS;
+    } catch { return DEFAULT_PREFS; }
+  });
+  const [saved, setSaved] = useState(false);
+
+  const update = (patch: Partial<NotifPrefs>) => {
+    const next = { ...prefs, ...patch };
+    setPrefs(next);
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(next));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const toggleAlert = (key: keyof NotifPrefs["alerts"]) => {
+    update({ alerts: { ...prefs.alerts, [key]: !prefs.alerts[key] } });
+  };
+
+  const ALERT_TYPES: { key: keyof NotifPrefs["alerts"]; label: string; icon: React.ReactNode; desc: string }[] = [
+    { key: "newLead", label: "New Lead", icon: <Zap size={14} className="text-[#FACC15]" />, desc: "Instant alert when a prospect submits a form" },
+    { key: "maintenanceEmergency", label: "Maintenance Emergency", icon: <AlertCircle size={14} className="text-[#EF4444]" />, desc: "Urgent tickets from maintenance staff" },
+    { key: "chatRequest", label: "AI Chat Escalation", icon: <MessageSquare size={14} className="text-[#60A5FA]" />, desc: "When a visitor asks to speak with a person" },
+    { key: "cleaningComplete", label: "Cleaning Complete", icon: <Sparkles size={14} className="text-[#4ADE80]" />, desc: "Unit turnovers marked as done" },
+    { key: "weeklyDigest", label: "Weekly Digest", icon: <BarChart3 size={14} className="text-[#A78BFA]" />, desc: "Summary of leads, activity & performance" },
+  ];
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#F59E0B] to-[#EF4444] flex items-center justify-center flex-shrink-0">
+          <BellRing size={13} className="text-white" />
+        </div>
+        <h2 className="text-sm font-black text-white uppercase tracking-widest">Notifications</h2>
+        <span className="text-[9px] px-2 py-0.5 rounded-full bg-gradient-to-r from-[rgba(250,204,21,0.15)] to-[rgba(245,158,11,0.15)] border border-[rgba(250,204,21,0.3)] text-[#FACC15] font-black tracking-wider">BETA</span>
+      </div>
+      <p className="text-[11px] text-gray-500 mb-5">
+        Configure how you get notified about new leads, emergencies, and activity. Preferences are saved locally — backend delivery coming soon.
+      </p>
+
+      {/* Saved toast */}
+      {saved && (
+        <div className="mb-4 flex items-center gap-2 text-[11px] text-[#4ADE80] font-bold animate-pulse">
+          <CheckCircle2 size={12} /> Preferences saved
+        </div>
+      )}
+
+      <div className="space-y-4">
+
+        {/* ── Email Alerts ── */}
+        <div className="rounded-2xl border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.03)] p-4" style={{ boxShadow: "0 0 20px rgba(96,165,250,0.06)" }}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[rgba(96,165,250,0.12)] flex items-center justify-center">
+                <Mail size={16} className="text-[#60A5FA]" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-white">Email Alerts</p>
+                <p className="text-[10px] text-gray-500">Receive notifications via email</p>
+              </div>
+            </div>
+            <button onClick={() => update({ emailEnabled: !prefs.emailEnabled })}
+              className="w-11 h-6 rounded-full transition-all duration-300 relative"
+              style={{
+                backgroundColor: prefs.emailEnabled ? "#60A5FA" : "rgba(255,255,255,0.08)",
+                boxShadow: prefs.emailEnabled ? "0 0 12px rgba(96,165,250,0.4)" : "none",
+              }}>
+              <div className="w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md"
+                style={{ left: prefs.emailEnabled ? "22px" : "2px" }} />
+            </button>
+          </div>
+          {prefs.emailEnabled && (
+            <input
+              type="email"
+              value={prefs.emailAddress}
+              onChange={e => update({ emailAddress: e.target.value })}
+              placeholder="your@email.com"
+              className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(96,165,250,0.2)] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none focus:border-[rgba(96,165,250,0.5)] transition-colors"
+            />
+          )}
+        </div>
+
+        {/* ── SMS Alerts (Twilio — Coming Soon) ── */}
+        <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-4 relative overflow-hidden">
+          {/* Coming Soon overlay */}
+          <div className="absolute inset-0 bg-[rgba(8,12,20,0.6)] backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-2xl">
+            <div className="w-10 h-10 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center mb-2">
+              <Lock size={16} className="text-gray-500" />
+            </div>
+            <p className="text-xs font-black text-gray-400">Coming Soon</p>
+            <p className="text-[10px] text-gray-600 mt-0.5">Powered by Twilio</p>
+          </div>
+          {/* Underneath content (dimmed) */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[rgba(74,222,128,0.12)] flex items-center justify-center">
+                <Smartphone size={16} className="text-[#4ADE80]" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-white">SMS Alerts</p>
+                <p className="text-[10px] text-gray-500">Text message via Twilio</p>
+              </div>
+            </div>
+            <div className="w-11 h-6 rounded-full bg-[rgba(255,255,255,0.08)] relative">
+              <div className="w-5 h-5 rounded-full bg-gray-600 absolute top-0.5 left-0.5" />
+            </div>
+          </div>
+          <input
+            disabled
+            placeholder="(423) 555-0100"
+            className="w-full bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.06)] rounded-xl px-3 py-2.5 text-sm text-gray-600 outline-none"
+          />
+        </div>
+
+        {/* ── Alert Types ── */}
+        <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-4">
+          <p className="text-xs font-black text-white uppercase tracking-wider mb-3">What to notify</p>
+          <div className="space-y-1">
+            {ALERT_TYPES.map(({ key, label, icon, desc }) => (
+              <button key={key} onClick={() => toggleAlert(key)}
+                className="w-full flex items-center gap-3 p-2.5 rounded-xl transition-all hover:bg-[rgba(255,255,255,0.03)] active:scale-[0.98]">
+                <div className="w-7 h-7 rounded-lg bg-[rgba(255,255,255,0.04)] flex items-center justify-center flex-shrink-0">
+                  {icon}
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-xs font-bold text-white truncate">{label}</p>
+                  <p className="text-[10px] text-gray-600 truncate">{desc}</p>
+                </div>
+                <div className="w-9 h-5 rounded-full transition-all duration-300 relative flex-shrink-0"
+                  style={{
+                    backgroundColor: prefs.alerts[key] ? "#4ADE80" : "rgba(255,255,255,0.08)",
+                    boxShadow: prefs.alerts[key] ? "0 0 8px rgba(74,222,128,0.3)" : "none",
+                  }}>
+                  <div className="w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-sm"
+                    style={{ left: prefs.alerts[key] ? "18px" : "2px" }} />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Quiet Hours ── */}
+        <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[rgba(168,85,247,0.12)] flex items-center justify-center">
+                <Moon size={16} className="text-[#A78BFA]" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-white">Quiet Hours</p>
+                <p className="text-[10px] text-gray-500">Pause non-emergency alerts</p>
+              </div>
+            </div>
+            <button onClick={() => update({ quietHoursEnabled: !prefs.quietHoursEnabled })}
+              className="w-11 h-6 rounded-full transition-all duration-300 relative"
+              style={{
+                backgroundColor: prefs.quietHoursEnabled ? "#A78BFA" : "rgba(255,255,255,0.08)",
+                boxShadow: prefs.quietHoursEnabled ? "0 0 12px rgba(167,139,250,0.3)" : "none",
+              }}>
+              <div className="w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md"
+                style={{ left: prefs.quietHoursEnabled ? "22px" : "2px" }} />
+            </button>
+          </div>
+          {prefs.quietHoursEnabled && (
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <label className="text-[10px] text-gray-600 font-bold uppercase tracking-wider block mb-1">From</label>
+                <input type="time" value={prefs.quietStart}
+                  onChange={e => update({ quietStart: e.target.value })}
+                  className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(168,85,247,0.2)] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[rgba(168,85,247,0.5)] transition-colors [color-scheme:dark]" />
+              </div>
+              <div className="text-gray-600 text-xs font-bold pt-4">→</div>
+              <div className="flex-1">
+                <label className="text-[10px] text-gray-600 font-bold uppercase tracking-wider block mb-1">Until</label>
+                <input type="time" value={prefs.quietEnd}
+                  onChange={e => update({ quietEnd: e.target.value })}
+                  className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(168,85,247,0.2)] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[rgba(168,85,247,0.5)] transition-colors [color-scheme:dark]" />
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+
 // ─── Settings Panel ────────────────────────────────────────────────────────────
 
 function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
@@ -656,6 +886,12 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
           </div>
         )}
       </div>
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
+      {/* ── Notifications (Beta) ── */}
+      <NotificationsCard />
 
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
