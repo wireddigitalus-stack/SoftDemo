@@ -176,14 +176,14 @@ function ImportPanel() {
       >
         <input ref={inputRef} type="file" accept=".xlsx,.csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
         <Upload size={20} className="text-[#60A5FA] opacity-60" />
-        <p className="text-[11px] text-gray-500 text-center">Drag & drop your <strong className="text-gray-400">.xlsx</strong> or <strong className="text-gray-400">.csv</strong> here<br />or click to browse</p>
+        <p className="text-xs text-gray-500 text-center">Drag & drop your <strong className="text-gray-400">.xlsx</strong> or <strong className="text-gray-400">.csv</strong> here<br />or click to browse</p>
       </label>
 
       {/* Preview */}
       {rows.length > 0 && (
         <div className="rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] overflow-auto max-h-40">
-          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-wider px-3 pt-2 pb-1">Preview — first {rows.length} rows</p>
-          <table className="w-full text-[10px] text-gray-400">
+          <p className="text-xs text-gray-600 font-bold uppercase tracking-wider px-3 pt-2 pb-1">Preview — first {rows.length} rows</p>
+          <table className="w-full text-xs text-gray-400">
             <thead><tr className="border-b border-[rgba(255,255,255,0.05)]">
               {headers.slice(0,5).map(h => <th key={h} className="px-3 py-1 text-left text-[9px] text-gray-600 font-bold uppercase">{h}</th>)}
             </tr></thead>
@@ -235,7 +235,7 @@ function Tooltip({ text, children, wide }: { text: string; children: React.React
           className={`pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[999] ${wide ? "w-56" : "w-44"} text-center`}
           role="tooltip"
         >
-          <span className="block px-3 py-2 rounded-xl text-[11px] leading-snug font-medium text-gray-200 bg-[rgba(10,16,26,0.97)] border border-[rgba(255,255,255,0.1)] shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <span className="block px-3 py-2 rounded-xl text-xs leading-snug font-medium text-gray-200 bg-[rgba(10,16,26,0.97)] border border-[rgba(255,255,255,0.1)] shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
             {text}
           </span>
           {/* Caret */}
@@ -392,7 +392,7 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
           </div>
           <div>
             <h3 className="text-sm font-black text-white">{title}</h3>
-            <p className="text-[10px] text-gray-600">{users.length} user{users.length !== 1 ? "s" : ""} · instant access control</p>
+            <p className="text-xs text-gray-600">{users.length} user{users.length !== 1 ? "s" : ""} · instant access control</p>
           </div>
         </div>
         <button onClick={() => setShowAdd(s => !s)}
@@ -407,12 +407,12 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
         <div className="mb-4 p-3 rounded-xl border border-[rgba(255,255,255,0.07)] bg-[rgba(0,0,0,0.2)] space-y-2">
           <div className={`grid ${isStaffRole ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}>
             <div>
-              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Full Name {isStaffRole && '*'}</label>
+              <label className="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">Full Name {isStaffRole && '*'}</label>
               <input value={name} onChange={e => setName(e.target.value)} placeholder="Mike D." className={FIELD} />
             </div>
             {!isStaffRole && (
               <div>
-                <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Gmail Address *</label>
+                <label className="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">Gmail Address *</label>
                 <input value={email} onChange={e => setEmail(e.target.value)} placeholder="mike@gmail.com" type="email" className={FIELD}
                   onKeyDown={e => { if (e.key === "Enter") addUser(); }} />
               </div>
@@ -420,23 +420,23 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
           </div>
           {isStaffRole && (
             <div>
-              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">6-Digit PIN</label>
+              <label className="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">6-Digit PIN</label>
               <div className="flex gap-2">
                 <input value={pin} onChange={e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); setPin(v); }}
                   placeholder="123456" maxLength={6} inputMode="numeric" pattern="[0-9]*"
                   className={FIELD + " font-mono tracking-[0.3em] text-center"}
                   onKeyDown={e => { if (e.key === "Enter") addUser(); }} />
                 <button onClick={generatePin} type="button"
-                  className="px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.1)] text-[10px] font-bold text-gray-400 hover:text-white hover:border-[rgba(255,255,255,0.25)] transition-all whitespace-nowrap">
+                  className="px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.1)] text-xs font-bold text-gray-400 hover:text-white hover:border-[rgba(255,255,255,0.25)] transition-all whitespace-nowrap">
                   🎲 Random
                 </button>
               </div>
-              <p className="text-[10px] text-gray-600 mt-1">Leave empty for default PIN: 123456</p>
+              <p className="text-xs text-gray-600 mt-1">Leave empty for default PIN: 123456</p>
             </div>
           )}
           {isStaffRole && (
             <div>
-              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">Email (optional)</label>
+              <label className="text-xs text-gray-500 font-bold uppercase tracking-wider block mb-1">Email (optional)</label>
               <input value={email} onChange={e => setEmail(e.target.value)} placeholder="mike@gmail.com" type="email" className={FIELD} />
             </div>
           )}
@@ -465,7 +465,7 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
             const isOwner = u.email ? OWNER_EMAILS.has(u.email.toLowerCase()) : false;
             return (
           <div key={u.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${u.active ? "border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)]" : "border-[rgba(255,255,255,0.03)] opacity-40"}`}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0"
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0"
               style={{ backgroundColor: `${color}15`, color, border: `1px solid ${color}30` }}>
               {initials(u.name || u.email || "?")}
             </div>
@@ -478,11 +478,11 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
                   </Tooltip>
                 )}
               </div>
-              <p className="text-[11px] text-gray-500 truncate">{u.email || "(PIN-only)"}</p>
+              <p className="text-xs text-gray-500 truncate">{u.email || "(PIN-only)"}</p>
               {isStaffRole && u.pin && (
                 <button onClick={() => { navigator.clipboard.writeText(u.pin!); }}
                   title="Copy PIN"
-                  className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-white transition-colors mt-0.5">
+                  className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-white transition-colors mt-0.5">
                   <span className="font-mono tracking-wider bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 rounded">PIN: {u.pin}</span>
                   📋
                 </button>
@@ -491,7 +491,7 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
             {!isOwner && (
               <button onClick={() => toggleActive(u.id, u.active)}
                 title={u.active ? "Suspend access" : "Re-enable access"}
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all ${
+                className={`text-xs font-bold px-2 py-0.5 rounded-lg border transition-all ${
                   u.active ? "text-[#4ADE80] border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.08)] hover:bg-[rgba(239,68,68,0.08)] hover:text-red-400 hover:border-[rgba(239,68,68,0.3)]"
                   : "text-gray-600 border-[rgba(255,255,255,0.08)] hover:text-[#4ADE80]"
                 }`}>
@@ -499,7 +499,7 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
               </button>
             )}
             {isOwner ? (
-              <span className="text-[10px] text-[#4ADE80] font-bold px-2 py-0.5 rounded-lg border border-[rgba(74,222,128,0.25)] bg-[rgba(74,222,128,0.06)]">Active</span>
+              <span className="text-xs text-[#4ADE80] font-bold px-2 py-0.5 rounded-lg border border-[rgba(74,222,128,0.25)] bg-[rgba(74,222,128,0.06)]">Active</span>
             ) : (
               <button onClick={() => removeUser(u.id)} className="flex-shrink-0 text-gray-700 hover:text-red-400 transition-colors">
                 <Trash2 size={13} />
@@ -512,7 +512,7 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
 
       {/* Setup hint (shown only if table doesn't exist yet) */}
       {role === "admin" && users.length === 0 && (
-        <p className="text-[10px] text-gray-700 mt-3">
+        <p className="text-xs text-gray-700 mt-3">
           💡 First time? Run the SQL setup in the Supabase SQL Editor, then add users here.
         </p>
       )}
@@ -604,7 +604,7 @@ function NotificationsCard() {
           <ChevronRight size={16} className={`text-[#FACC15] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
         </div>
       </button>
-      <p className="text-[11px] text-gray-500 mb-3">
+      <p className="text-xs text-gray-500 mb-3">
         Configure how you get notified about new leads, emergencies, and activity.
       </p>
 
@@ -612,7 +612,7 @@ function NotificationsCard() {
 
       {/* Saved toast */}
       {saved && (
-        <div className="mb-4 flex items-center gap-2 text-[11px] text-[#4ADE80] font-bold animate-pulse">
+        <div className="mb-4 flex items-center gap-2 text-xs text-[#4ADE80] font-bold animate-pulse">
           <CheckCircle2 size={12} /> Preferences saved
         </div>
       )}
@@ -628,7 +628,7 @@ function NotificationsCard() {
               </div>
               <div>
                 <p className="text-sm font-black text-white">Email Alerts</p>
-                <p className="text-[10px] text-gray-500">Receive notifications via email</p>
+                <p className="text-xs text-gray-500">Receive notifications via email</p>
               </div>
             </div>
             <button onClick={() => update({ emailEnabled: !prefs.emailEnabled })}
@@ -660,7 +660,7 @@ function NotificationsCard() {
               <Lock size={16} className="text-gray-500" />
             </div>
             <p className="text-xs font-black text-gray-400">Coming Soon</p>
-            <p className="text-[10px] text-gray-600 mt-0.5">Powered by Twilio</p>
+            <p className="text-xs text-gray-600 mt-0.5">Powered by Twilio</p>
           </div>
           {/* Underneath content (dimmed) */}
           <div className="flex items-center justify-between mb-3">
@@ -670,7 +670,7 @@ function NotificationsCard() {
               </div>
               <div>
                 <p className="text-sm font-black text-white">SMS Alerts</p>
-                <p className="text-[10px] text-gray-500">Text message via Twilio</p>
+                <p className="text-xs text-gray-500">Text message via Twilio</p>
               </div>
             </div>
             <div className="w-11 h-6 rounded-full bg-[rgba(255,255,255,0.08)] relative">
@@ -696,7 +696,7 @@ function NotificationsCard() {
                 </div>
                 <div className="flex-1 text-left min-w-0">
                   <p className="text-xs font-bold text-white truncate">{label}</p>
-                  <p className="text-[10px] text-gray-600 truncate">{desc}</p>
+                  <p className="text-xs text-gray-600 truncate">{desc}</p>
                 </div>
                 <div className="w-9 h-5 rounded-full transition-all duration-300 relative flex-shrink-0"
                   style={{
@@ -720,7 +720,7 @@ function NotificationsCard() {
               </div>
               <div>
                 <p className="text-sm font-black text-white">Quiet Hours</p>
-                <p className="text-[10px] text-gray-500">Pause non-emergency alerts</p>
+                <p className="text-xs text-gray-500">Pause non-emergency alerts</p>
               </div>
             </div>
             <button onClick={() => update({ quietHoursEnabled: !prefs.quietHoursEnabled })}
@@ -736,14 +736,14 @@ function NotificationsCard() {
           {prefs.quietHoursEnabled && (
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="text-[10px] text-gray-600 font-bold uppercase tracking-wider block mb-1">From</label>
+                <label className="text-xs text-gray-600 font-bold uppercase tracking-wider block mb-1">From</label>
                 <input type="time" value={prefs.quietStart}
                   onChange={e => update({ quietStart: e.target.value })}
                   className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(168,85,247,0.2)] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[rgba(168,85,247,0.5)] transition-colors [color-scheme:dark]" />
               </div>
               <div className="text-gray-600 text-xs font-bold pt-4">→</div>
               <div className="flex-1">
-                <label className="text-[10px] text-gray-600 font-bold uppercase tracking-wider block mb-1">Until</label>
+                <label className="text-xs text-gray-600 font-bold uppercase tracking-wider block mb-1">Until</label>
                 <input type="time" value={prefs.quietEnd}
                   onChange={e => update({ quietEnd: e.target.value })}
                   className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(168,85,247,0.2)] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[rgba(168,85,247,0.5)] transition-colors [color-scheme:dark]" />
@@ -795,7 +795,7 @@ function SocialLinksCard() {
           <ChevronRight size={16} className={`text-[#60A5FA] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
         </div>
       </button>
-      <p className="text-[11px] text-gray-500 mb-3">
+      <p className="text-[13px] text-gray-400 mb-3">
         Copy ready-to-use links for Facebook & Instagram posts. Feature a specific property to match your social content.
       </p>
 
@@ -804,12 +804,12 @@ function SocialLinksCard() {
           {LINKS.map(({ slug, label, emoji, desc }) => (
             <div key={slug || "all"} className="flex items-center gap-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] px-3 py-2.5">
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-white truncate">{emoji} {label}</p>
-                <p className="text-[10px] text-gray-600 truncate">{desc}</p>
+                <p className="text-sm font-bold text-white truncate">{emoji} {label}</p>
+                <p className="text-xs text-gray-400 truncate">{desc}</p>
               </div>
               <button
                 onClick={() => copy("fb", slug)}
-                className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
                   copied === `fb-${slug}`
                     ? "bg-[#4ADE80] text-black"
                     : "bg-[rgba(59,130,246,0.12)] border border-[rgba(59,130,246,0.25)] text-[#60A5FA] hover:bg-[rgba(59,130,246,0.2)]"
@@ -819,7 +819,7 @@ function SocialLinksCard() {
               </button>
               <button
                 onClick={() => copy("ig", slug)}
-                className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
                   copied === `ig-${slug}`
                     ? "bg-[#4ADE80] text-black"
                     : "bg-[rgba(236,72,153,0.12)] border border-[rgba(236,72,153,0.25)] text-[#F472B6] hover:bg-[rgba(236,72,153,0.2)]"
@@ -832,7 +832,7 @@ function SocialLinksCard() {
         </div>
 
         <div className="mt-3 rounded-xl bg-[rgba(74,222,128,0.04)] border border-[rgba(74,222,128,0.12)] px-3 py-2.5">
-          <p className="text-[10px] text-gray-500 leading-relaxed">
+          <p className="text-[13px] text-gray-400 leading-relaxed">
             <span className="text-[#4ADE80] font-bold">How it works:</span> Paste the link into your Facebook/Instagram post. When someone clicks, they land on a branded page that highlights the featured property with a hero card, photo, and CTA — the rest of your properties show below.
           </p>
         </div>
@@ -906,7 +906,7 @@ function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfi
           <Shield size={15} className="text-[#4ADE80]" />
           <h2 className="text-sm font-black text-white uppercase tracking-widest">Portal Access</h2>
         </div>
-        <p className="text-[11px] text-gray-500 mb-5">
+        <p className="text-xs text-gray-500 mb-5">
           Admin access uses Gmail sign-in. Staff portals (Maintenance & Cleaning) use a 6-digit PIN — no Gmail required. Changes take effect immediately.
         </p>
 
@@ -914,8 +914,8 @@ function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfi
         {setupSQL && (
           <div className="mb-5 p-4 rounded-xl border border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.05)]">
             <p className="text-xs font-bold text-[#4ADE80] mb-2">One-time Supabase setup required</p>
-            <p className="text-[11px] text-gray-400 mb-2">Run this SQL in your <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-[#4ADE80] underline">Supabase SQL Editor</a>, then click Refresh:</p>
-            <pre className="text-[10px] text-gray-300 bg-[rgba(0,0,0,0.5)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">{`CREATE TABLE IF NOT EXISTS allowed_users (
+            <p className="text-xs text-gray-400 mb-2">Run this SQL in your <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-[#4ADE80] underline">Supabase SQL Editor</a>, then click Refresh:</p>
+            <pre className="text-xs text-gray-300 bg-[rgba(0,0,0,0.5)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">{`CREATE TABLE IF NOT EXISTS allowed_users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE,
   name TEXT DEFAULT '',
@@ -1007,14 +1007,14 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
               <Download size={15} className="text-[#4ADE80]" />
               <p className="text-xs font-black text-white uppercase tracking-widest">Export Leads</p>
             </div>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
+            <p className="text-xs text-gray-500 leading-relaxed">
               Download all active leads as a formatted Excel spreadsheet — names, phones, scores, budgets, timelines and more.
             </p>
             <div className="rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] p-3">
-              <p className="text-[10px] text-gray-600 font-bold uppercase tracking-wider mb-2">Columns included</p>
+              <p className="text-xs text-gray-600 font-bold uppercase tracking-wider mb-2">Columns included</p>
               <div className="flex flex-wrap gap-1.5">
                 {["Name","Phone","Email","Space Type","Budget/mo","Timeline","Team Size","AI Score","Label","Source","Submitted"].map(c => (
-                  <span key={c} className="text-[10px] px-1.5 py-0.5 rounded bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.12)] text-gray-500">{c}</span>
+                  <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.12)] text-gray-500">{c}</span>
                 ))}
               </div>
             </div>
@@ -1028,7 +1028,7 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
               <Upload size={15} className="text-[#60A5FA]" />
               <p className="text-xs font-black text-white uppercase tracking-widest">Import Leads</p>
             </div>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
+            <p className="text-xs text-gray-500 leading-relaxed">
               Upload an Excel (.xlsx) or CSV file from Monday.com, your old CRM, or any spreadsheet. We'll map the columns automatically.
             </p>
             <ImportPanel />
@@ -1057,13 +1057,13 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
           <div className="flex items-center gap-2 mb-3">
             <Trash2 size={15} className="text-red-400" />
             <p className="text-xs font-black text-white uppercase tracking-widest">Clear All Leads</p>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] text-red-400 font-bold ml-auto">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] text-red-400 font-bold ml-auto">
               {leads.length} lead{leads.length !== 1 ? "s" : ""}
             </span>
           </div>
-          <p className="text-[11px] text-gray-500 leading-relaxed mb-4">
+          <p className="text-xs text-gray-500 leading-relaxed mb-4">
             This will permanently remove <strong className="text-red-400">{leads.length}</strong> lead{leads.length !== 1 ? "s" : ""} from Supabase.
-            Type <code className="text-red-400 bg-[rgba(239,68,68,0.1)] px-1.5 py-0.5 rounded text-[10px] font-bold">DELETE</code> below to confirm.
+            Type <code className="text-red-400 bg-[rgba(239,68,68,0.1)] px-1.5 py-0.5 rounded text-xs font-bold">DELETE</code> below to confirm.
           </p>
           <div className="flex items-center gap-3">
             <input
@@ -1090,16 +1090,16 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
       <div>
         <div className="flex items-center gap-2 mb-4">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center">
-            <span className="text-black text-[10px] font-black">QR</span>
+            <span className="text-black text-xs font-black">QR</span>
           </div>
           <div className="flex-1">
             <h2 className="text-sm font-black text-white uppercase tracking-widest">QR Capture Cards</h2>
-            <p className="text-[10px] text-gray-500">Each admin user gets a unique link — scan to capture leads in-person</p>
+            <p className="text-xs text-gray-500">Each admin user gets a unique link — scan to capture leads in-person</p>
           </div>
           {hiddenQR.size > 0 && (
             <button
               onClick={() => setShowHidden(h => !h)}
-              className="text-[10px] font-bold text-gray-500 hover:text-gray-300 border border-[rgba(255,255,255,0.08)] rounded-lg px-2.5 py-1 transition-colors"
+              className="text-xs font-bold text-gray-500 hover:text-gray-300 border border-[rgba(255,255,255,0.08)] rounded-lg px-2.5 py-1 transition-colors"
             >
               {showHidden ? "Hide hidden" : `Show ${hiddenQR.size} hidden`}
             </button>
@@ -1136,8 +1136,8 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
               <div key={admin.id} className={`rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] p-4 ${isHidden ? "opacity-40" : ""}`}>
                 {isHidden && (
                   <div className="flex items-center justify-between mb-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] px-3 py-2">
-                    <span className="text-[10px] text-gray-500">Card hidden — login access unchanged</span>
-                    <button onClick={() => unhideCard(admin.id)} className="text-[10px] font-bold text-[#4ADE80] hover:underline">Restore</button>
+                    <span className="text-xs text-gray-500">Card hidden — login access unchanged</span>
+                    <button onClick={() => unhideCard(admin.id)} className="text-xs font-bold text-[#4ADE80] hover:underline">Restore</button>
                   </div>
                 )}
                 {/* Header row */}
@@ -1157,7 +1157,7 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
                     ) : (
                       <p className="text-sm font-bold text-white truncate">{admin.name || admin.email}</p>
                     )}
-                    <p className="text-[10px] text-[#4ADE80] font-bold">{qrLeadCount} QR lead{qrLeadCount !== 1 ? "s" : ""}</p>
+                    <p className="text-xs text-[#4ADE80] font-bold">{qrLeadCount} QR lead{qrLeadCount !== 1 ? "s" : ""}</p>
                   </div>
                   {/* Edit / Delete controls */}
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -1166,13 +1166,13 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
                         <button
                           onClick={saveEdit}
                           disabled={savingQR}
-                          className="px-2 py-1 rounded-lg text-[10px] font-black bg-[rgba(74,222,128,0.15)] border border-[rgba(74,222,128,0.4)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.25)] disabled:opacity-50 transition-colors"
+                          className="px-2 py-1 rounded-lg text-xs font-black bg-[rgba(74,222,128,0.15)] border border-[rgba(74,222,128,0.4)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.25)] disabled:opacity-50 transition-colors"
                         >
                           {savingQR ? <Loader2 size={10} className="animate-spin" /> : "Save"}
                         </button>
                         <button
                           onClick={() => setEditingQR(null)}
-                          className="px-2 py-1 rounded-lg text-[10px] font-bold border border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-gray-300 transition-colors"
+                          className="px-2 py-1 rounded-lg text-xs font-bold border border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-gray-300 transition-colors"
                         >
                           Cancel
                         </button>
@@ -1181,13 +1181,13 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
                       <>
                         <button
                           onClick={() => hideCard(admin.id)}
-                          className="px-2 py-1 rounded-lg text-[10px] font-black bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.4)] text-red-400 hover:bg-[rgba(239,68,68,0.25)] transition-colors"
+                          className="px-2 py-1 rounded-lg text-xs font-black bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.4)] text-red-400 hover:bg-[rgba(239,68,68,0.25)] transition-colors"
                         >
                           Hide Card
                         </button>
                         <button
                           onClick={() => setDeletingQR(null)}
-                          className="px-2 py-1 rounded-lg text-[10px] font-bold border border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-gray-300 transition-colors"
+                          className="px-2 py-1 rounded-lg text-xs font-bold border border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-gray-300 transition-colors"
                         >
                           Cancel
                         </button>
@@ -1216,7 +1216,7 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
                 </div>
 
                 {isDeleting && (
-                  <p className="text-[11px] text-amber-400 bg-[rgba(251,191,36,0.06)] border border-[rgba(251,191,36,0.2)] rounded-xl px-3 py-2 mb-3">
+                  <p className="text-xs text-amber-400 bg-[rgba(251,191,36,0.06)] border border-[rgba(251,191,36,0.2)] rounded-xl px-3 py-2 mb-3">
                     This hides <strong>{admin.name || admin.email}&apos;s</strong> QR card from this view only. Their login access is <strong>not</strong> affected.
                   </p>
                 )}
@@ -1226,17 +1226,17 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
                   <img src={qrSrc} alt={`QR for ${admin.name}`} width={120} height={120} className="rounded-xl" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 text-[10px] text-gray-500 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] rounded-lg px-2 py-1.5 truncate">
+                  <code className="flex-1 text-xs text-gray-500 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] rounded-lg px-2 py-1.5 truncate">
                     /meet/{slug}
                   </code>
                   <button
                     onClick={() => { navigator.clipboard.writeText(captureUrl).catch(() => {}); }}
-                    className="flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-[rgba(74,222,128,0.25)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.08)] transition-colors"
+                    className="flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-[rgba(74,222,128,0.25)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.08)] transition-colors"
                   >
                     Copy
                   </button>
                   <a href={captureUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-[rgba(255,255,255,0.08)] text-gray-400 hover:text-white transition-colors"
+                    className="flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-[rgba(255,255,255,0.08)] text-gray-400 hover:text-white transition-colors"
                   >
                     Preview
                   </a>
@@ -1312,7 +1312,7 @@ function AskVisionModal({ leads, onClose }: { leads: Lead[]; onClose: () => void
             </div>
             <div>
               <p className="text-white font-black text-sm">Ask VISION</p>
-              <p className="text-[10px] text-[#4ADE80]">Lead Intelligence · {leads.length} leads in context</p>
+              <p className="text-xs text-[#4ADE80]">Lead Intelligence · {leads.length} leads in context</p>
             </div>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/8 transition-colors">
@@ -1325,7 +1325,7 @@ function AskVisionModal({ leads, onClose }: { leads: Lead[]; onClose: () => void
           {/* Quick queries */}
           {!asked && (
             <div>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">Quick questions</p>
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Quick questions</p>
               <div className="flex flex-wrap gap-2">
                 {QUICK_QUERIES.map(q => (
                   <button
@@ -1343,7 +1343,7 @@ function AskVisionModal({ leads, onClose }: { leads: Lead[]; onClose: () => void
           {/* Response area */}
           {asked && (
             <div className="rounded-xl border border-[rgba(74,222,128,0.15)] bg-[rgba(74,222,128,0.03)] p-4 min-h-[80px]">
-              <p className="text-[10px] text-[#4ADE80] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <p className="text-xs text-[#4ADE80] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <Sparkles size={10} /> Ask VISION Analysis
               </p>
               {loading ? (
@@ -1470,13 +1470,13 @@ Use real names and numbers. Be punchy.`,
           </div>
           <div>
             <p className="text-xs font-black text-[#4ADE80] uppercase tracking-widest">Daily Brief</p>
-            <p className="text-[11px] text-gray-500">{today}</p>
+            <p className="text-xs text-gray-500">{today}</p>
           </div>
         </div>
         <button
           onClick={generateBrief}
           disabled={briefLoading}
-          className="flex items-center gap-1 text-[10px] text-gray-600 hover:text-[#4ADE80] transition-colors disabled:opacity-40"
+          className="flex items-center gap-1 text-xs text-gray-600 hover:text-[#4ADE80] transition-colors disabled:opacity-40"
           title="Regenerate brief"
         >
           <RefreshCw size={10} className={briefLoading ? "animate-spin" : ""} />
@@ -1544,7 +1544,7 @@ Use real names and numbers. Be punchy.`,
         ) : topLead ? (
           <p className="text-sm text-gray-500 italic">Top priority: {topLead.name} — {topLead.spaceType} at ${topLead.budget.toLocaleString()}/mo</p>
         ) : null}
-        <p className="text-[10px] text-gray-600 mt-2 flex items-center gap-1">
+        <p className="text-xs text-gray-600 mt-2 flex items-center gap-1">
           <Sparkles size={9} /> Powered by Ask VISION
         </p>
       </div>
@@ -1619,11 +1619,11 @@ function LeadComments({ leadId, currentUserName }: { leadId: string; currentUser
         <div className="mt-3 space-y-2">
           {/* Comment list */}
           {loadingCmts ? (
-            <div className="flex items-center gap-2 text-[11px] text-gray-600">
+            <div className="flex items-center gap-2 text-xs text-gray-600">
               <Loader2 size={11} className="animate-spin" /> Loading activity…
             </div>
           ) : comments.length === 0 ? (
-            <p className="text-[11px] text-gray-700 italic">No activity yet — be the first to add a note.</p>
+            <p className="text-xs text-gray-700 italic">No activity yet — be the first to add a note.</p>
           ) : (
             comments.map(c => (
               <div key={c.id} className="flex gap-2.5">
@@ -1632,8 +1632,8 @@ function LeadComments({ leadId, currentUserName }: { leadId: string; currentUser
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[11px] font-bold text-gray-300">{c.author}</span>
-                    <span className="text-[10px] text-gray-600">{timeAgo(c.timestamp)}</span>
+                    <span className="text-xs font-bold text-gray-300">{c.author}</span>
+                    <span className="text-xs text-gray-600">{timeAgo(c.timestamp)}</span>
                   </div>
                   <p className="text-[12px] text-gray-400 leading-relaxed">{c.body}</p>
                 </div>
@@ -1696,7 +1696,7 @@ function derivedLabel(score: number): "Hot Lead" | "Warm Lead" | "Nurture" {
 }
 
 const FIELD = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2.5 text-sm text-white focus:border-[rgba(74,222,128,0.4)] outline-none placeholder:text-gray-600 transition-colors";
-const LABEL = "block text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1";
+const LABEL = "block text-xs text-gray-500 font-bold uppercase tracking-wider mb-1";
 
 function AddLeadPanel({ onLeadAdded }: { onLeadAdded: (lead: Lead) => void }) {
   const [open, setOpen] = useState(false);
@@ -1865,13 +1865,13 @@ function AddLeadPanel({ onLeadAdded }: { onLeadAdded: (lead: Lead) => void }) {
                     onChange={e => setForm({ ...form, manualScore: Number(e.target.value) })}
                     className="w-full accent-[#4ADE80]"
                   />
-                  <div className="flex justify-between text-[10px] text-gray-600 mt-0.5">
+                  <div className="flex justify-between text-xs text-gray-600 mt-0.5">
                     <span>0</span><span>50</span><span>100</span>
                   </div>
                 </div>
                 <div className="text-center flex-shrink-0">
                   <p className="text-2xl font-black tabular-nums" style={{ color: labelColor }}>{form.manualScore}</p>
-                  <p className="text-[10px] font-bold" style={{ color: labelColor }}>{label}</p>
+                  <p className="text-xs font-bold" style={{ color: labelColor }}>{label}</p>
                 </div>
               </div>
             )}
@@ -2204,7 +2204,7 @@ export default function AdminPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse" />
                 </div>
                 <p className="text-sm font-bold text-white truncate">{newLeadToast.name}</p>
-                <p className="text-[11px] text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-400 mt-0.5">
                   {newLeadToast.spaceType} · <span style={{ color: scoreColor(newLeadToast.score) }}>{newLeadToast.score}/100</span> · {newLeadToast.scoreLabel}
                 </p>
               </div>
@@ -2222,16 +2222,16 @@ export default function AdminPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-white font-black text-xl tracking-tight">VISION</h1>
-                <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#4ADE80] bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.25)] px-2 py-0.5 rounded-lg">
+                <span className="flex items-center gap-1.5 text-xs font-bold text-[#4ADE80] bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.25)] px-2 py-0.5 rounded-lg">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse" />
                   LIVE
                 </span>
               </div>
-              <p className="text-[10px] font-semibold text-gray-500 tracking-widest uppercase -mt-0.5">Property Intelligence Platform</p>
+              <p className="text-xs font-semibold text-gray-500 tracking-widest uppercase -mt-0.5">Property Intelligence Platform</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-[11px] text-gray-600 hidden sm:block">Last refresh: {lastRefresh.toLocaleTimeString()}</span>
+            <span className="text-xs text-gray-600 hidden sm:block">Last refresh: {lastRefresh.toLocaleTimeString()}</span>
 
             {/* Online presence avatars */}
             {onlineUsers.length > 0 && (
@@ -2250,7 +2250,7 @@ export default function AdminPage() {
                   </div>
                 ))}
                 {onlineUsers.length > 1 && (
-                  <span className="text-[10px] text-gray-600 ml-1">{onlineUsers.length} online</span>
+                  <span className="text-xs text-gray-600 ml-1">{onlineUsers.length} online</span>
                 )}
               </div>
             )}
@@ -2281,13 +2281,13 @@ export default function AdminPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={currentUser.avatar} alt={currentUser.name} className="w-7 h-7 rounded-full border border-[rgba(74,222,128,0.3)]" />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4ADE80]/30 to-[#22C55E]/20 border border-[rgba(74,222,128,0.3)] flex items-center justify-center text-[10px] font-black text-[#4ADE80]">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4ADE80]/30 to-[#22C55E]/20 border border-[rgba(74,222,128,0.3)] flex items-center justify-center text-xs font-black text-[#4ADE80]">
                     {currentUser.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
                   </div>
                 )}
                 <button
                   onClick={async () => { await supabaseBrowser.auth.signOut(); router.replace("/admin/login"); }}
-                  className="text-[10px] text-gray-600 hover:text-red-400 transition-colors hidden sm:block"
+                  className="text-xs text-gray-600 hover:text-red-400 transition-colors hidden sm:block"
                   title="Sign out"
                 >
                   Sign out
@@ -2364,7 +2364,7 @@ export default function AdminPage() {
                   )}
                   <div>
                     <h2 className="text-xl font-black text-white">{greeting}, {firstName} 👋</h2>
-                    <p className="text-[11px] text-gray-500">Here&apos;s your pipeline snapshot for today.</p>
+                    <p className="text-xs text-gray-500">Here&apos;s your pipeline snapshot for today.</p>
                   </div>
                 </div>
               );
@@ -2403,17 +2403,17 @@ export default function AdminPage() {
                 </div>
                 <div className="flex flex-wrap gap-8">
                   <div>
-                    <p className="text-[11px] text-gray-500 mb-0.5">Hot Lead Monthly Value</p>
+                    <p className="text-xs text-gray-500 mb-0.5">Hot Lead Monthly Value</p>
                     <p className="text-3xl font-black text-white tabular-nums">${hotMonthlyPipeline.toLocaleString()}<span className="text-base text-gray-500 font-normal">/mo</span></p>
                   </div>
                   <div className="w-px bg-[rgba(255,255,255,0.06)] hidden sm:block" />
                   <div>
-                    <p className="text-[11px] text-gray-500 mb-0.5">Projected Annual Revenue</p>
+                    <p className="text-xs text-gray-500 mb-0.5">Projected Annual Revenue</p>
                     <p className="text-3xl font-black text-[#4ADE80] tabular-nums">${annualProjection.toLocaleString()}<span className="text-base text-[#4ADE80]/60 font-normal">/yr</span></p>
                   </div>
                   <div className="w-px bg-[rgba(255,255,255,0.06)] hidden sm:block" />
                   <div>
-                    <p className="text-[11px] text-gray-500 mb-0.5">Total Pipeline (All Leads)</p>
+                    <p className="text-xs text-gray-500 mb-0.5">Total Pipeline (All Leads)</p>
                     <p className="text-3xl font-black text-gray-300 tabular-nums">${totalMonthlyPipeline.toLocaleString()}<span className="text-base text-gray-600 font-normal">/mo</span></p>
                   </div>
                 </div>
@@ -2471,11 +2471,11 @@ export default function AdminPage() {
                   <div className="flex-1 text-left">
                     <div className="flex items-center gap-2">
                       <h2 className="text-sm font-black text-white uppercase tracking-widest">Priority Call List</h2>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(74,222,128,0.12)] border border-[rgba(74,222,128,0.25)] text-[#4ADE80] font-bold">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[rgba(74,222,128,0.12)] border border-[rgba(74,222,128,0.25)] text-[#4ADE80] font-bold">
                         {callList.length} lead{callList.length !== 1 ? "s" : ""}
                       </span>
                     </div>
-                    <p className="text-[10px] text-gray-600 mt-0.5">
+                    <p className="text-xs text-gray-600 mt-0.5">
                       {callListOpen ? "▲ Tap to collapse" : "▼ Tap to expand · sorted by score × budget"}
                     </p>
                   </div>
@@ -2499,12 +2499,12 @@ export default function AdminPage() {
                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 text-xs sm:text-sm font-black" style={{ backgroundColor: `${scoreColor(lead.score)}12`, color: scoreColor(lead.score) }}>{lead.score}</div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-bold text-white truncate">{lead.name}</p>
-                              <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] text-gray-500 mt-0.5">
+                              <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-gray-500 mt-0.5">
                                 <span className="truncate max-w-[90px] sm:max-w-none">{lead.spaceType}</span>
                                 <span className="text-[#4ADE80] font-semibold">${lead.budget.toLocaleString()}/mo</span>
                               </div>
                             </div>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-lg border font-bold hidden sm:block flex-shrink-0 ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold hidden sm:block flex-shrink-0 ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
                             <div className="flex items-center gap-1.5 flex-shrink-0">
                               <a href={`tel:${lead.phone}`} className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#4ADE80] to-[#22C55E] text-black text-xs font-black hover:opacity-90 transition-opacity">
                                 <Phone size={11} />
@@ -2563,22 +2563,22 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-base">🏆</span>
                     <p className="text-xs font-black text-[#4ADE80] uppercase tracking-widest">QR Lead Leaderboard</p>
-                    <span className="text-[10px] text-gray-600 ml-1">— in-person captures</span>
+                    <span className="text-xs text-gray-600 ml-1">— in-person captures</span>
                   </div>
                   <div className="space-y-2">
                     {ranked.map(([slug, stats], i) => (
                       <div key={slug} className="flex items-center gap-3">
                         <span className="text-sm font-black w-5 text-center" style={{ color: i === 0 ? "#FACC15" : i === 1 ? "#94A3B8" : "#92400E" }}>#{i + 1}</span>
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#4ADE80]/20 to-[#22C55E]/10 border border-[rgba(74,222,128,0.2)] flex items-center justify-center text-[10px] font-black text-[#4ADE80]">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#4ADE80]/20 to-[#22C55E]/10 border border-[rgba(74,222,128,0.2)] flex items-center justify-center text-xs font-black text-[#4ADE80]">
                           {slug.slice(0, 2).toUpperCase()}
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-bold text-white capitalize">{slug}</p>
-                          <p className="text-[10px] text-gray-600">{timeAgo(stats.latest)}</p>
+                          <p className="text-xs text-gray-600">{timeAgo(stats.latest)}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-black text-[#4ADE80]">{stats.count} lead{stats.count !== 1 ? "s" : ""}</p>
-                          {stats.pipeline > 0 && <p className="text-[10px] text-gray-600">${stats.pipeline.toLocaleString()}/mo</p>}
+                          {stats.pipeline > 0 && <p className="text-xs text-gray-600">${stats.pipeline.toLocaleString()}/mo</p>}
                         </div>
                       </div>
                     ))}
@@ -2692,25 +2692,25 @@ export default function AdminPage() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="text-white font-bold text-base">{lead.name}</h3>
                             <Tooltip text={lead.scoreLabel === "Hot Lead" ? "Hot Lead: Score 70+. Call today — high close probability." : lead.scoreLabel === "Warm Lead" ? "Warm Lead: Score 40–69. Nurture with follow-up emails or a call this week." : "Nurture: Score below 40. Keep warm — long-term prospect."}>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-lg border font-bold cursor-help ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold cursor-help ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
                             </Tooltip>
                             {lead.isWhale && lead.whaleTier === "gold" && (
                               <Tooltip text="Whale Alert: Budget $8k+/mo. Top-priority prospect — escalate immediately and offer a personal showing." wide>
-                                <span className="flex items-center gap-1 text-[10px] font-black text-[#FACC15] bg-[rgba(250,204,21,0.12)] border border-[rgba(250,204,21,0.4)] px-2 py-0.5 rounded-lg cursor-help">
+                                <span className="flex items-center gap-1 text-xs font-black text-[#FACC15] bg-[rgba(250,204,21,0.12)] border border-[rgba(250,204,21,0.4)] px-2 py-0.5 rounded-lg cursor-help">
                                   ⭐ Whale Alert
                                 </span>
                               </Tooltip>
                             )}
                             {lead.isWhale && lead.whaleTier === "silver" && (
                               <Tooltip text="High-Intent Whale: Budget $4–8k/mo. High-value prospect — prioritize follow-up within 24 hours." wide>
-                                <span className="flex items-center gap-1 text-[10px] font-black text-[#C4B5FD] bg-[rgba(196,181,253,0.08)] border border-[rgba(196,181,253,0.25)] px-2 py-0.5 rounded-lg cursor-help">
+                                <span className="flex items-center gap-1 text-xs font-black text-[#C4B5FD] bg-[rgba(196,181,253,0.08)] border border-[rgba(196,181,253,0.25)] px-2 py-0.5 rounded-lg cursor-help">
                                   🐳 High Intent
                                 </span>
                               </Tooltip>
                             )}
                             {isLive && (
                               <Tooltip text="New lead — just arrived in real time from the AI chat widget.">
-                                <span className="flex items-center gap-1 text-[10px] font-black text-[#4ADE80] bg-[rgba(74,222,128,0.12)] border border-[rgba(74,222,128,0.35)] px-2 py-0.5 rounded-lg cursor-help">
+                                <span className="flex items-center gap-1 text-xs font-black text-[#4ADE80] bg-[rgba(74,222,128,0.12)] border border-[rgba(74,222,128,0.35)] px-2 py-0.5 rounded-lg cursor-help">
                                   <span className="w-1 h-1 rounded-full bg-[#4ADE80] animate-pulse" />
                                   NEW
                                 </span>
@@ -2725,7 +2725,7 @@ export default function AdminPage() {
                               return (
                                 <button
                                   onClick={() => setActiveCallLog({ leadId: lead.id, leadName: lead.name, phone: lead.phone || "" })}
-                                  className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all hover:opacity-80 cursor-pointer"
+                                  className="flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-lg border transition-all hover:opacity-80 cursor-pointer"
                                   style={{ color: followUpDue ? "#F87171" : outcomeColor(lastLog.outcome), borderColor: followUpDue ? "rgba(248,113,113,0.4)" : `${outcomeColor(lastLog.outcome)}40`, backgroundColor: followUpDue ? "rgba(248,113,113,0.1)" : `${outcomeColor(lastLog.outcome)}12` }}
                                   title={`Last call: ${outcomeLabel(lastLog.outcome)} — click to view call log`}
                                 >
@@ -2753,7 +2753,7 @@ export default function AdminPage() {
                           {/* Expiring-soon badge */}
                           {daysRemaining(lead.timestamp) <= 30 && daysRemaining(lead.timestamp) > 0 && (
                             <Tooltip text={`This lead auto-archives in ${daysRemaining(lead.timestamp)} days if no action is taken. Follow up soon!`} wide>
-                              <span className="flex items-center gap-1 text-[10px] font-bold text-orange-400 animate-pulse cursor-help">
+                              <span className="flex items-center gap-1 text-xs font-bold text-orange-400 animate-pulse cursor-help">
                                 ⏳ {daysRemaining(lead.timestamp)}d left
                               </span>
                             </Tooltip>
@@ -2774,16 +2774,16 @@ export default function AdminPage() {
                           {/* Delete lead */}
                           {deletingLeadId === lead.id ? (
                             <div className="flex items-center gap-1.5 ml-auto">
-                              <span className="text-[10px] text-red-400 font-semibold">Delete?</span>
+                              <span className="text-xs text-red-400 font-semibold">Delete?</span>
                               <button
                                 onClick={() => deleteLead(lead.id)}
-                                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.35)] text-red-400 text-[10px] font-bold hover:bg-[rgba(239,68,68,0.2)] transition-colors"
+                                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.35)] text-red-400 text-xs font-bold hover:bg-[rgba(239,68,68,0.2)] transition-colors"
                               >
                                 <Trash2 size={10} /> Yes
                               </button>
                               <button
                                 onClick={() => setDeletingLeadId(null)}
-                                className="px-2 py-1 rounded-lg border border-[rgba(255,255,255,0.08)] text-gray-500 text-[10px] font-bold hover:text-gray-300 transition-colors"
+                                className="px-2 py-1 rounded-lg border border-[rgba(255,255,255,0.08)] text-gray-500 text-xs font-bold hover:text-gray-300 transition-colors"
                               >
                                 No
                               </button>
@@ -2854,10 +2854,10 @@ export default function AdminPage() {
                       {/* Age bar */}
                     <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.05)]">
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[10px] text-gray-600 flex items-center gap-1">
+                        <span className="text-xs text-gray-600 flex items-center gap-1">
                           <Clock size={9} /> Lead age: {daysOld(lead.timestamp)} day{daysOld(lead.timestamp) !== 1 ? "s" : ""}
                         </span>
-                        <span className="text-[10px] font-bold" style={{ color: ageBarColor(daysOld(lead.timestamp)) }}>
+                        <span className="text-xs font-bold" style={{ color: ageBarColor(daysOld(lead.timestamp)) }}>
                           {daysRemaining(lead.timestamp)} days remaining
                         </span>
                       </div>
@@ -2899,7 +2899,7 @@ export default function AdminPage() {
                     <div className="w-8 h-8 rounded-xl bg-[rgba(96,165,250,0.15)] flex items-center justify-center text-base">❄️</div>
                     <div className="text-left">
                       <p className="text-sm font-black text-[#93C5FD]">Cold Pipeline <span className="text-[#60A5FA] font-bold ml-1">({coldLeads.length})</span></p>
-                      <p className="text-[10px] text-gray-600">No contact in {COLD_DAYS}+ days — needs re-engagement</p>
+                      <p className="text-xs text-gray-600">No contact in {COLD_DAYS}+ days — needs re-engagement</p>
                     </div>
                   </div>
                   <ChevronDown size={14} className={`text-gray-600 transition-transform duration-200 ${coldPipelineOpen ? "rotate-180" : ""}`} />
@@ -2929,7 +2929,7 @@ export default function AdminPage() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex gap-x-3 mt-0.5 text-[11px] text-gray-600">
+                            <div className="flex gap-x-3 mt-0.5 text-xs text-gray-600">
                               <span>{lead.spaceType}</span>
                               <span>${lead.budget.toLocaleString()}/mo</span>
                               {lead.phone && <span className="font-mono">{lead.phone}</span>}
@@ -3001,10 +3001,10 @@ export default function AdminPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm font-bold text-gray-400">{lead.name}</p>
-                          <span className="text-[10px] px-2 py-0.5 rounded-lg border border-[rgba(148,163,184,0.2)] text-gray-600 font-bold">{lead.scoreLabel}</span>
-                          <span className="text-[10px] text-gray-700 flex items-center gap-1"><Archive size={9} /> Archived {daysOld(lead.timestamp) - MAX_AGE_DAYS}d ago</span>
+                          <span className="text-xs px-2 py-0.5 rounded-lg border border-[rgba(148,163,184,0.2)] text-gray-600 font-bold">{lead.scoreLabel}</span>
+                          <span className="text-xs text-gray-700 flex items-center gap-1"><Archive size={9} /> Archived {daysOld(lead.timestamp) - MAX_AGE_DAYS}d ago</span>
                         </div>
-                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-[11px] text-gray-600">
+                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-xs text-gray-600">
                           <span>{lead.spaceType}</span>
                           <span>${lead.budget.toLocaleString()}/mo</span>
                           {lead.phone && <span>{lead.phone}</span>}
@@ -3034,9 +3034,11 @@ export default function AdminPage() {
           <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8">
             <MarketingTab onSubTabChange={setMarketingSubTab} />
           </div>
-          <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8 mt-6">
-            <SocialLinksCard />
-          </div>
+          {marketingSubTab === "social" && (
+            <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8 mt-6">
+              <SocialLinksCard />
+            </div>
+          )}
         </>)}
 
 
@@ -3048,7 +3050,7 @@ export default function AdminPage() {
 
         {activeTab === "settings" && <SettingsPanel leads={activeLeads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />}
 
-        <p className="text-center text-[11px] text-gray-700 mt-10">
+        <p className="text-center text-xs text-gray-700 mt-10">
           VISION Property Intelligence Platform · AI-Powered by Gemini · Auto-refreshes every 30s
           <br />
           <span className="text-gray-600">🟢 Database connected</span>
