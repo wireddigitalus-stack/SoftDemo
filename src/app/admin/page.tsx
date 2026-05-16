@@ -986,12 +986,6 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
 
-      {/* ── Social Capture Links ── */}
-      <SocialLinksCard />
-
-      {/* ─ Divider */}
-      <div className="border-t border-[rgba(255,255,255,0.05)]" />
-
       {/* ── Data Import / Export ── */}
       <div>
         <div className="flex items-center gap-2 mb-1">
@@ -3036,11 +3030,14 @@ export default function AdminPage() {
         )}
 
         {/* ─ SETTINGS TAB ───────────────────────────────────────────────────── */}
-        {activeTab === "marketing" && (
+        {activeTab === "marketing" && (<>
           <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8">
             <MarketingTab onSubTabChange={setMarketingSubTab} />
           </div>
-        )}
+          <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-6 sm:p-8 mt-6">
+            <SocialLinksCard />
+          </div>
+        </>)}
 
 
         {activeTab === "content" && (
