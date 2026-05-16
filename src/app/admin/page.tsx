@@ -589,19 +589,24 @@ function NotificationsCard() {
     { key: "weeklyDigest", label: "Weekly Digest", icon: <BarChart3 size={14} className="text-[#A78BFA]" />, desc: "Summary of leads, activity & performance" },
   ];
 
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <div>
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-1">
+      {/* Header — clickable to expand/collapse */}
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2 mb-1 group">
         <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#F59E0B] to-[#EF4444] flex items-center justify-center flex-shrink-0">
           <BellRing size={13} className="text-white" />
         </div>
         <h2 className="text-sm font-black text-white uppercase tracking-widest">Notifications</h2>
         <span className="text-[9px] px-2 py-0.5 rounded-full bg-gradient-to-r from-[rgba(250,204,21,0.15)] to-[rgba(245,158,11,0.15)] border border-[rgba(250,204,21,0.3)] text-[#FACC15] font-black tracking-wider">BETA</span>
-      </div>
-      <p className="text-[11px] text-gray-500 mb-5">
-        Configure how you get notified about new leads, emergencies, and activity. Preferences are saved locally — backend delivery coming soon.
+        <ChevronRight size={14} className={`ml-auto text-gray-600 transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+      </button>
+      <p className="text-[11px] text-gray-500 mb-3">
+        Configure how you get notified about new leads, emergencies, and activity.
       </p>
+
+      {!expanded ? null : (<>
 
       {/* Saved toast */}
       {saved && (
@@ -746,6 +751,8 @@ function NotificationsCard() {
         </div>
 
       </div>
+
+      </>)}
     </div>
   );
 }
