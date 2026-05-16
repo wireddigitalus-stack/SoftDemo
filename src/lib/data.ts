@@ -68,7 +68,7 @@ export const GEO_PAGES = [
     marketBlurb:
       "Bristol, Virginia (zip 24201) sits directly across State Street from Bristol, Tennessee — sharing the same downtown but offering a distinct Virginia business environment with different tax structures, incentive programs, and zoning. The opening of the Hard Rock Hotel & Casino has transformed Bristol VA into the region's fastest-growing commercial corridor, creating unprecedented demand for retail, restaurant, and service-oriented commercial space.",
     availableTypes: ["Retail / Restaurant", "Office", "Warehouse / Industrial", "Development Opportunity"],
-    isPrimary: false,
+    isPrimary: true,
   },
   {
     slug: "kingsport-tn",
