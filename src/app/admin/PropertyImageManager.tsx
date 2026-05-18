@@ -104,9 +104,25 @@ export default function PropertyImageManager() {
     setSavedAt(prev => ({ ...prev, [propertyId]: time }));
   }
 
-  async function setHero(propertyId: string, url: string) {
+  /** Ensure a Supabase record exists for this property — seed from static data.ts images if needed */
+  function ensureRecord(propertyId: string): PropertyImages {
     const existing = propImages[propertyId];
-    if (!existing) return;
+    if (existing) return existing;
+    // Seed from static fallback
+    const prop = PROPERTIES.find(p => p.id === propertyId);
+    const fallbackImages: string[] = (prop as any)?.images || ((prop as any)?.image ? [(prop as any).image] : []);
+    const seeded: PropertyImages = {
+      property_id: propertyId,
+      hero_url: fallbackImages[0] || null,
+      all_urls: [...fallbackImages],
+      updated_at: new Date().toISOString(),
+    };
+    setPropImages(prev => ({ ...prev, [propertyId]: seeded }));
+    return seeded;
+  }
+
+  async function setHero(propertyId: string, url: string) {
+    const existing = ensureRecord(propertyId);
     const updated = { ...existing, hero_url: url, updated_at: new Date().toISOString() };
     setPropImages(prev => ({ ...prev, [propertyId]: updated }));
     await patchRecord(propertyId, url, existing.all_urls);
@@ -115,16 +131,13 @@ export default function PropertyImageManager() {
 
   async function removeImage(propertyId: string, url: string) {
     setDeleting(url);
-    // Optimistic UI update
-    const existing = propImages[propertyId];
-    if (existing) {
-      const next = existing.all_urls.filter((u) => u !== url);
-      const newHero = existing.hero_url === url ? (next[0] || null) : existing.hero_url;
-      setPropImages((prev) => ({
-        ...prev,
-        [propertyId]: { ...existing, all_urls: next, hero_url: newHero, updated_at: new Date().toISOString() },
-      }));
-    }
+    const existing = ensureRecord(propertyId);
+    const next = existing.all_urls.filter((u) => u !== url);
+    const newHero = existing.hero_url === url ? (next[0] || null) : existing.hero_url;
+    setPropImages((prev) => ({
+      ...prev,
+      [propertyId]: { ...existing, all_urls: next, hero_url: newHero, updated_at: new Date().toISOString() },
+    }));
 
     const res = await fetch("/api/property-images", {
       method: "DELETE",
