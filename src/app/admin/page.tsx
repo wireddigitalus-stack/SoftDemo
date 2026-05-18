@@ -2317,32 +2317,138 @@ export default function AdminPage() {
           />
         )}
 
-        {/* Tab Nav — sticky below fixed site-nav, horizontally scrollable on mobile */}
-        <div className="sticky top-14 z-40 bg-[#080C14] -mx-4 sm:-mx-6 px-4 sm:px-6 mb-8">
-          <div className="scrollbar-none flex items-center gap-0.5 border-b border-[rgba(255,255,255,0.06)] overflow-x-auto pb-0 -mx-2 px-2 pr-6 sm:mx-0 sm:px-0 sm:pr-0" style={{ scrollbarWidth: "none", msOverflowStyle: "none", touchAction: "pan-x", WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain" }}>
+        {/* ═══ Premium Dashboard Navigation ═══════════════════════════════════ */}
+
+        {/* Mobile/Tablet: Horizontal compact nav */}
+        <div className="lg:hidden sticky top-14 z-40 bg-[#080C14] -mx-4 sm:-mx-6 px-4 sm:px-6 mb-8">
+          <div className="scrollbar-none flex items-center gap-1 overflow-x-auto py-2 pr-6" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {([
-              { key: "leads",       label: "Leads",    fullLabel: `Leads (${activeLeads.length})`, icon: TrendingUp },
-              { key: "tenants",     label: "Tenants",  fullLabel: "Tenants",     icon: Building2 },
-              { key: "maintenance", label: "Maint.",   fullLabel: "Maintenance", icon: Wrench },
-              { key: "cleaning",    label: "Cleaning", fullLabel: "Cleaning",    icon: Sparkles },
-              { key: "analytics",   label: "Analytic", fullLabel: "Analytics",   icon: BarChart3 },
-              { key: "marketing",   label: "Market",   fullLabel: "Marketing",   icon: FileText },
-              { key: "content",     label: "Content",  fullLabel: "Content",     icon: Pencil },
-              { key: "archived",    label: "Archive",  fullLabel: `Archived (${archivedLeads.length})`, icon: Archive },
-              { key: "settings",    label: "Settings", fullLabel: "Settings",    icon: Settings },
-            ] as const).map(({ key, label, fullLabel, icon: Icon }) => (
+              { key: "leads",       label: `Leads (${activeLeads.length})`, icon: TrendingUp, color: "#4ADE80" },
+              { key: "tenants",     label: "Tenants",     icon: Building2, color: "#60A5FA" },
+              { key: "maintenance", label: "Maint.",       icon: Wrench, color: "#F97316" },
+              { key: "cleaning",    label: "Cleaning",    icon: Sparkles, color: "#A78BFA" },
+              { key: "analytics",   label: "Analytics",   icon: BarChart3, color: "#22D3EE" },
+              { key: "marketing",   label: "Marketing",   icon: FileText, color: "#E1306C" },
+              { key: "content",     label: "Content",     icon: Pencil, color: "#FACC15" },
+              { key: "archived",    label: `Archive (${archivedLeads.length})`, icon: Archive, color: "#9CA3AF" },
+              { key: "settings",    label: "Settings",    icon: Settings, color: "#6B7280" },
+            ] as const).map(({ key, label, icon: Icon, color }) => (
               <button
                 key={key}
                 onClick={() => switchTab(key)}
-                className={`flex items-center gap-1.5 px-3 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all -mb-px whitespace-nowrap flex-shrink-0 ${activeTab === key ? "border-[#4ADE80] text-[#4ADE80]" : "border-transparent text-gray-500 hover:text-gray-300"}`}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex-shrink-0 transition-all duration-200 ${
+                  activeTab === key
+                    ? "text-white shadow-lg"
+                    : "text-gray-500 hover:text-gray-300 bg-transparent hover:bg-[rgba(255,255,255,0.04)]"
+                }`}
+                style={activeTab === key ? {
+                  background: `linear-gradient(135deg, ${color}22, ${color}11)`,
+                  border: `1px solid ${color}44`,
+                  boxShadow: `0 0 20px ${color}15`,
+                  color,
+                } : { border: "1px solid transparent" }}
               >
-                <Icon size={13} />
-                <span className="sm:hidden">{label}</span>
-                <span className="hidden sm:inline">{fullLabel}</span>
+                <Icon size={12} />
+                {label}
               </button>
             ))}
           </div>
         </div>
+
+        {/* Desktop: Sidebar + Content Layout */}
+        <div className="lg:flex lg:gap-8 mb-8">
+          {/* ── Sidebar (desktop only) ── */}
+          <div className="hidden lg:block w-[220px] flex-shrink-0">
+            <div className="sticky top-20 space-y-1.5 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1" style={{ scrollbarWidth: "none" }}>
+              <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] px-3 mb-2">Navigation</p>
+              {([
+                { key: "leads",       label: `Leads`, count: activeLeads.length, icon: TrendingUp, color: "#4ADE80",  desc: "Incoming inquiries" },
+                { key: "tenants",     label: "Tenants",     icon: Building2, color: "#60A5FA", desc: "Active leases" },
+                { key: "maintenance", label: "Maintenance", icon: Wrench,    color: "#F97316", desc: "Work requests" },
+                { key: "cleaning",    label: "Cleaning",    icon: Sparkles,  color: "#A78BFA", desc: "Schedules" },
+                { key: "analytics",   label: "Analytics",   icon: BarChart3, color: "#22D3EE", desc: "Traffic & KPIs" },
+                { key: "marketing",   label: "Marketing",   icon: FileText,  color: "#E1306C", desc: "Promo tools" },
+                { key: "content",     label: "Content",     icon: Pencil,    color: "#FACC15", desc: "Site editor" },
+                { key: "archived",    label: "Archived",    count: archivedLeads.length, icon: Archive,   color: "#9CA3AF", desc: "Closed leads" },
+                { key: "settings",    label: "Settings",    icon: Settings,  color: "#6B7280", desc: "Preferences" },
+              ] as const).map(({ key, label, icon: Icon, color, desc, ...rest }) => {
+                const isActive = activeTab === key;
+                const count = (rest as any).count;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => switchTab(key)}
+                    className={`w-full group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                      isActive
+                        ? "bg-[rgba(255,255,255,0.06)]"
+                        : "hover:bg-[rgba(255,255,255,0.03)]"
+                    }`}
+                    style={isActive ? {
+                      boxShadow: `inset 0 0 0 1px ${color}33, 0 0 24px ${color}08`,
+                    } : {}}
+                  >
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <div
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+                        style={{ background: color, boxShadow: `0 0 8px ${color}80` }}
+                      />
+                    )}
+                    {/* Icon */}
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
+                        isActive ? "shadow-lg" : "opacity-60 group-hover:opacity-90"
+                      }`}
+                      style={isActive ? {
+                        background: `linear-gradient(135deg, ${color}25, ${color}10)`,
+                        border: `1px solid ${color}35`,
+                      } : {
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                      }}
+                    >
+                      <Icon size={14} style={isActive ? { color } : { color: "#9CA3AF" }} />
+                    </div>
+                    {/* Label + desc */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[13px] font-bold transition-colors ${isActive ? "text-white" : "text-gray-400 group-hover:text-gray-200"}`}>
+                          {label}
+                        </span>
+                        {count !== undefined && count > 0 && (
+                          <span
+                            className="text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
+                            style={isActive ? {
+                              background: `${color}20`,
+                              color,
+                              border: `1px solid ${color}30`,
+                            } : {
+                              background: "rgba(255,255,255,0.06)",
+                              color: "#6B7280",
+                              border: "1px solid rgba(255,255,255,0.06)",
+                            }}
+                          >
+                            {count}
+                          </span>
+                        )}
+                      </div>
+                      <span className={`text-[10px] leading-none transition-colors ${isActive ? "text-gray-500" : "text-gray-700 group-hover:text-gray-600"}`}>
+                        {desc}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+
+              {/* Sidebar footer */}
+              <div className="pt-3 mt-3 border-t border-[rgba(255,255,255,0.04)]">
+                <p className="text-[9px] text-gray-700 text-center">Auto-refreshes · 30s</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Content Area (always rendered) ── */}
+          <div className="flex-1 min-w-0">
 
         {/* ─ LEADS TAB ──────────────────────────────────────────────────────── */}
         {activeTab === "leads" && (
@@ -3049,6 +3155,9 @@ export default function AdminPage() {
         )}
 
         {activeTab === "settings" && <SettingsPanel leads={activeLeads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />}
+
+          </div>{/* end content area */}
+        </div>{/* end sidebar+content flex */}
 
         <p className="text-center text-xs text-gray-700 mt-10">
           VISION Property Intelligence Platform · AI-Powered by Gemini · Auto-refreshes every 30s
