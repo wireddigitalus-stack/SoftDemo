@@ -13,6 +13,7 @@ import ContentTab from "./ContentTab";
 import ProTips from "./ProTips";
 import CallLogModal, { type CallLog, outcomeColor, outcomeLabel } from "./CallLogModal";
 import PrintButton from "./PrintButton";
+import ActivityFeedPanel from "./ActivityFeedPanel";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import * as XLSX from "xlsx";
 import {
@@ -1937,6 +1938,7 @@ export default function AdminPage() {
   const [callListOpen, setCallListOpen] = useState(false);
   const [callLogs, setCallLogs] = useState<CallLog[]>([]);
   const [activeCallLog, setActiveCallLog] = useState<{ leadId: string; leadName: string; phone: string } | null>(null);
+  const [showActivityFeed, setShowActivityFeed] = useState(false);
   const [coldPipelineOpen, setColdPipelineOpen] = useState(false);
   const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
   const [deletingAll, setDeletingAll] = useState(false);
@@ -2256,6 +2258,17 @@ export default function AdminPage() {
                 )}
               </div>
             )}
+
+            {/* Activity Feed bell */}
+            <button
+              onClick={() => setShowActivityFeed(true)}
+              className="relative flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[rgba(96,165,250,0.08)] border border-[rgba(96,165,250,0.2)] text-[#60A5FA] text-xs font-bold hover:bg-[rgba(96,165,250,0.14)] transition-colors"
+              title="Activity Log"
+            >
+              <Bell size={13} />
+              <span className="hidden sm:inline">Activity</span>
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
+            </button>
 
             <button
               onClick={() => setShowAskVision(true)}
@@ -3162,6 +3175,11 @@ export default function AdminPage() {
 
       {/* ─ PRO TIPS floating button (always visible, context-aware) ─────────── */}
       <ProTips activeTab={(activeTab === "marketing" ? `marketing-${marketingSubTab}` : activeTab === "content" ? contentSubView : activeTab) as import("./ProTips").TabKey} />
+
+      {/* Activity Feed slide-in panel */}
+      {showActivityFeed && (
+        <ActivityFeedPanel onClose={() => setShowActivityFeed(false)} />
+      )}
 
     </div>
   );
