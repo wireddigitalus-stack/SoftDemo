@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
       electric_monthly: Number(fields.electricMonthly) || 0,
       water_monthly:    Number(fields.waterMonthly)   || 0,
       other_monthly:    Number(fields.otherMonthly)   || 0,
+      trend:            (fields.trend as string) || "stable",
       notes:            (fields.notes as string)?.trim() || "",
       updated_at:       new Date().toISOString(),
     };
@@ -82,7 +83,10 @@ CREATE TABLE IF NOT EXISTS property_details (
   electric_monthly  NUMERIC(10,2) DEFAULT 0,
   water_monthly     NUMERIC(10,2) DEFAULT 0,
   other_monthly     NUMERIC(10,2) DEFAULT 0,
+  trend             TEXT DEFAULT 'stable',
   notes             TEXT DEFAULT '',
   updated_at        TIMESTAMPTZ DEFAULT NOW()
 );
+-- If table already exists, add missing columns:
+ALTER TABLE property_details ADD COLUMN IF NOT EXISTS trend TEXT DEFAULT 'stable';
 `.trim();

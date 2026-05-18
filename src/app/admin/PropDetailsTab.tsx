@@ -4,7 +4,7 @@ import {
   Building2, Users, DollarSign, TrendingUp, AlertTriangle,
   Clock, CheckCircle2, Home, Loader2, RefreshCw, Save,
   ChevronDown, ChevronUp, Zap, Droplets, ShieldCheck, Receipt,
-  MoreHorizontal,
+  MoreHorizontal, TrendingDown, Minus, Printer, X,
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
 import type { Tenant } from "./TenantsTab";
@@ -19,8 +19,11 @@ interface PropDetail {
   electric_monthly: number;
   water_monthly: number;
   other_monthly: number;
+  trend: "up" | "stable" | "down";
   notes: string;
 }
+
+type Trend = "up" | "stable" | "down";
 
 type DetailForm = {
   totalUnits: string;
@@ -29,6 +32,7 @@ type DetailForm = {
   electricMonthly: string;
   waterMonthly: string;
   otherMonthly: string;
+  trend: Trend;
   notes: string;
 };
 
@@ -88,6 +92,166 @@ function Field({ label, value, onChange, prefix = "$" }: { label: string; value:
   );
 }
 
+// ── TrendSelector ─────────────────────────────────────────────────────────────
+
+const TRENDS: { value: Trend; label: string; icon: React.ElementType; color: string }[] = [
+  { value: "up",     label: "Improving", icon: TrendingUp,   color: "#4ADE80" },
+  { value: "stable", label: "Stable",    icon: Minus,        color: "#FACC15" },
+  { value: "down",   label: "Declining", icon: TrendingDown, color: "#EF4444" },
+];
+
+function TrendSelector({ value, onChange }: { value: Trend; onChange: (v: Trend) => void }) {
+  return (
+    <div className="flex gap-1.5">
+      {TRENDS.map(({ value: v, label, icon: Icon, color }) => (
+        <button key={v} onClick={() => onChange(v)}
+          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all"
+          style={value === v
+            ? { background: `${color}18`, color, borderColor: `${color}40` }
+            : { background: "transparent", color: "#6b7280", borderColor: "rgba(255,255,255,0.08)" }}>
+          <Icon size={10} />{label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── PrintReport ───────────────────────────────────────────────────────────────
+
+interface PrintData {
+  property: typeof PROPERTIES[number];
+  tenants: Tenant[];
+  detail?: PropDetail;
+}
+
+function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void }) {
+  const now = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const totalRevenue = data.reduce((s, { tenants: ts }) => s + ts.reduce((a, t) => a + (t.monthlyRent || 0), 0), 0);
+  const totalExp = data.reduce((s, { detail: d }) => {
+    if (!d) return s;
+    return s + d.electric_monthly + d.water_monthly + d.other_monthly + d.taxes_annual / 12 + d.insurance_annual / 12;
+  }, 0);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-start justify-center overflow-y-auto py-8 px-4">
+      <div className="bg-white text-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl">
+        {/* Print controls — hidden when printing */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 print:hidden">
+          <span className="text-sm font-bold text-gray-700">Portfolio Report Preview</span>
+          <div className="flex gap-2">
+            <button onClick={() => window.print()}
+              className="flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+              <Printer size={13} /> Print / Save PDF
+            </button>
+            <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+              <X size={16} className="text-gray-500" />
+            </button>
+          </div>
+        </div>
+
+        {/* Report body */}
+        <div className="p-8 space-y-6">
+          {/* Letterhead */}
+          <div className="flex items-start justify-between border-b border-gray-200 pb-5">
+            <div>
+              <h1 className="text-2xl font-black text-gray-900">Portfolio Report</h1>
+              <p className="text-sm text-gray-500 mt-1">Generated {now}</p>
+            </div>
+            <div className="text-right text-sm">
+              <p className="font-bold text-gray-900">{data.length} Properties</p>
+              <p className="text-gray-500">{data.reduce((s, d) => s + d.tenants.length, 0)} Active Tenants</p>
+            </div>
+          </div>
+
+          {/* Portfolio summary */}
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: "Total Revenue",  value: `$${totalRevenue.toLocaleString()}/mo`,             color: "#16a34a" },
+              { label: "Total Expenses", value: totalExp ? `$${Math.round(totalExp).toLocaleString()}/mo` : "Not set", color: "#dc2626" },
+              { label: "Net P&L",        value: totalExp ? `$${Math.round(totalRevenue - totalExp).toLocaleString()}/mo` : "—", color: totalRevenue > totalExp ? "#16a34a" : "#dc2626" },
+            ].map(s => (
+              <div key={s.label} className="rounded-xl border border-gray-200 p-4 text-center">
+                <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+                <p className="text-lg font-black" style={{ color: s.color }}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Per-property tables */}
+          {data.map(({ property, tenants: ts, detail: d }) => {
+            const rev = ts.reduce((s, t) => s + (t.monthlyRent || 0), 0);
+            const taxMo = (d?.taxes_annual || 0) / 12;
+            const insMo = (d?.insurance_annual || 0) / 12;
+            const exp = taxMo + insMo + (d?.electric_monthly || 0) + (d?.water_monthly || 0) + (d?.other_monthly || 0);
+            const profit = rev - exp;
+            const totalUnits = d?.total_units || ts.length;
+            const occ = totalUnits ? Math.round((ts.length / totalUnits) * 100) : 0;
+            const trend = d?.trend || "stable";
+            const trendLabel = TRENDS.find(t => t.value === trend)?.label || "Stable";
+
+            return (
+              <div key={property.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
+                  <div>
+                    <h2 className="font-black text-gray-900 text-sm">{property.name}</h2>
+                    <p className="text-xs text-gray-500">{property.city} · {property.type}</p>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="font-bold" style={{ color: occ >= 100 ? "#16a34a" : occ > 0 ? "#ca8a04" : "#9ca3af" }}>
+                      {ts.length}/{totalUnits} units ({occ}%)
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded-full border font-bold"
+                      style={{ color: trend === "up" ? "#16a34a" : trend === "down" ? "#dc2626" : "#ca8a04", borderColor: trend === "up" ? "#16a34a" : trend === "down" ? "#dc2626" : "#ca8a04" }}>
+                      {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"} {trendLabel}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Financials row */}
+                <div className="grid grid-cols-4 divide-x divide-gray-100 text-center">
+                  {[{ l: "Revenue", v: rev ? `$${rev.toLocaleString()}/mo` : "—" },
+                    { l: "Expenses", v: exp ? `$${Math.round(exp).toLocaleString()}/mo` : "—" },
+                    { l: "Net P&L", v: exp ? `${profit >= 0 ? "+" : ""}$${Math.round(profit).toLocaleString()}/mo` : "—" },
+                    { l: "Avg Rent", v: ts.length ? `$${Math.round(rev / ts.length).toLocaleString()}/mo` : "—" },
+                  ].map(({ l, v }) => (
+                    <div key={l} className="py-3 px-2">
+                      <p className="text-[10px] text-gray-400">{l}</p>
+                      <p className="text-sm font-bold text-gray-800">{v}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Tenant list */}
+                {ts.length > 0 && (
+                  <table className="w-full text-xs border-t border-gray-100">
+                    <thead><tr className="bg-gray-50">
+                      <th className="text-left px-4 py-2 text-gray-500 font-semibold">Tenant</th>
+                      <th className="text-left px-4 py-2 text-gray-500 font-semibold">Unit</th>
+                      <th className="text-right px-4 py-2 text-gray-500 font-semibold">Rent/mo</th>
+                      <th className="text-right px-4 py-2 text-gray-500 font-semibold">Lease End</th>
+                    </tr></thead>
+                    <tbody>
+                      {ts.map(t => (
+                        <tr key={t.id} className="border-t border-gray-50">
+                          <td className="px-4 py-2 font-medium text-gray-800">{t.name}</td>
+                          <td className="px-4 py-2 text-gray-500">{t.unit || "—"}</td>
+                          <td className="px-4 py-2 text-right text-gray-800">{t.monthlyRent ? `$${t.monthlyRent.toLocaleString()}` : "—"}</td>
+                          <td className="px-4 py-2 text-right text-gray-500">{t.leaseEnd || t.renewalDate || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                {d?.notes && <p className="px-4 py-2 text-[11px] text-gray-400 border-t border-gray-100 italic">{d.notes}</p>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── PropertyCard ──────────────────────────────────────────────────────────────
 
 function PropertyCard({ property, tenants, detail, onSave }: {
@@ -96,6 +260,9 @@ function PropertyCard({ property, tenants, detail, onSave }: {
   detail: PropDetail | undefined;
   onSave: (id: string, form: DetailForm) => Promise<void>;
 }) {
+  const trend: Trend = detail?.trend || "stable";
+  const trendItem = TRENDS.find(t => t.value === trend)!;
+  const TrendIcon = trendItem.icon;
   const propTenants = tenants.filter(t => {
     const b = (t.building || "").toLowerCase();
     const n = property.name.toLowerCase();
@@ -112,6 +279,7 @@ function PropertyCard({ property, tenants, detail, onSave }: {
     electricMonthly: String(detail?.electric_monthly || ""),
     waterMonthly: String(detail?.water_monthly || ""),
     otherMonthly: String(detail?.other_monthly || ""),
+    trend: detail?.trend || "stable",
     notes: detail?.notes || "",
   });
 
@@ -124,6 +292,7 @@ function PropertyCard({ property, tenants, detail, onSave }: {
       electricMonthly: String(detail.electric_monthly || ""),
       waterMonthly: String(detail.water_monthly || ""),
       otherMonthly: String(detail.other_monthly || ""),
+      trend: detail.trend || "stable",
       notes: detail.notes || "",
     });
   }, [detail]);
@@ -159,7 +328,13 @@ function PropertyCard({ property, tenants, detail, onSave }: {
       <div className="flex items-center gap-4 p-5 border-b border-[rgba(255,255,255,0.05)]">
         <Ring value={occupancy} color={occColor} />
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-black text-white leading-tight truncate">{property.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-black text-white leading-tight truncate">{property.name}</h3>
+            <span className="flex-shrink-0 flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+              style={{ background: `${trendItem.color}15`, color: trendItem.color, border: `1px solid ${trendItem.color}30` }}>
+              <TrendIcon size={9} />{trendItem.label}
+            </span>
+          </div>
           <p className="text-[11px] text-gray-500 mt-0.5 truncate">{property.city} · {property.type}</p>
           <span className="mt-1.5 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
             style={{ background: `${occColor}18`, color: occColor, border: `1px solid ${occColor}30` }}>
@@ -250,6 +425,10 @@ function PropertyCard({ property, tenants, detail, onSave }: {
               <Field label="Other / mo"         value={form.otherMonthly}     onChange={set("otherMonthly")} />
             </div>
             <div>
+              <label className="text-[10px] text-gray-600 block mb-1">Vacancy Trend</label>
+              <TrendSelector value={form.trend} onChange={v => setForm(f => ({ ...f, trend: v }))} />
+            </div>
+            <div>
               <label className="text-[10px] text-gray-600 block mb-1">Notes</label>
               <textarea rows={2} value={form.notes} onChange={e => set("notes")(e.target.value)}
                 className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-lg text-xs text-white px-3 py-2 outline-none resize-none"
@@ -295,6 +474,7 @@ export default function PropDetailsTab() {
   const [loading, setLoading] = useState(true);
   const [migrationSql, setMigrationSql] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  const [showPrint, setShowPrint] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -335,6 +515,16 @@ export default function PropDetailsTab() {
     s + d.electric_monthly + d.water_monthly + d.other_monthly + d.taxes_annual / 12 + d.insurance_annual / 12, 0), [details]);
   const alerts = useMemo(() => tenants.filter(t => { const d = daysUntil(t.leaseEnd || t.renewalDate); return d !== null && d <= 90; }).length, [tenants]);
 
+  const printData = useMemo(() => PROPERTIES.map(p => ({
+    property: p,
+    tenants: tenants.filter(t => {
+      const b = (t.building || "").toLowerCase();
+      const n = p.name.toLowerCase();
+      return b && (b.includes(n.slice(0, 8)) || n.includes(b.slice(0, 8)));
+    }),
+    detail: detailMap[p.id],
+  })), [tenants, detailMap]);
+
   return (
     <div className="space-y-5">
 
@@ -350,6 +540,10 @@ export default function PropDetailsTab() {
         <button onClick={() => setTick(t => t + 1)}
           className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)] transition-all">
           <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> Refresh
+        </button>
+        <button onClick={() => setShowPrint(true)}
+          className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] px-3 py-2 rounded-lg border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-all">
+          <Printer size={12} /> Print Report
         </button>
       </div>
 
@@ -400,6 +594,8 @@ export default function PropDetailsTab() {
           <AlertTriangle size={14} /> <span><strong>{alerts} lease{alerts > 1 ? "s" : ""}</strong> expiring within 90 days — check Tenants tab for details.</span>
         </div>
       )}
+
+      {showPrint && <PrintReport data={printData} onClose={() => setShowPrint(false)} />}
     </div>
   );
 }

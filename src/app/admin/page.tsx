@@ -2180,7 +2180,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080C14] text-white">
+    <div className="admin-dash min-h-screen bg-[#080C14] text-white">
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-16">
 
         {/* ─ New Lead Toast ──────────────────────────────────────────────── */}
