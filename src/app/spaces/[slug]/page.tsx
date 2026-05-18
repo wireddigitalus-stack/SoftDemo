@@ -7,6 +7,7 @@ import { ArrowRight, Phone, Check, MapPin, ChevronDown } from "lucide-react";
 import { SPACE_TYPE_PAGES, PROPERTIES, GEO_PAGES, COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
+import { fetchImageOverrides, resolveHeroImage } from "@/lib/property-image-overrides";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -49,6 +50,13 @@ export default async function SpaceTypePage({ params }: Props) {
   const linkedGeoPages = GEO_PAGES.filter((g) =>
     page.geoLinks.includes(g.slug)
   );
+
+  // Fetch live image overrides so admin hero selections show on cards
+  const imgOverrides = await fetchImageOverrides();
+  const resolvedProperties = matchedProperties.map(p => ({
+    ...p,
+    image: resolveHeroImage(p.id, (p as any).image, imgOverrides),
+  }));
 
   const isGold = page.accentColor === "#FACC15";
   const accent = isGold ? "#FACC15" : "#4ADE80";
@@ -221,7 +229,7 @@ export default async function SpaceTypePage({ params }: Props) {
             </div>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {matchedProperties.map((property) => (
+              {resolvedProperties.map((property) => (
                 <article
                   key={property.id}
                   className={`group glass rounded-2xl overflow-hidden border ${accentBorder} flex flex-col property-card`}

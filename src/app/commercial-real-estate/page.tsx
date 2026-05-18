@@ -88,11 +88,16 @@ export default function CommercialRealEstatePage() {
       features: po.features ? po.features.split("\n").filter(Boolean) : p.features,
       imageAlt: po.imageAlt || p.imageAlt,
     } : p;
-    // Merge image overrides — admin uploads win over static data
+    // Merge image overrides — admin uploads win over static data, hero always first
     if (io?.all_urls?.length) {
-      return { ...base, images: io.all_urls, image: io.hero_url || io.all_urls[0] };
+      const hero = io.hero_url || io.all_urls[0];
+      const orderedUrls = hero
+        ? [hero, ...io.all_urls.filter((u: string) => u !== hero)]
+        : io.all_urls;
+      return { ...base, images: orderedUrls, image: hero };
     }
     return base;
+
   }), [propOverrides, imageOverrides]);
 
   const filtered = activeFilter === "All"
