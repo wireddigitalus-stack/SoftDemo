@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
 import type { Tenant } from "./TenantsTab";
+import PortfolioOverviewCard from "./PortfolioOverviewCard";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,6 +46,20 @@ function daysUntil(d: string | null | undefined) {
 function pct(n: number, d: number) { return d ? Math.round((n / d) * 100) : 0; }
 function fmt(n: number) { return n ? `$${n.toLocaleString()}` : "—"; }
 function n(s: string) { return parseFloat(s) || 0; }
+
+// Strips spaces, punctuation & digits → pure alpha token for fuzzy matching
+// e.g. "Centre Point 357" → "centrepoint", "CentrePoint" → "centrepoint"
+function norm(s: string) {
+  return s.toLowerCase().replace(/[^a-z]/g, "");
+}
+function buildingMatch(building: string, propertyName: string): boolean {
+  const b = norm(building);
+  const p = norm(propertyName);
+  if (!b || !p) return false;
+  // exact normalized match, or one contains a 6-char prefix of the other
+  const prefix = Math.min(6, Math.min(b.length, p.length));
+  return b === p || b.includes(p.slice(0, prefix)) || p.includes(b.slice(0, prefix));
+}
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -266,7 +281,7 @@ function PropertyCard({ property, tenants, detail, onSave }: {
   const propTenants = tenants.filter(t => {
     const b = (t.building || "").toLowerCase();
     const n = property.name.toLowerCase();
-    return b && (b.includes(n.slice(0, 8)) || n.includes(b.slice(0, 8)));
+    return buildingMatch(t.building || "", property.name);
   });
 
   const [open, setOpen] = useState(false);
@@ -518,9 +533,7 @@ export default function PropDetailsTab() {
   const printData = useMemo(() => PROPERTIES.map(p => ({
     property: p,
     tenants: tenants.filter(t => {
-      const b = (t.building || "").toLowerCase();
-      const n = p.name.toLowerCase();
-      return b && (b.includes(n.slice(0, 8)) || n.includes(b.slice(0, 8)));
+      return buildingMatch(t.building || "", p.name);
     }),
     detail: detailMap[p.id],
   })), [tenants, detailMap]);
@@ -555,7 +568,12 @@ export default function PropDetailsTab() {
         </div>
       )}
 
-      {/* Portfolio bar */}
+      {/* CEO Overview Card */}
+      {!loading && (
+        <PortfolioOverviewCard tenants={tenants} details={details} />
+      )}
+
+      {/* Portfolio KPI bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { icon: Building2,     label: "Properties",  value: PROPERTIES.length,                                    color: "#A78BFA" },
