@@ -2319,7 +2319,7 @@ export default function AdminPage() {
 
         {/* Tab Nav — sticky below fixed site-nav, horizontally scrollable on mobile */}
         <div className="sticky top-14 z-40 bg-[#080C14] -mx-4 sm:-mx-6 px-4 sm:px-6 mb-8">
-          <div className="scrollbar-none flex items-center gap-0.5 border-b border-[rgba(255,255,255,0.06)] overflow-x-auto pb-0 -mx-2 px-2 sm:mx-0 sm:px-0" style={{ scrollbarWidth: "none", msOverflowStyle: "none", touchAction: "pan-x", WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain" }}>
+          <div className="scrollbar-none flex items-center gap-0.5 border-b border-[rgba(255,255,255,0.06)] overflow-x-auto pb-0 -mx-2 px-2 pr-6 sm:mx-0 sm:px-0 sm:pr-0" style={{ scrollbarWidth: "none", msOverflowStyle: "none", touchAction: "pan-x", WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain" }}>
             {([
               { key: "leads",       label: "Leads",    fullLabel: `Leads (${activeLeads.length})`, icon: TrendingUp },
               { key: "tenants",     label: "Tenants",  fullLabel: "Tenants",     icon: Building2 },
