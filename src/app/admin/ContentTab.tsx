@@ -147,7 +147,7 @@ export default function ContentTab({ onSubViewChange }: ContentTabProps) {
   const [loading, setLoading] = useState(true);
   const [activeMapSection, setActiveMapSection] = useState<string | null>("hero");
   const [mapOpen, setMapOpen] = useState(false);
-  const [activeView, setActiveView] = useState<"content" | "markets" | "pages" | "properties">("content");
+  const [activeView, setActiveView] = useState<"content" | "markets" | "pages" | "properties">("properties");
 
   // Propagate sub-view changes to parent for ProTips context
   const handleViewChange = (view: "content" | "markets" | "pages" | "properties") => {

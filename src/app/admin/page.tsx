@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import TenantsTab from "./TenantsTab";
+import PropDetailsTab from "./PropDetailsTab";
 import AnalyticsTab, { type AnalyticsLead } from "./AnalyticsTab";
 import MaintenanceTab from "./MaintenanceTab";
 import CleaningTab from "./CleaningTab";
@@ -1910,7 +1911,7 @@ export default function AdminPage() {
   const briefKeyRef = useRef(0);
   const [briefKey, setBriefKey] = useState(0);
   const searchParams = useSearchParams();
-  const VALID_TABS = ["leads", "tenants", "analytics", "maintenance", "cleaning", "archived", "marketing", "content", "settings"] as const;
+  const VALID_TABS = ["leads", "tenants", "propdetails", "analytics", "maintenance", "cleaning", "archived", "marketing", "content", "settings"] as const;
   type TabKey = typeof VALID_TABS[number];
   const initialTab = (VALID_TABS.includes(searchParams.get("tab") as TabKey) ? searchParams.get("tab") : "leads") as TabKey;
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
@@ -2325,6 +2326,7 @@ export default function AdminPage() {
             {([
               { key: "leads",       label: `Leads (${activeLeads.length})`, icon: TrendingUp, color: "#4ADE80" },
               { key: "tenants",     label: "Tenants",     icon: Building2, color: "#60A5FA" },
+              { key: "propdetails", label: "Prop Details", icon: BarChart3, color: "#A78BFA" },
               { key: "maintenance", label: "Maint.",       icon: Wrench, color: "#F97316" },
               { key: "cleaning",    label: "Cleaning",    icon: Sparkles, color: "#A78BFA" },
               { key: "analytics",   label: "Analytics",   icon: BarChart3, color: "#22D3EE" },
@@ -2361,6 +2363,7 @@ export default function AdminPage() {
             {([
               { key: "leads",       label: "Leads",       count: activeLeads.length, icon: TrendingUp, color: "#4ADE80",  desc: "Inquiries" },
               { key: "tenants",     label: "Tenants",     icon: Building2, color: "#60A5FA", desc: "Active leases" },
+              { key: "propdetails", label: "Prop Details", icon: BarChart3, color: "#A78BFA", desc: "Occupancy & stats" },
               { key: "maintenance", label: "Maintenance", icon: Wrench,    color: "#F97316", desc: "Work orders" },
               { key: "cleaning",    label: "Cleaning",    icon: Sparkles,  color: "#A78BFA", desc: "Schedules" },
               { key: "analytics",   label: "Analytics",   icon: BarChart3, color: "#22D3EE", desc: "Traffic & KPIs" },
@@ -3067,6 +3070,11 @@ export default function AdminPage() {
         {/* ─ TENANTS TAB ──────────────────────────────────────────────── */}
         {activeTab === "tenants" && (
           <TenantsTab currentUserName={currentUser?.name} />
+        )}
+
+        {/* ─ PROP DETAILS TAB ─────────────────────────────────────────────── */}
+        {activeTab === "propdetails" && (
+          <PropDetailsTab />
         )}
 
         {activeTab === "archived" && (
