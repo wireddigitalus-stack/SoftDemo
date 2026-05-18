@@ -239,6 +239,27 @@ export default async function PropertyDetailPage({ params }: Props) {
               <h2 className="text-xl font-bold text-white mb-4">About This Property</h2>
               <p className="text-gray-300 text-base leading-relaxed mb-8">{property.description}</p>
 
+              {/* Video Embed */}
+              {(property as any).videoUrl && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-[rgba(250,204,21,0.1)] border border-[rgba(250,204,21,0.2)] flex items-center justify-center">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.14v14l11-7-11-7z" fill="#FACC15"/></svg>
+                    </span>
+                    Take a Virtual Tour
+                  </h2>
+                  <div className="relative rounded-2xl overflow-hidden border border-[rgba(74,222,128,0.12)] bg-[#111827]" style={{ paddingBottom: "56.25%" }}>
+                    <iframe
+                      src={(property as any).videoUrl}
+                      title={`${property.name} — Video Tour`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                    />
+                  </div>
+                </div>
+              )}
+
               <h2 className="text-xl font-bold text-white mb-4">Features & Amenities</h2>
               <div className="grid sm:grid-cols-2 gap-3 mb-8">
                 {property.features.map((f: string) => (

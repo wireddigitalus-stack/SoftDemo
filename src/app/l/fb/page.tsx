@@ -44,11 +44,11 @@ const PROPERTY_DETAILS: Record<string, {
     tags: ["Casino Adjacent", "High Traffic", "Retail/Restaurant"],
   },
   "foundation-event-facility": {
-    label: "🎉 Event Facility", sub: "Foundation Event Center", href: "/properties/foundation-event-facility", emoji: "🎉",
+    label: "🎉 Event Facility", sub: "Up to 450 Guests · 620 State St", href: "/properties/foundation-event-facility", emoji: "🎉",
     image: "/property-images/development-event-space-after.jpg",
-    headline: "Foundation — Premier Event Facility",
-    desc: "Versatile event venue in Bristol with full catering kitchen, AV systems, and flexible floor plans. Perfect for corporate events, weddings, and community gatherings.",
-    tags: ["Full Kitchen", "AV Equipped", "Flexible Layout"],
+    headline: "Foundation — Premier Event Venue",
+    desc: "The Tri-Cities' premier event venue in a restored 110+ year-old building. 3 distinct rooms for up to 450 guests — featuring 17-ft ceilings, Bose sound, HD projection, elevated stage, built-in bar, and full-service catering.",
+    tags: ["Up to 450 Guests", "3 Venues", "Full AV & Stage", "Built-In Bar", "Catering Available"],
   },
   "warehouse": {
     label: "🏭 Warehouse", sub: "2,000–25,000 sqft · Bristol Metro", href: "/spaces/industrial-space-tri-cities-tn", emoji: "🏭",
