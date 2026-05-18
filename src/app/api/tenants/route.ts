@@ -140,7 +140,13 @@ export async function PATCH(req: NextRequest) {
         resource_type: "tenant",
         resource_name: (body.name        as string) || (id as string),
         resource_id:   id as string,
-        metadata: { fields_changed: Object.keys(patch) },
+        metadata: {
+          changed: (() => {
+            const keys = Object.keys(patch).map(k => k.replace(/_/g, " "));
+            if (keys.length <= 2) return keys.join(", ");
+            return `${keys.slice(0, 2).join(", ")} +${keys.length - 2} more`;
+          })(),
+        },
       });
       return NextResponse.json({ success: true });
     }

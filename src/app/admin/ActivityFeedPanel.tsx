@@ -184,7 +184,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
               return (
                 <div
                   key={log.id}
-                  className="flex items-start gap-3 p-3 rounded-xl border border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.08)] transition-all group"
+                  className="flex items-start gap-3 p-3 rounded-xl border border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.08)] transition-all group overflow-hidden"
                   style={{ background: "rgba(255,255,255,0.02)" }}
                 >
                   {/* Type icon */}
@@ -196,7 +196,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 overflow-hidden">
                     {/* Actor + action + resource */}
                     <p className="text-sm text-white leading-snug">
                       <span className="font-black">{log.actor_name}</span>
@@ -215,21 +215,27 @@ export default function ActivityFeedPanel({ onClose }: Props) {
 
                     {/* Resource name */}
                     {log.resource_name && (
-                      <p className="text-xs text-gray-300 font-medium mt-0.5 truncate">
-                        {log.resource_name}
+                      <p className="text-xs text-gray-300 font-medium mt-0.5 truncate max-w-full">
+                        {log.resource_name.length > 48
+                          ? log.resource_name.slice(0, 48) + "…"
+                          : log.resource_name}
                       </p>
                     )}
 
                     {/* Metadata chips */}
                     {log.metadata && Object.keys(log.metadata).length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <div className="flex flex-wrap gap-1 mt-1 overflow-hidden">
                         {Object.entries(log.metadata).slice(0, 3).map(([k, v]) =>
                           v !== undefined && v !== null && v !== "" && String(v).trim() ? (
                             <span
                               key={k}
-                              className="text-[10px] text-gray-600 bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5 rounded-md"
+                              className="text-[10px] text-gray-600 bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5 rounded-md max-w-full truncate"
+                              style={{ maxWidth: "100%" }}
                             >
-                              {String(k).replace(/_/g, " ")}: <span className="text-gray-400">{String(v)}</span>
+                              {String(k).replace(/_/g, " ")}:{" "}
+                              <span className="text-gray-400">
+                                {String(v).length > 30 ? String(v).slice(0, 30) + "…" : String(v)}
+                              </span>
                             </span>
                           ) : null
                         )}
@@ -237,12 +243,14 @@ export default function ActivityFeedPanel({ onClose }: Props) {
                     )}
 
                     {/* Time */}
-                    <div className="flex items-center gap-1 mt-1.5">
-                      <Clock size={9} className="text-gray-700" />
-                      <span className="text-[10px] text-gray-700" title={formatDate(log.created_at)}>
+                    <div className="flex items-center gap-1 mt-1.5 min-w-0 overflow-hidden">
+                      <Clock size={9} className="text-gray-700 flex-shrink-0" />
+                      <span className="text-[10px] text-gray-700 flex-shrink-0" title={formatDate(log.created_at)}>
                         {timeAgo(log.created_at)}
                       </span>
-                      <span className="text-[10px] text-gray-800 ml-1">· {log.actor_email}</span>
+                      <span className="text-[10px] text-gray-800 ml-1 truncate" title={log.actor_email}>
+                        · {log.actor_email}
+                      </span>
                     </div>
                   </div>
 
