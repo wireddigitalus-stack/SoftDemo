@@ -158,8 +158,12 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
               className="flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
               <Printer size={13} /> Print / Save PDF
             </button>
-            <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-              <X size={16} className="text-gray-500" />
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-md flex-shrink-0"
+              title="Close"
+            >
+              <X size={14} className="text-white" strokeWidth={2.5} />
             </button>
           </div>
         </div>
