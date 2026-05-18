@@ -512,7 +512,7 @@ function TicketCard({ ticket, onEdit, onDelete, onUpdate, currentUserName }:
 
 // ─── Main MaintenanceTab ──────────────────────────────────────────────────────
 
-export default function MaintenanceTab({ currentUserName }: { currentUserName?: string }) {
+export default function MaintenanceTab({ currentUserName, currentUserEmail }: { currentUserName?: string; currentUserEmail?: string }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [setupError, setSetupError] = useState(false);
@@ -556,6 +556,8 @@ export default function MaintenanceTab({ currentUserName }: { currentUserName?: 
         estimatedCost: form.estimatedCost, estimatedHours: form.estimatedHours,
         scheduledDate: form.scheduledDate || null, completedDate: form.completedDate || null,
         notes: form.notes,
+        actorName: currentUserName || "Admin",
+        actorEmail: currentUserEmail || "",
       }),
     });
     if (!res.ok) throw new Error();
@@ -574,6 +576,8 @@ export default function MaintenanceTab({ currentUserName }: { currentUserName?: 
         estimatedHours: form.estimatedHours,
         scheduledDate: form.scheduledDate || null, completedDate: form.completedDate || null,
         notes: form.notes,
+        actorName: currentUserName || "Admin",
+        actorEmail: currentUserEmail || "",
       }),
     });
     if (!res.ok) throw new Error();
@@ -589,7 +593,11 @@ export default function MaintenanceTab({ currentUserName }: { currentUserName?: 
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/maintenance?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/maintenance?id=${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actorName: currentUserName || "Admin", actorEmail: currentUserEmail || "" }),
+    });
     setTickets(prev => prev.filter(t => t.id !== id));
   };
 

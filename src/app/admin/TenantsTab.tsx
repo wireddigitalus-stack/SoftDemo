@@ -598,7 +598,7 @@ function TenantCard({
 
 // ─── Main TenantsTab ──────────────────────────────────────────────────────────
 
-export default function TenantsTab({ currentUserName }: { currentUserName?: string }) {
+export default function TenantsTab({ currentUserName, currentUserEmail }: { currentUserName?: string; currentUserEmail?: string }) {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [setupError, setSetupError] = useState(false);
@@ -643,6 +643,8 @@ export default function TenantsTab({ currentUserName }: { currentUserName?: stri
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
+        actorName: currentUserName || "Admin",
+        actorEmail: currentUserEmail || "",
       }),
     });
     if (!res.ok) throw new Error("Save failed");
@@ -667,6 +669,8 @@ export default function TenantsTab({ currentUserName }: { currentUserName?: stri
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
+        actorName: currentUserName || "Admin",
+        actorEmail: currentUserEmail || "",
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -676,7 +680,11 @@ export default function TenantsTab({ currentUserName }: { currentUserName?: stri
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/tenants?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/tenants?id=${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actorName: currentUserName || "Admin", actorEmail: currentUserEmail || "" }),
+    });
     setTenants(prev => prev.filter(t => t.id !== id));
   };
 
