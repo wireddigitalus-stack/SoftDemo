@@ -2375,41 +2375,42 @@ export default function AdminPage() {
                 <button
                   key={key}
                   onClick={() => switchTab(key)}
-                  className={`group relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                  className={`group relative flex items-center gap-2.5 px-3 py-3 rounded-xl text-left transition-all duration-200 border ${
                     isActive
-                      ? "bg-[rgba(255,255,255,0.06)]"
-                      : "hover:bg-[rgba(255,255,255,0.03)]"
+                      ? "bg-[rgba(255,255,255,0.07)]"
+                      : "bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.10)] hover:border-[rgba(255,255,255,0.18)]"
                   }`}
                   style={isActive ? {
-                    boxShadow: `inset 0 0 0 1px ${color}33, 0 0 20px ${color}08`,
+                    borderColor: `${color}55`,
+                    boxShadow: `0 0 24px ${color}15, inset 0 0 0 0.5px ${color}20`,
                   } : {}}
                 >
                   {/* Bottom active bar */}
                   {isActive && (
                     <div
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full"
-                      style={{ background: color, boxShadow: `0 0 8px ${color}80` }}
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[2px] rounded-full"
+                      style={{ background: color, boxShadow: `0 0 10px ${color}90` }}
                     />
                   )}
                   {/* Icon badge */}
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
-                      isActive ? "shadow-lg" : "opacity-50 group-hover:opacity-80"
+                      isActive ? "shadow-lg" : "opacity-60 group-hover:opacity-90"
                     }`}
                     style={isActive ? {
-                      background: `linear-gradient(135deg, ${color}25, ${color}10)`,
-                      border: `1px solid ${color}35`,
+                      background: `linear-gradient(135deg, ${color}30, ${color}12)`,
+                      border: `1px solid ${color}50`,
                     } : {
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.06)",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.10)",
                     }}
                   >
-                    <Icon size={14} style={isActive ? { color } : { color: "#6B7280" }} />
+                    <Icon size={14} style={isActive ? { color } : { color: "#9CA3AF" }} />
                   </div>
                   {/* Label + desc */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1">
-                      <span className={`text-xs font-bold truncate transition-colors ${isActive ? "text-white" : "text-gray-500 group-hover:text-gray-300"}`}>
+                      <span className={`text-xs font-bold truncate transition-colors ${isActive ? "text-white" : "text-gray-400 group-hover:text-gray-200"}`}>
                         {label}
                       </span>
                       {count !== undefined && count > 0 && (
@@ -2418,17 +2419,18 @@ export default function AdminPage() {
                           style={isActive ? {
                             background: `${color}20`,
                             color,
-                            border: `1px solid ${color}30`,
+                            border: `1px solid ${color}40`,
                           } : {
-                            background: "rgba(255,255,255,0.05)",
-                            color: "#6B7280",
+                            background: "rgba(255,255,255,0.06)",
+                            color: "#9CA3AF",
+                            border: "1px solid rgba(255,255,255,0.08)",
                           }}
                         >
                           {count}
                         </span>
                       )}
                     </div>
-                    <span className={`text-[10px] leading-tight truncate block transition-colors ${isActive ? "text-gray-500" : "text-gray-700 group-hover:text-gray-600"}`}>
+                    <span className={`text-[10px] leading-tight truncate block transition-colors ${isActive ? "text-gray-400" : "text-gray-600 group-hover:text-gray-500"}`}>
                       {desc}
                     </span>
                   </div>
