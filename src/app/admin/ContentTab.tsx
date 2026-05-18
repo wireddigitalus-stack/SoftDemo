@@ -10,6 +10,7 @@ import PageMap from "./PageMap";
 import HeroBannerManager from "./HeroBannerManager";
 import PropertyEditor from "./PropertyEditor";
 import PropertyCreator from "./PropertyCreator";
+import PropertyImageManager from "./PropertyImageManager";
 import MlsImportMock from "@/components/MlsImportMock";
 import MarketEditor from "./MarketEditor";
 import PageEditor from "./PageEditor";
@@ -621,6 +622,11 @@ export default function ContentTab({ onSubViewChange }: ContentTabProps) {
       {/* ── Existing Properties Editor ── */}
       <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
         <PropertyEditor />
+      </div>
+
+      {/* ── Property Photos ── */}
+      <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden p-5 sm:p-6">
+        <PropertyImageManager />
       </div>
 
       {/* Bottom Summary for Properties View */}
