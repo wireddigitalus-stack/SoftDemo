@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Phone, ArrowRight, Check, Wifi, Coffee, Users, Clock, Monitor, Lock } from "lucide-react";
+import { Phone, ArrowRight, Check, Wifi, Coffee, Users, Clock, Monitor, Lock, Star } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import CoWorkHeroCarousel from "@/components/CoWorkHeroCarousel";
@@ -311,6 +311,14 @@ export default function CoWorkPage() {
               <Link href="/contact" className="btn-secondary">
                 Get Directions & Availability <ArrowRight size={16} />
               </Link>
+              <a
+                href="https://maps.app.goo.gl/EFTj2yweHqtJwks69"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[rgba(250,204,21,0.3)] bg-[rgba(250,204,21,0.06)] text-[#FACC15] font-semibold text-sm hover:bg-[rgba(250,204,21,0.12)] transition-colors"
+              >
+                <Star size={16} /> Leave a Review
+              </a>
             </div>
           </div>
         </section>

@@ -277,6 +277,7 @@ export const PROPERTIES = [
       "Single Offices Available",
     ],
     imageAlt: "City Centre Professional Suites 100 5th Street Downtown Bristol TN",
+    reviewUrl: "https://maps.app.goo.gl/gC3VfeWsL5Aa7Gx28",
   },
   {
     id: "bristol-cowork",
@@ -299,6 +300,7 @@ export const PROPERTIES = [
       "Experience modern commercial leasing at Bristol CoWork — a 5,000+ sqft facility at 620 State Street offering fully furnished private offices, dedicated desks, and equipped conference rooms with high-speed internet and all utilities included, engineered to support business growth in Bristol TN's commercial real estate market.",
     features: ["Private Offices", "Dedicated Desks", "Conference Rooms", "High-Speed Internet", "Fully Furnished"],
     imageAlt: "Bristol CoWork shared workspace at 620 State Street Bristol Tennessee",
+    reviewUrl: "https://maps.app.goo.gl/EFTj2yweHqtJwks69",
   },
   {
     id: "the-executive",
@@ -377,6 +379,7 @@ export const PROPERTIES = [
       "Full-Service Coordination",
     ],
     imageAlt: "Foundation Event Facility 620 State Street Downtown Bristol TN event venue",
+    reviewUrl: "https://maps.app.goo.gl/EFTj2yweHqtJwks69",
   },
   {
     id: "west-state-commons",

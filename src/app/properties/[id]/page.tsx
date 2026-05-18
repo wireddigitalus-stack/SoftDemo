@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { MapPin, Phone, ArrowRight, Check, ArrowLeft } from "lucide-react";
+import { MapPin, Phone, ArrowRight, Check, ArrowLeft, Star } from "lucide-react";
 import { PROPERTIES, COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
@@ -293,6 +293,25 @@ export default async function PropertyDetailPage({ params }: Props) {
                   {COMPANY.email}
                 </p>
               </div>
+
+              {/* Google Review CTA */}
+              {(property as any).reviewUrl && (
+                <a
+                  href={(property as any).reviewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 glass rounded-2xl p-5 border border-[rgba(250,204,21,0.2)] hover:border-[rgba(250,204,21,0.4)] transition-all group flex items-center gap-4"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[rgba(250,204,21,0.1)] border border-[rgba(250,204,21,0.2)] flex items-center justify-center flex-shrink-0 group-hover:bg-[rgba(250,204,21,0.18)] transition-colors">
+                    <Star size={20} className="text-[#FACC15]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white group-hover:text-[#FACC15] transition-colors">Leave Us a Review</p>
+                    <p className="text-xs text-gray-500">Share your experience on Google</p>
+                  </div>
+                  <ArrowRight size={16} className="text-gray-600 ml-auto group-hover:text-[#FACC15] transition-colors" />
+                </a>
+              )}
             </div>
           </div>
         </section>
