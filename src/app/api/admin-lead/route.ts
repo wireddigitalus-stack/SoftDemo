@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { writeActivityLog } from "@/lib/activity-log";
 
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -64,6 +65,17 @@ export async function POST(req: NextRequest) {
       console.error("Supabase insert error:", err);
       return NextResponse.json({ error: "Database insert failed" }, { status: 500 });
     }
+
+    // Audit log — fire and forget
+    writeActivityLog({
+      actor_email:   body.actorEmail  || "unknown",
+      actor_name:    body.actorName   || "Admin",
+      action:        "created",
+      resource_type: "lead",
+      resource_name: lead.name,
+      resource_id:   lead.id,
+      metadata: { score: lead.score, score_label: lead.score_label, budget: lead.budget, space_type: lead.space_type },
+    });
 
     // Return in the same shape as lease-bot so AdminPage can use it uniformly
     const returned = {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { writeActivityLog } from "@/lib/activity-log";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -64,6 +65,18 @@ export async function POST(req: NextRequest) {
       console.error("tenants POST error:", await res.text());
       return NextResponse.json({ error: "Insert failed" }, { status: 500 });
     }
+
+    // Audit log — fire and forget
+    writeActivityLog({
+      actor_email:   body.actorEmail  || "unknown",
+      actor_name:    body.actorName   || "Admin",
+      action:        "created",
+      resource_type: "tenant",
+      resource_name: tenant.name,
+      resource_id:   tenant.id,
+      metadata: { building: tenant.building, unit: tenant.unit, monthly_rent: tenant.monthly_rent },
+    });
+
     return NextResponse.json({ success: true, tenant });
   } catch (err) {
     console.error("tenants POST catch:", err);
@@ -119,6 +132,16 @@ export async function PATCH(req: NextRequest) {
     const responseText = await res.text();
 
     if (res.status === 204 || res.status === 200) {
+      // Audit log — fire and forget
+      writeActivityLog({
+        actor_email:   (body.actorEmail  as string) || "unknown",
+        actor_name:    (body.actorName   as string) || "Admin",
+        action:        "updated",
+        resource_type: "tenant",
+        resource_name: (body.name        as string) || (id as string),
+        resource_id:   id as string,
+        metadata: { fields_changed: Object.keys(patch) },
+      });
       return NextResponse.json({ success: true });
     }
 
@@ -159,5 +182,16 @@ export async function DELETE(req: NextRequest) {
     console.error("tenants DELETE error:", await res.text());
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
+
+  // Audit log — fire and forget
+  writeActivityLog({
+    actor_email:   req.nextUrl.searchParams.get("actorEmail") || "unknown",
+    actor_name:    req.nextUrl.searchParams.get("actorName")  || "Admin",
+    action:        "deleted",
+    resource_type: "tenant",
+    resource_name: req.nextUrl.searchParams.get("name")       || id,
+    resource_id:   id,
+  });
+
   return NextResponse.json({ success: true });
 }

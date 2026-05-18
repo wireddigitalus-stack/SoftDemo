@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { writeActivityLog } from "@/lib/activity-log";
 
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -48,6 +49,17 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify(assignment),
   });
   if (!res.ok) return NextResponse.json({ error: "Insert failed" }, { status: 500 });
+
+  writeActivityLog({
+    actor_email:   body.actorEmail  || "unknown",
+    actor_name:    body.actorName   || "Admin",
+    action:        "created",
+    resource_type: "cleaning",
+    resource_name: `${assignment.property} — ${assignment.area}`,
+    resource_id:   assignment.id,
+    metadata: { worker: assignment.worker_name, date: assignment.scheduled_date },
+  });
+
   return NextResponse.json({ success: true, assignment });
 }
 
@@ -67,6 +79,17 @@ export async function PATCH(req: NextRequest) {
     body: JSON.stringify(patch),
   });
   if (!res.ok) return NextResponse.json({ error: "Update failed" }, { status: 500 });
+
+  writeActivityLog({
+    actor_email:   body.actorEmail || "unknown",
+    actor_name:    body.actorName  || "Admin",
+    action:        "updated",
+    resource_type: "cleaning",
+    resource_name: id,
+    resource_id:   id,
+    metadata: { status: body.status },
+  });
+
   return NextResponse.json({ success: true });
 }
 
@@ -76,5 +99,15 @@ export async function DELETE(req: NextRequest) {
   await fetch(`${SUPABASE_URL}/rest/v1/cleaning_assignments?id=eq.${encodeURIComponent(id)}`, {
     method: "DELETE", headers: H,
   });
+
+  writeActivityLog({
+    actor_email:   req.nextUrl.searchParams.get("actorEmail") || "unknown",
+    actor_name:    req.nextUrl.searchParams.get("actorName")  || "Admin",
+    action:        "deleted",
+    resource_type: "cleaning",
+    resource_name: req.nextUrl.searchParams.get("name")       || id,
+    resource_id:   id,
+  });
+
   return NextResponse.json({ success: true });
 }

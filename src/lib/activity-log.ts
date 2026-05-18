@@ -1,0 +1,45 @@
+/**
+ * Shared helper — write a single entry to the activity_log table.
+ * Called server-side from any API route after a successful mutation.
+ * Fire-and-forget: errors are logged but never surfaced to the client.
+ */
+
+const SUPABASE_URL  = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SERVICE_KEY   = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+export interface ActivityPayload {
+  actor_email:   string;   // who did it  e.g. "robert@visionllc.com"
+  actor_name:    string;   // display name e.g. "Robert"
+  action:        "created" | "updated" | "deleted";
+  resource_type: "tenant" | "lead" | "maintenance" | "cleaning";
+  resource_name: string;   // human label  e.g. "Tin Roof Kitchen"
+  resource_id:   string;   // record id
+  metadata?:     Record<string, unknown>; // optional extra context
+}
+
+export async function writeActivityLog(payload: ActivityPayload): Promise<void> {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/activity_log`, {
+      method: "POST",
+      headers: {
+        "apikey":        SERVICE_KEY,
+        "Authorization": `Bearer ${SERVICE_KEY}`,
+        "Content-Type":  "application/json",
+        "Prefer":        "return=minimal",
+      },
+      body: JSON.stringify({
+        actor_email:   payload.actor_email   || "unknown",
+        actor_name:    payload.actor_name    || "Admin",
+        action:        payload.action,
+        resource_type: payload.resource_type,
+        resource_name: payload.resource_name || "",
+        resource_id:   payload.resource_id   || "",
+        metadata:      payload.metadata      || {},
+        created_at:    new Date().toISOString(),
+      }),
+    });
+  } catch (err) {
+    // Never crash the main request — just warn
+    console.warn("[activity-log] write failed:", err);
+  }
+}
