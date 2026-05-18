@@ -55,7 +55,15 @@ export default function PropertyEditor() {
   const [propImages, setPropImages] = useState<Record<string, PropertyImages>>({});
   const [imgUploading, setImgUploading] = useState<string | null>(null);
   const [imgDeleting, setImgDeleting] = useState<string | null>(null);
+  const [imgSaved, setImgSaved] = useState<string | null>(null);
+  const [propSaving, setPropSaving] = useState<Record<string, boolean>>({});
+  const [propSaved, setPropSaved] = useState<Record<string, boolean>>({});
   const fileRefs = useRef<Record<string, HTMLInputElement>>({});
+
+  function flashImgSaved(propId: string) {
+    setImgSaved(propId);
+    setTimeout(() => setImgSaved(null), 2500);
+  };
 
   const fetchContent = useCallback(async () => {
     try {
@@ -127,6 +135,7 @@ export default function PropertyEditor() {
       const hero = ex.hero_url || newUrls[0];
       setPropImages(prev => ({ ...prev, [propId]: { ...ex, all_urls: merged, hero_url: hero, updated_at: new Date().toISOString() } }));
       await patchImages(propId, hero, merged);
+      flashImgSaved(propId);
     }
     setImgUploading(null);
   }
@@ -135,6 +144,7 @@ export default function PropertyEditor() {
     const ex = getImgRecord(propId);
     setPropImages(prev => ({ ...prev, [propId]: { ...ex, hero_url: url } }));
     await patchImages(propId, url, ex.all_urls);
+    flashImgSaved(propId);
   }
 
   async function handleRemoveImg(propId: string, url: string) {
@@ -145,6 +155,7 @@ export default function PropertyEditor() {
     setPropImages(prev => ({ ...prev, [propId]: { ...ex, all_urls: next, hero_url: newHero } }));
     await fetch("/api/property-images", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ propertyId: propId, url }) });
     setImgDeleting(null);
+    flashImgSaved(propId);
   }
 
   const getValue = (section: string, key: string): string => {
@@ -222,6 +233,40 @@ export default function PropertyEditor() {
     }
   };
 
+  // Save only fields for a single property section
+  const saveProp = async (sectionKey: string) => {
+    const dirty = Object.keys(DEFAULTS[sectionKey] || {}).filter(k => isDirty(sectionKey, k));
+    if (dirty.length === 0) return;
+    setPropSaving(p => ({ ...p, [sectionKey]: true }));
+    setError(null);
+    try {
+      for (const key of dirty) {
+        const value = editedValues[`${sectionKey}:${key}`] ?? getValue(sectionKey, key);
+        const res = await fetch("/api/site-content", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ section: sectionKey, key, value }),
+        });
+        if (!res.ok) throw new Error(`Failed to save ${key}`);
+        setOverrides(prev => {
+          const filtered = prev.filter(o => !(o.section === sectionKey && o.key === key));
+          return [...filtered, { section: sectionKey, key, value }];
+        });
+      }
+      setEditedValues(prev => {
+        const next = { ...prev };
+        for (const key of dirty) delete next[`${sectionKey}:${key}`];
+        return next;
+      });
+      setPropSaved(p => ({ ...p, [sectionKey]: true }));
+      setTimeout(() => setPropSaved(p => ({ ...p, [sectionKey]: false })), 3000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setPropSaving(p => ({ ...p, [sectionKey]: false }));
+    }
+  };
+
   const toggleSection = (s: string) => setExpandedSections(p => ({ ...p, [s]: !p[s] }));
 
   const sectionDirtyCount = (s: string): number =>
@@ -250,7 +295,7 @@ export default function PropertyEditor() {
             Property Editor
           </h2>
           <p className="text-xs text-gray-500 mt-1">
-            Edit text for your <strong className="text-gray-300">{PROPERTIES.length} existing properties</strong>. Changes appear on the live site within 60 seconds.
+            Edit text <strong className="text-gray-400">&amp;</strong> images for your <strong className="text-gray-300">{PROPERTIES.length} properties</strong>. Each card has its own Save button.
           </p>
         </div>
         <button
@@ -277,28 +322,6 @@ export default function PropertyEditor() {
           )}
         </button>
       </div>
-
-      {/* Sticky floating save bar */}
-      {totalDirty > 0 && (
-        <div className="sticky top-16 z-30 -mx-1">
-          <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.35)] backdrop-blur-sm">
-            <div className="flex items-center gap-2">
-              <AlertCircle size={15} className="text-[#FACC15] flex-shrink-0" />
-              <p className="text-xs text-[#FACC15] font-semibold">
-                <strong>{totalDirty} unsaved change{totalDirty > 1 ? "s" : ""}</strong> — don't forget to save!
-              </p>
-            </div>
-            <button
-              onClick={saveAll}
-              disabled={saving}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FACC15] hover:bg-[#EAB308] text-black text-xs font-black transition-all shadow-lg"
-            >
-              {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
-              {saving ? "Saving…" : "Save Now"}
-            </button>
-          </div>
-        </div>
-      )}
 
       {error && (
         <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-red-950/40 border border-red-900/50">
@@ -368,7 +391,14 @@ export default function PropertyEditor() {
                   const isUp = imgUploading === prop.id;
                   return (
                     <div>
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">📷 Gallery</p>
+                      <div className="flex items-center gap-2 mb-2">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">📷 Gallery</p>
+                        {imgSaved === prop.id && (
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-[#4ADE80] animate-pulse">
+                            <CheckCircle2 size={11} /> Saved
+                          </span>
+                        )}
+                      </div>
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                         {urls.map((url, i) => {
                           const isHero = url === hero;
@@ -462,6 +492,33 @@ export default function PropertyEditor() {
                   );
                 })}
                 </div>{/* end text fields */}
+
+                {/* ── Per-property Save button ── */}
+                {(() => {
+                  const dc = sectionDirtyCount(sectionKey);
+                  const isSaving = propSaving[sectionKey];
+                  const isSaved = propSaved[sectionKey];
+                  return (
+                    <div className="flex items-center justify-end pt-2">
+                      <button
+                        onClick={() => saveProp(sectionKey)}
+                        disabled={dc === 0 || isSaving}
+                        className={`flex items-center gap-2 font-bold text-sm px-5 py-2.5 rounded-xl transition-all duration-300 ${
+                          isSaved
+                            ? "bg-[#4ADE80] text-black"
+                            : dc > 0
+                            ? "bg-[#4ADE80] hover:bg-[#22C55E] text-black"
+                            : "bg-[rgba(255,255,255,0.06)] text-gray-600 cursor-not-allowed"
+                        }`}
+                        style={dc > 0 && !isSaved ? { animation: "savePulse 2s infinite" } : {}}
+                      >
+                        {isSaving ? <><Loader2 size={14} className="animate-spin" /> Saving…</> :
+                         isSaved  ? <><CheckCircle2 size={14} /> Saved!</> :
+                                    <><Save size={14} /> Save{dc > 0 ? ` (${dc})` : ""}</>}
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
