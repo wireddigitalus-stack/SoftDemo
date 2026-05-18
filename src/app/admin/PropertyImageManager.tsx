@@ -268,48 +268,39 @@ export default function PropertyImageManager() {
               {/* ── Expanded Gallery Grid ───────────────────────── */}
               {isOpen && imgCount > 0 && (
                 <div className="px-4 pb-4">
-                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {allUrls.map((url, i) => {
                       const isHero = url === hero;
                       const isDeleting = deleting === url;
                       return (
-                        <div
-                          key={url + i}
-                          className={`relative group rounded-xl overflow-hidden border-2 transition-all ${
-                            isHero
-                              ? "border-[#FACC15] shadow-lg shadow-[rgba(250,204,21,0.2)]"
-                              : "border-transparent hover:border-[rgba(255,255,255,0.2)]"
-                          }`}
-                        >
+                        <div key={url + i} className={`rounded-xl overflow-hidden border-2 transition-all ${isHero ? "border-[#FACC15]" : "border-[rgba(255,255,255,0.08)]"}`}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={url}
                             alt={`${prop.name} ${i + 1}`}
-                            className={`w-full h-16 object-cover transition-opacity ${isDeleting ? "opacity-30" : "opacity-100"}`}
+                            className={`w-full h-16 object-cover ${isDeleting ? "opacity-30" : ""}`}
                           />
-
-                          {/* Hero badge */}
-                          {isHero && (
-                            <div className="absolute top-1 left-1 text-[8px] bg-[#FACC15] text-black font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                              <Star size={6} fill="currentColor" /> HERO
-                            </div>
-                          )}
-
-                          {/* Hover overlay */}
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            {!isHero && (
+                          {/* Always-visible action bar — touch safe */}
+                          <div className="flex items-center justify-between px-1.5 py-1 bg-[rgba(0,0,0,0.6)]">
+                            {isHero ? (
+                              <span className="text-[8px] font-black text-[#FACC15] flex items-center gap-0.5">
+                                <Star size={7} fill="currentColor" /> HERO
+                              </span>
+                            ) : (
                               <button
                                 onClick={() => setHero(prop.id, url)}
-                                className="w-7 h-7 flex items-center justify-center rounded-lg bg-[rgba(250,204,21,0.9)] text-black hover:scale-110 transition-transform"
+                                className="text-[#FACC15] hover:scale-110 transition-transform p-0.5"
                                 title="Set as hero"
                               >
-                                <Star size={11} fill="currentColor" />
+                                <Star size={11} />
                               </button>
                             )}
                             <button
-                              onClick={() => removeImage(prop.id, url)}
+                              onClick={() => {
+                                if (window.confirm("Remove this image?")) removeImage(prop.id, url);
+                              }}
                               disabled={isDeleting}
-                              className="w-7 h-7 flex items-center justify-center rounded-lg bg-[rgba(239,68,68,0.9)] text-white hover:scale-110 transition-transform disabled:opacity-50"
+                              className="text-red-400 hover:text-red-300 transition-colors p-0.5 disabled:opacity-40"
                               title="Remove"
                             >
                               {isDeleting ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={11} />}
@@ -323,13 +314,13 @@ export default function PropertyImageManager() {
                     <button
                       onClick={() => fileRefs.current![prop.id]?.click()}
                       disabled={isUploading}
-                      className="h-16 rounded-xl border-2 border-dashed border-[rgba(96,165,250,0.3)] text-[#60A5FA] hover:border-[rgba(96,165,250,0.6)] hover:bg-[rgba(96,165,250,0.05)] transition-all flex items-center justify-center disabled:opacity-40"
+                      className="h-[88px] rounded-xl border-2 border-dashed border-[rgba(96,165,250,0.3)] text-[#60A5FA] hover:border-[rgba(96,165,250,0.6)] hover:bg-[rgba(96,165,250,0.05)] transition-all flex items-center justify-center disabled:opacity-40"
                     >
                       {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                     </button>
                   </div>
                   <p className="text-[10px] text-gray-700 mt-2">
-                    ⭐ Star = hero image (used on listing cards &amp; one-sheets). Hover a photo to manage it.
+                    ⭐ Star = hero image · Tap 🗑️ to remove (confirmation required)
                   </p>
 
                   {/* ── Gallery Saved Banner ─────────────────────── */}

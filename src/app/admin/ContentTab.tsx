@@ -624,10 +624,7 @@ export default function ContentTab({ onSubViewChange }: ContentTabProps) {
         <PropertyEditor />
       </div>
 
-      {/* ── Property Photos ── */}
-      <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden p-5 sm:p-6">
-        <PropertyImageManager />
-      </div>
+
 
       {/* Bottom Summary for Properties View */}
       <div className="text-center pt-2 pb-4">

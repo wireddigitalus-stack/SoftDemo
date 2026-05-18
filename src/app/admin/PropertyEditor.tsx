@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Save, CheckCircle2, Loader2, RotateCcw, AlertCircle,
-  Type, Pencil, ChevronDown, ChevronRight, Building2, MapPin,
+  Type, ChevronDown, ChevronRight, Building2, MapPin,
+  Star, Trash2, Upload, ImageIcon, Plus,
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
+
+interface PropertyImages {
+  property_id: string;
+  hero_url: string | null;
+  all_urls: string[];
+  updated_at: string;
+}
 
 // ── Build defaults from the hardcoded PROPERTIES array ───────────────────────
 
@@ -43,12 +51,16 @@ export default function PropertyEditor() {
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  // ── Image management state ──
+  const [propImages, setPropImages] = useState<Record<string, PropertyImages>>({});
+  const [imgUploading, setImgUploading] = useState<string | null>(null);
+  const [imgDeleting, setImgDeleting] = useState<string | null>(null);
+  const fileRefs = useRef<Record<string, HTMLInputElement>>({});
 
   const fetchContent = useCallback(async () => {
     try {
       const res = await fetch("/api/site-content");
       const data = await res.json();
-      // Only keep property-related overrides
       const items: ContentItem[] = (data.items || []).filter(
         (i: ContentItem) => i.section.startsWith("property:")
       );
@@ -60,7 +72,80 @@ export default function PropertyEditor() {
     }
   }, []);
 
-  useEffect(() => { fetchContent(); }, [fetchContent]);
+  const fetchImages = useCallback(async () => {
+    try {
+      const res = await fetch("/api/property-images");
+      const d = await res.json();
+      const map: Record<string, PropertyImages> = {};
+      if (Array.isArray(d.overrides)) {
+        for (const row of d.overrides) {
+          map[row.property_id] = {
+            property_id: row.property_id,
+            hero_url: row.hero_url || row.image_url || null,
+            all_urls: Array.isArray(row.all_urls) ? row.all_urls : (row.image_url ? [row.image_url] : []),
+            updated_at: row.updated_at,
+          };
+        }
+      }
+      setPropImages(map);
+    } catch { console.warn("Failed to fetch images"); }
+  }, []);
+
+  useEffect(() => { fetchContent(); fetchImages(); }, [fetchContent, fetchImages]);
+
+  // ── Image helpers ──
+  function getImgRecord(propId: string, fallback?: string[]): PropertyImages {
+    const ex = propImages[propId];
+    if (ex) return ex;
+    const prop = PROPERTIES.find(p => p.id === propId);
+    const imgs: string[] = (prop as any)?.images || ((prop as any)?.image ? [(prop as any).image] : []);
+    return { property_id: propId, hero_url: fallback?.[0] || imgs[0] || null, all_urls: fallback || imgs, updated_at: "" };
+  }
+
+  async function patchImages(propId: string, heroUrl: string | null, allUrls: string[]) {
+    await fetch("/api/property-images", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ propertyId: propId, heroUrl, allUrls }),
+    });
+  }
+
+  async function handleImgUpload(propId: string, files: FileList) {
+    setImgUploading(propId);
+    const newUrls: string[] = [];
+    for (const file of Array.from(files)) {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("propertyId", propId);
+      const res = await fetch("/api/property-images", { method: "POST", body: form });
+      const d = await res.json();
+      if (d.url) newUrls.push(d.url);
+    }
+    if (newUrls.length) {
+      const ex = getImgRecord(propId);
+      const merged = [...ex.all_urls, ...newUrls];
+      const hero = ex.hero_url || newUrls[0];
+      setPropImages(prev => ({ ...prev, [propId]: { ...ex, all_urls: merged, hero_url: hero, updated_at: new Date().toISOString() } }));
+      await patchImages(propId, hero, merged);
+    }
+    setImgUploading(null);
+  }
+
+  async function handleSetHero(propId: string, url: string) {
+    const ex = getImgRecord(propId);
+    setPropImages(prev => ({ ...prev, [propId]: { ...ex, hero_url: url } }));
+    await patchImages(propId, url, ex.all_urls);
+  }
+
+  async function handleRemoveImg(propId: string, url: string) {
+    setImgDeleting(url);
+    const ex = getImgRecord(propId);
+    const next = ex.all_urls.filter(u => u !== url);
+    const newHero = ex.hero_url === url ? (next[0] || null) : ex.hero_url;
+    setPropImages(prev => ({ ...prev, [propId]: { ...ex, all_urls: next, hero_url: newHero } }));
+    await fetch("/api/property-images", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ propertyId: propId, url }) });
+    setImgDeleting(null);
+  }
 
   const getValue = (section: string, key: string): string => {
     const editKey = `${section}:${key}`;
@@ -257,7 +342,59 @@ export default function PropertyEditor() {
             </button>
 
             {isExpanded && (
-              <div className="border-t border-[rgba(255,255,255,0.05)] p-5 space-y-4">
+              <div className="border-t border-[rgba(255,255,255,0.05)] p-5 space-y-5">
+                {/* ── Image Gallery ── */}
+                {(() => {
+                  const rec = getImgRecord(prop.id, (prop as any).images || ((prop as any).image ? [(prop as any).image] : []));
+                  const hero = rec.hero_url;
+                  const urls = rec.all_urls;
+                  const isUp = imgUploading === prop.id;
+                  return (
+                    <div>
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">📷 Gallery</p>
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        {urls.map((url, i) => {
+                          const isHero = url === hero;
+                          const isDel = imgDeleting === url;
+                          return (
+                            <div key={url + i} className={`rounded-xl overflow-hidden border-2 ${isHero ? "border-[#FACC15]" : "border-[rgba(255,255,255,0.08)]"}` }>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={url} alt={`${prop.name} ${i}`} className={`w-full h-16 object-cover ${isDel ? "opacity-30" : ""}`} />
+                              <div className="flex items-center justify-between px-1.5 py-1 bg-[rgba(0,0,0,0.55)]">
+                                {isHero ? (
+                                  <span className="text-[8px] font-black text-[#FACC15] flex items-center gap-0.5"><Star size={7} fill="currentColor" /> HERO</span>
+                                ) : (
+                                  <button onClick={() => handleSetHero(prop.id, url)} className="text-[#FACC15] p-0.5" title="Set hero"><Star size={11} /></button>
+                                )}
+                                <button
+                                  onClick={() => { if (window.confirm("Remove this image?")) handleRemoveImg(prop.id, url); }}
+                                  disabled={isDel}
+                                  className="text-red-400 hover:text-red-300 p-0.5 disabled:opacity-40"
+                                >
+                                  {isDel ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={11} />}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <button
+                          onClick={() => fileRefs.current[prop.id]?.click()}
+                          disabled={isUp}
+                          className="h-[88px] rounded-xl border-2 border-dashed border-[rgba(96,165,250,0.3)] text-[#60A5FA] hover:border-[rgba(96,165,250,0.5)] hover:bg-[rgba(96,165,250,0.05)] transition-all flex flex-col items-center justify-center gap-1 text-[10px]"
+                        >
+                          {isUp ? <Loader2 size={14} className="animate-spin" /> : <><Upload size={14} /><span>Add</span></>}
+                        </button>
+                      </div>
+                      <input
+                        ref={el => { if (el) fileRefs.current[prop.id] = el; }}
+                        type="file" accept="image/*" multiple className="hidden"
+                        onChange={e => { if (e.target.files?.length) { handleImgUpload(prop.id, e.target.files); e.target.value = ""; } }}
+                      />
+                    </div>
+                  );
+                })()}
+
+                <div className="border-t border-[rgba(255,255,255,0.05)] pt-4 space-y-4">
                 {Object.entries(fields).map(([fieldKey, fieldMeta]) => {
                   const val = getValue(sectionKey, fieldKey);
                   const dirty = isDirty(sectionKey, fieldKey);
@@ -302,6 +439,7 @@ export default function PropertyEditor() {
                     </div>
                   );
                 })}
+                </div>{/* end text fields */}
               </div>
             )}
           </div>
