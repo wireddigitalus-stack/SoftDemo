@@ -287,9 +287,7 @@ export default function PropertyEditor() {
   return (
     <div className="space-y-5">
 
-      {/* ── Top Bar ── */}
-      <div className="flex items-center justify-between flex-wrap gap-4 p-5 sm:p-6 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
-        <div>
+      <div className="p-5 sm:p-6 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
           <h2 className="text-lg font-black text-white flex items-center gap-2">
             <Building2 size={20} className="text-[#F97316]" />
             Property Editor
@@ -297,31 +295,8 @@ export default function PropertyEditor() {
           <p className="text-xs text-gray-500 mt-1">
             Edit text <strong className="text-gray-400">&amp;</strong> images for your <strong className="text-gray-300">{PROPERTIES.length} properties</strong>. Each card has its own Save button.
           </p>
-        </div>
-        <button
-          onClick={saveAll}
-          disabled={totalDirty === 0 || saving}
-          className={`relative flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-xl transition-all duration-300 ${
-            saveSuccess
-              ? "bg-[#4ADE80] text-black"
-              : totalDirty > 0
-              ? "bg-[#4ADE80] hover:bg-[#22C55E] text-black"
-              : "bg-[rgba(255,255,255,0.06)] text-gray-600 cursor-not-allowed"
-          }`}
-          style={totalDirty > 0 && !saveSuccess ? {
-            boxShadow: "0 0 0 0 rgba(74,222,128,0.7)",
-            animation: "savePulse 2s infinite",
-          } : {}}
-        >
-          {saving ? (
-            <><Loader2 size={16} className="animate-spin" /> Saving…</>
-          ) : saveSuccess ? (
-            <><CheckCircle2 size={16} /> Saved!</>
-          ) : (
-            <><Save size={16} /> Save {totalDirty > 0 && `(${totalDirty})`}</>
-          )}
-        </button>
       </div>
+
 
       {error && (
         <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-red-950/40 border border-red-900/50">
