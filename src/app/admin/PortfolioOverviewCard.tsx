@@ -50,91 +50,107 @@ const TREND_MAP = {
   down:   { label: "Declining", icon: TrendingDown, color: "#EF4444" },
 };
 
-// ── SVG Bar Chart ─────────────────────────────────────────────────────────────
+// ── Full-Width CSS Bar Chart (analytics-page style) ───────────────────────────
 
 interface BarDatum {
   label: string;
+  fullLabel: string;
   revenue: number;
   expenses: number;
 }
 
 function BarChart({ data }: { data: BarDatum[] }) {
-  const [tip, setTip] = useState<{ x: number; y: number; d: BarDatum } | null>(null);
-  const H = 140, BAR_W = 14, GROUP_GAP = 28, SIDE = 48;
-
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const maxVal = Math.max(...data.flatMap(d => [d.revenue, d.expenses]), 1);
-  const totalW = SIDE + data.length * (BAR_W * 2 + GROUP_GAP) + 16;
-
-  const yLabels = [0, 0.25, 0.5, 0.75, 1].map(f => ({
-    y: H - f * H,
-    label: fmtK(f * maxVal),
-  }));
 
   return (
-    <div className="relative w-full overflow-x-auto">
-      <svg width={Math.max(totalW, 320)} height={H + 48} className="min-w-full">
-        {/* Grid lines */}
-        {yLabels.map(({ y, label }) => (
-          <g key={y}>
-            <line x1={SIDE} y1={y} x2={totalW} y2={y}
-              stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
-            <text x={SIDE - 4} y={y + 4} textAnchor="end"
-              fontSize={9} fill="#6b7280">{label}</text>
-          </g>
-        ))}
-
-        {/* Bars */}
+    <div className="w-full">
+      {/* Bars — flex row fills 100% width */}
+      <div className="flex items-end gap-2 h-40 mb-3 w-full">
         {data.map((d, i) => {
-          const x = SIDE + i * (BAR_W * 2 + GROUP_GAP) + 8;
-          const rh = (d.revenue / maxVal) * H;
-          const eh = (d.expenses / maxVal) * H;
+          const rh = maxVal === 0 ? 0 : Math.max(3, Math.round((d.revenue / maxVal) * 160));
+          const eh = maxVal === 0 ? 0 : Math.max(d.expenses > 0 ? 3 : 0, Math.round((d.expenses / maxVal) * 160));
+          const profit = d.revenue - d.expenses;
+          const isHovered = hoveredIdx === i;
 
           return (
-            <g key={d.label}
-              onMouseEnter={e => setTip({ x: x + BAR_W, y: 10, d })}
-              onMouseLeave={() => setTip(null)}
-              style={{ cursor: "pointer" }}>
-              {/* Revenue bar */}
-              <rect x={x} y={H - rh} width={BAR_W} height={Math.max(rh, 2)}
-                rx={3} fill={d.revenue > d.expenses ? "#4ADE80" : "#22c55e"}
-                opacity={0.85} />
-              {/* Expenses bar */}
-              <rect x={x + BAR_W + 2} y={H - eh} width={BAR_W} height={Math.max(eh, 2)}
-                rx={3} fill="#F97316" opacity={eh > 0 ? 0.75 : 0.15} />
-              {/* X label */}
-              <text x={x + BAR_W + 1} y={H + 14} textAnchor="middle"
-                fontSize={8} fill="#9ca3af" className="select-none">
-                {d.label.length > 8 ? d.label.slice(0, 8) + "…" : d.label}
-              </text>
-            </g>
+            <div
+              key={d.label}
+              className="flex-1 flex flex-col items-center justify-end gap-0.5 group relative cursor-pointer"
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
+            >
+              {/* Hover tooltip */}
+              {isHovered && (
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-20 w-44 bg-[#0A0F1A] border border-[rgba(255,255,255,0.12)] rounded-xl p-3 shadow-2xl pointer-events-none">
+                  <p className="text-sm font-black text-white mb-1.5">{d.fullLabel}</p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Revenue</span>
+                      <span className="text-xs font-bold text-[#4ADE80]">${d.revenue.toLocaleString()}/mo</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Expenses</span>
+                      <span className="text-xs font-bold text-[#F97316]">
+                        {d.expenses ? `$${Math.round(d.expenses).toLocaleString()}/mo` : "Not set"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-[rgba(255,255,255,0.06)]">
+                      <span className="text-xs text-gray-400">Net P&L</span>
+                      <span className="text-xs font-black" style={{ color: profit >= 0 ? "#4ADE80" : "#EF4444" }}>
+                        {profit >= 0 ? "+" : ""}${Math.round(profit).toLocaleString()}/mo
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Bar pair */}
+              <div className="flex items-end gap-0.5 w-full justify-center">
+                {/* Revenue bar */}
+                <div
+                  className="flex-1 rounded-t-md transition-all duration-500 relative overflow-hidden"
+                  style={{
+                    height: `${rh}px`,
+                    backgroundColor: "#4ADE80",
+                    opacity: isHovered ? 1 : 0.75,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white opacity-10" />
+                </div>
+                {/* Expenses bar */}
+                <div
+                  className="flex-1 rounded-t-md transition-all duration-500"
+                  style={{
+                    height: `${eh}px`,
+                    backgroundColor: "#F97316",
+                    opacity: isHovered ? 0.9 : d.expenses > 0 ? 0.6 : 0.12,
+                  }}
+                />
+              </div>
+            </div>
           );
         })}
+      </div>
 
-        {/* Y axis line */}
-        <line x1={SIDE} y1={0} x2={SIDE} y2={H}
-          stroke="rgba(255,255,255,0.08)" strokeWidth={1} />
-      </svg>
-
-      {/* Tooltip */}
-      {tip && (
-        <div className="pointer-events-none absolute z-10 rounded-xl border border-[rgba(255,255,255,0.1)] bg-[#0f1623] shadow-xl px-3 py-2.5 text-xs"
-          style={{ left: tip.x + 8, top: tip.y }}>
-          <p className="font-black text-white mb-1">{tip.d.label}</p>
-          <p className="text-[#4ADE80]">Revenue: ${tip.d.revenue.toLocaleString()}/mo</p>
-          <p className="text-[#F97316]">Expenses: {tip.d.expenses ? `$${Math.round(tip.d.expenses).toLocaleString()}/mo` : "Not set"}</p>
-          <p className="font-bold mt-0.5" style={{ color: tip.d.revenue >= tip.d.expenses ? "#4ADE80" : "#EF4444" }}>
-            P&L: {tip.d.revenue >= tip.d.expenses ? "+" : ""}${Math.round(tip.d.revenue - tip.d.expenses).toLocaleString()}/mo
-          </p>
-        </div>
-      )}
+      {/* X-axis labels */}
+      <div className="flex gap-2 w-full">
+        {data.map((d, i) => (
+          <div key={d.label} className="flex-1 text-center">
+            <span className="text-xs text-gray-300 font-medium leading-tight block truncate px-0.5">
+              {d.label}
+            </span>
+          </div>
+        ))}
+      </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-1 pl-12">
-        <span className="flex items-center gap-1.5 text-[10px] text-gray-500">
-          <span className="w-2.5 h-2.5 rounded-sm bg-[#4ADE80]" /> Revenue
+      <div className="flex items-center gap-5 mt-3">
+        <span className="flex items-center gap-1.5 text-xs text-gray-400">
+          <span className="w-3 h-3 rounded-sm bg-[#4ADE80]" /> Revenue
         </span>
-        <span className="flex items-center gap-1.5 text-[10px] text-gray-500">
-          <span className="w-2.5 h-2.5 rounded-sm bg-[#F97316]" /> Expenses
+        <span className="flex items-center gap-1.5 text-xs text-gray-400">
+          <span className="w-3 h-3 rounded-sm bg-[#F97316]" /> Expenses
         </span>
       </div>
     </div>
@@ -181,7 +197,8 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
   ];
 
   const chartData: BarDatum[] = propData.map(p => ({
-    label: p.property.name.split(" ")[0], // first word as short label
+    label: p.property.name.length > 10 ? p.property.name.split(" ").slice(0, 2).join(" ") : p.property.name,
+    fullLabel: p.property.name,
     revenue: p.revenue,
     expenses: p.expenses,
   }));
@@ -220,13 +237,13 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
 
       {/* Chart */}
       <div className="px-6 pt-5 pb-4 border-t border-[rgba(255,255,255,0.04)]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-4">Revenue vs Expenses by Property</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Revenue vs Expenses by Property</p>
         <BarChart data={chartData} />
       </div>
 
       {/* Property Health Strip */}
       <div className="border-t border-[rgba(255,255,255,0.04)] px-6 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-3">Property Health</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Property Health</p>
         <div className="space-y-2.5">
           {propData.map(({ property, occupancy, profit, trend, alerts, expenses }) => {
             const trendCfg = TREND_MAP[trend];
@@ -236,9 +253,9 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
             return (
               <div key={property.id} className="flex items-center gap-3">
                 {/* Name + trend */}
-                <div className="w-40 flex-shrink-0 flex items-center gap-1.5 min-w-0">
-                  <TrendIcon size={10} style={{ color: trendCfg.color, flexShrink: 0 }} />
-                  <span className="text-xs font-semibold text-white truncate">{property.name}</span>
+                <div className="w-44 flex-shrink-0 flex items-center gap-1.5 min-w-0">
+                  <TrendIcon size={12} style={{ color: trendCfg.color, flexShrink: 0 }} />
+                  <span className="text-sm font-semibold text-white truncate">{property.name}</span>
                 </div>
 
                 {/* Occupancy bar */}
@@ -248,20 +265,20 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
                 </div>
 
                 {/* Occ % */}
-                <span className="w-9 text-right text-[10px] font-bold flex-shrink-0" style={{ color: occColor }}>
+                <span className="w-10 text-right text-xs font-bold flex-shrink-0" style={{ color: occColor }}>
                   {occupancy}%
                 </span>
 
                 {/* P&L chip */}
-                <span className="w-24 text-right text-[10px] font-bold flex-shrink-0"
+                <span className="w-28 text-right text-xs font-bold flex-shrink-0"
                   style={{ color: expenses === 0 ? "#6b7280" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
                   {expenses === 0 ? "No data" : `${profit >= 0 ? "+" : ""}${fmtK(profit)}/mo`}
                 </span>
 
                 {/* Alert badge */}
                 {alerts > 0 ? (
-                  <span className="flex-shrink-0 flex items-center gap-0.5 text-[10px] font-bold text-yellow-400">
-                    <AlertTriangle size={9} />{alerts}
+                  <span className="flex-shrink-0 flex items-center gap-1 text-xs font-bold text-yellow-400">
+                    <AlertTriangle size={11} />{alerts}
                   </span>
                 ) : (
                   <span className="w-5 flex-shrink-0" />
