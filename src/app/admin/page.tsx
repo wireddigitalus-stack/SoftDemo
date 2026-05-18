@@ -3052,8 +3052,6 @@ export default function AdminPage() {
 
         <p className="text-center text-xs text-gray-700 mt-10">
           VISION Property Intelligence Platform · AI-Powered by Gemini · Auto-refreshes every 30s
-          <br />
-          <span className="text-gray-600">🟢 Database connected</span>
         </p>
       </div>
 
