@@ -9,6 +9,7 @@ import {
 import { PROPERTIES } from "@/lib/data";
 import type { Tenant } from "./TenantsTab";
 import PortfolioOverviewCard from "./PortfolioOverviewCard";
+import PortfolioHistoryChart from "./PortfolioHistoryChart";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -596,6 +597,11 @@ export default function PropDetailsTab() {
           </div>
         ))}
       </div>
+
+      {/* P&L History Chart */}
+      {!loading && (
+        <PortfolioHistoryChart />
+      )}
 
       {/* Cards */}
       {loading ? (

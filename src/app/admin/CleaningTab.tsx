@@ -206,7 +206,12 @@ function SummaryBanner({ assignments, today }: { assignments: Assignment[]; toda
 
 type RecurringType = "none" | "daily" | "weekdays" | "mwf" | "weekly";
 
-function AssignmentForm({ onSave, onCancel }: { onSave: () => void; onCancel: () => void }) {
+function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }: {
+  onSave: () => void;
+  onCancel: () => void;
+  currentUserName?: string;
+  currentUserEmail?: string;
+}) {
   const today = toISO(new Date());
   const [workerName, setWorkerName] = useState("");
   const [property, setProperty] = useState("");
@@ -256,11 +261,36 @@ function AssignmentForm({ onSave, onCancel }: { onSave: () => void; onCancel: ()
                 workerName: workerName.trim(), property: property.trim(),
                 area: area.trim(), scheduledDate: d,
                 startTime: startTime || null, endTime: endTime || null,
+                actorName: currentUserName || "Admin",
+                actorEmail: currentUserEmail || "",
               }),
             })
           )
         )
       );
+      onSave();
+    } catch { setError("Failed to save. Try again."); }
+    finally { setSaving(false); }
+  };
+
+  const [quickMode, setQuickMode] = useState(
+    typeof window !== "undefined" && window.innerWidth < 640
+  );
+
+  const submitQuick = async () => {
+    if (!workerName.trim() || !property.trim()) { setError("Worker and property are required."); return; }
+    setSaving(true); setError("");
+    try {
+      await fetch("/api/cleaning", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workerName: workerName.trim(), property: property.trim(),
+          area: "General", scheduledDate: date,
+          startTime: null, endTime: null,
+          actorName: currentUserName || "Admin",
+          actorEmail: currentUserEmail || "",
+        }),
+      });
       onSave();
     } catch { setError("Failed to save. Try again."); }
     finally { setSaving(false); }
@@ -275,8 +305,96 @@ function AssignmentForm({ onSave, onCancel }: { onSave: () => void; onCancel: ()
         <p className="text-xs font-black text-[#4ADE80] uppercase tracking-widest flex items-center gap-2">
           <Plus size={12} /> New Assignment
         </p>
-        <button onClick={onCancel} className="text-gray-600 hover:text-white transition-colors"><X size={16} /></button>
+        <div className="flex items-center gap-2">
+          {/* Mode toggle */}
+          <div style={{
+            display: "flex", background: "rgba(255,255,255,0.05)",
+            borderRadius: 8, padding: 2, gap: 2,
+          }}>
+            {[{k:true,l:"⚡ Quick"},{k:false,l:"Full"}].map(({k,l}) => (
+              <button
+                key={String(k)}
+                onClick={() => setQuickMode(k)}
+                style={{
+                  padding: "4px 10px", borderRadius: 6, fontSize: 11,
+                  fontWeight: 700, border: "none", cursor: "pointer",
+                  background: quickMode === k ? "rgba(74,222,128,0.25)" : "transparent",
+                  color: quickMode === k ? "#4ADE80" : "#64748B",
+                  transition: "all 0.15s",
+                }}
+              >{l}</button>
+            ))}
+          </div>
+          <button onClick={onCancel} className="text-gray-600 hover:text-white transition-colors"><X size={16} /></button>
+        </div>
       </div>
+
+      {/* ── QUICK MODE ── */}
+      {quickMode && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <p style={{ color: "#64748B", fontSize: 12, margin: 0 }}>
+            Tap, fill 3 fields, done. Area defaults to "General".
+          </p>
+          {/* Cleaner */}
+          <div>
+            <label style={{ color: "#94A3B8", fontSize: 13, fontWeight: 700, display: "block", marginBottom: 8 }}>Cleaner</label>
+            <input
+              value={workerName} onChange={e => setWorkerName(e.target.value)}
+              placeholder="Sarah M."
+              list="cleaner-suggestions-q"
+              style={{
+                width: "100%", padding: "14px 16px", borderRadius: 12,
+                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "#F1F5F9", fontSize: 16, outline: "none", boxSizing: "border-box",
+              }}
+            />
+            <datalist id="cleaner-suggestions-q">
+              {["Sarah M.","Linda K.","Priya R.","Jess T."].map(n => <option key={n} value={n}/>)}
+            </datalist>
+          </div>
+          {/* Property */}
+          <div>
+            <label style={{ color: "#94A3B8", fontSize: 13, fontWeight: 700, display: "block", marginBottom: 8 }}>Property / Building</label>
+            <input
+              value={property} onChange={e => setProperty(e.target.value)}
+              placeholder="The Executive"
+              style={{
+                width: "100%", padding: "14px 16px", borderRadius: 12,
+                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "#F1F5F9", fontSize: 16, outline: "none", boxSizing: "border-box",
+              }}
+            />
+          </div>
+          {/* Date */}
+          <div>
+            <label style={{ color: "#94A3B8", fontSize: 13, fontWeight: 700, display: "block", marginBottom: 8 }}>Date</label>
+            <input
+              type="date" value={date} onChange={e => setDate(e.target.value)}
+              style={{
+                width: "100%", padding: "14px 16px", borderRadius: 12,
+                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "#F1F5F9", fontSize: 16, outline: "none", boxSizing: "border-box",
+              }}
+            />
+          </div>
+          {error && <p style={{ color: "#F87171", fontSize: 13 }}>{error}</p>}
+          <button
+            onClick={submitQuick} disabled={saving}
+            style={{
+              width: "100%", padding: "16px", borderRadius: 14,
+              background: saving ? "rgba(74,222,128,0.2)" : "linear-gradient(135deg,#4ADE80,#22D3EE)",
+              border: "none", color: "#0F172A", fontWeight: 800, fontSize: 16,
+              cursor: saving ? "wait" : "pointer", transition: "all 0.2s",
+            }}
+          >
+            {saving ? "Saving…" : "✓ Log Job"}
+          </button>
+        </div>
+      )}
+
+      {/* ── FULL MODE ── */}
+      {!quickMode && (
+        <div className="space-y-4">
 
       {/* Worker + Property */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -369,6 +487,8 @@ function AssignmentForm({ onSave, onCancel }: { onSave: () => void; onCancel: ()
         </button>
         <button onClick={onCancel} className="px-4 py-2 rounded-xl border border-[rgba(255,255,255,0.08)] text-gray-500 text-xs hover:text-white transition-colors">Cancel</button>
       </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -588,7 +708,7 @@ CREATE POLICY "anon_all_cleaning" ON cleaning_assignments
 
 // ─── Main CleaningTab ─────────────────────────────────────────────────────────
 
-export default function CleaningTab() {
+export default function CleaningTab({ currentUserName, currentUserEmail }: { currentUserName?: string; currentUserEmail?: string }) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [setupError, setSetupError] = useState(false);
@@ -627,7 +747,11 @@ export default function CleaningTab() {
   useEffect(() => { fetchAssignments(); }, [fetchAssignments]);
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/cleaning?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/cleaning?id=${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actorName: currentUserName || "Admin", actorEmail: currentUserEmail || "" }),
+    });
     setAssignments(prev => prev.filter(a => a.id !== id));
   };
 
@@ -712,6 +836,8 @@ export default function CleaningTab() {
         <AssignmentForm
           onSave={() => { setShowForm(false); fetchAssignments(); }}
           onCancel={() => setShowForm(false)}
+          currentUserName={currentUserName}
+          currentUserEmail={currentUserEmail}
         />
       )}
 

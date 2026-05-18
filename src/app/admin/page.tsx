@@ -1700,7 +1700,7 @@ function derivedLabel(score: number): "Hot Lead" | "Warm Lead" | "Nurture" {
 const FIELD = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2.5 text-sm text-white focus:border-[rgba(74,222,128,0.4)] outline-none placeholder:text-gray-600 transition-colors";
 const LABEL = "block text-xs text-gray-500 font-bold uppercase tracking-wider mb-1";
 
-function AddLeadPanel({ onLeadAdded }: { onLeadAdded: (lead: Lead) => void }) {
+function AddLeadPanel({ onLeadAdded, currentUserName, currentUserEmail }: { onLeadAdded: (lead: Lead) => void; currentUserName?: string; currentUserEmail?: string }) {
   const [open, setOpen] = useState(false);
   const [scoreMode, setScoreMode] = useState<"ai" | "manual">("ai");
   const [submitting, setSubmitting] = useState(false);
@@ -1740,6 +1740,8 @@ function AddLeadPanel({ onLeadAdded }: { onLeadAdded: (lead: Lead) => void }) {
             spaceType: form.spaceType, budget: form.budget,
             timeline: form.timeline, teamSize: form.teamSize,
             additionalInfo: form.notes, utm_source: "manual", utm_medium: "admin", utm_campaign: "",
+            actorName: currentUserName || "Admin",
+            actorEmail: currentUserEmail || "",
           }),
         });
         const data = await res.json();
@@ -1756,6 +1758,8 @@ function AddLeadPanel({ onLeadAdded }: { onLeadAdded: (lead: Lead) => void }) {
             additionalInfo: form.notes,
             score: form.manualScore, scoreLabel: label,
             reasoning: "Manually entered and scored by admin.",
+            actorName: currentUserName || "Admin",
+            actorEmail: currentUserEmail || "",
           }),
         });
         const data = await res.json();
@@ -2653,10 +2657,14 @@ export default function AdminPage() {
             )}
 
             {/* Add Lead Panel */}
-            <AddLeadPanel onLeadAdded={lead => {
-              seenIdsRef.current.add(lead.id);
-              setLeads(prev => [lead, ...prev]);
-            }} />
+            <AddLeadPanel
+              onLeadAdded={lead => {
+                seenIdsRef.current.add(lead.id);
+                setLeads(prev => [lead, ...prev]);
+              }}
+              currentUserName={currentUser?.name}
+              currentUserEmail={currentUser?.email}
+            />
 
             {/* QR Leaderboard */}
             {(() => {
@@ -3075,15 +3083,15 @@ export default function AdminPage() {
 
         {/* ─ MAINTENANCE TAB ─────────────────────────────────────────── */}
         {activeTab === "maintenance" && (
-          <MaintenanceTab currentUserName={currentUser?.name} />
+          <MaintenanceTab currentUserName={currentUser?.name} currentUserEmail={currentUser?.email} />
         )}
 
         {/* ─ CLEANING TAB ──────────────────────────────────────────── */}
-        {activeTab === "cleaning" && <CleaningTab />}
+        {activeTab === "cleaning" && <CleaningTab currentUserName={currentUser?.name} currentUserEmail={currentUser?.email} />}
 
         {/* ─ TENANTS TAB ──────────────────────────────────────────────── */}
         {activeTab === "tenants" && (
-          <TenantsTab currentUserName={currentUser?.name} />
+          <TenantsTab currentUserName={currentUser?.name} currentUserEmail={currentUser?.email} />
         )}
 
         {/* ─ PROP DETAILS TAB ─────────────────────────────────────────────── */}
