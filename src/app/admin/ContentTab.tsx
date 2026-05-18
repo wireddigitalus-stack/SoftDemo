@@ -565,58 +565,60 @@ export default function ContentTab({ onSubViewChange }: ContentTabProps) {
       {activeView === "properties" && (
         <>
 
-      {/* ── Add New Property Card ── */}
+      {/* ── Add New Property Card (collapsed by default) ── */}
       <div className="glass rounded-2xl border border-[rgba(74,222,128,0.15)] overflow-hidden">
-        <div className="p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center">
-                <Building2 size={17} className="text-black" />
-              </div>
-              <div>
-                <h2 className="text-lg font-black text-white">Add New Property</h2>
-                <p className="text-[11px] text-gray-500">Choose a method to add a new property listing</p>
-              </div>
+        {/* Collapse toggle header */}
+        <button
+          onClick={() => setExpandedSections(prev => ({ ...prev, addPropertyOpen: !prev["addPropertyOpen"] }))}
+          className="w-full flex items-center justify-between p-5 sm:p-6 hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center flex-shrink-0">
+              <Building2 size={17} className="text-black" />
+            </div>
+            <div className="text-left">
+              <h2 className="text-base font-black text-white">Add New Property</h2>
+              <p className="text-[11px] text-gray-500">Click to expand and add a new listing</p>
             </div>
           </div>
-
-          {/* Mode Toggle: Manual vs MLS */}
-          <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1 mb-6">
-            <button
-              onClick={() => setExpandedSections(prev => ({ ...prev, addMode: false }))}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all duration-200 ${
-                !expandedSections["addMode"]
-                  ? "bg-[rgba(255,255,255,0.08)] text-white border border-[rgba(255,255,255,0.1)]"
-                  : "text-gray-600 hover:text-gray-400"
-              }`}
-            >
-              <Pencil size={12} />
-              Manual Entry
-            </button>
-            <button
-              onClick={() => setExpandedSections(prev => ({ ...prev, addMode: true }))}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all duration-200 ${
-                expandedSections["addMode"]
-                  ? "bg-[rgba(255,255,255,0.08)] text-white border border-[rgba(255,255,255,0.1)]"
-                  : "text-gray-600 hover:text-gray-400"
-              }`}
-            >
-              <UploadCloud size={12} />
-              MLS Import
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 font-semibold">Beta</span>
-            </button>
+          <div className="text-gray-600">
+            {expandedSections["addPropertyOpen"] ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
           </div>
+        </button>
 
-          {/* Manual Entry Mode */}
-          {!expandedSections["addMode"] && (
-            <PropertyCreator />
-          )}
+        {expandedSections["addPropertyOpen"] && (
+          <div className="border-t border-[rgba(255,255,255,0.05)] p-5 sm:p-6">
+            {/* Mode Toggle: Manual vs MLS */}
+            <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1 mb-6">
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, addMode: false }))}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all duration-200 ${
+                  !expandedSections["addMode"]
+                    ? "bg-[rgba(255,255,255,0.08)] text-white border border-[rgba(255,255,255,0.1)]"
+                    : "text-gray-600 hover:text-gray-400"
+                }`}
+              >
+                <Pencil size={12} />
+                Manual Entry
+              </button>
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, addMode: true }))}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all duration-200 ${
+                  expandedSections["addMode"]
+                    ? "bg-[rgba(255,255,255,0.08)] text-white border border-[rgba(255,255,255,0.1)]"
+                    : "text-gray-600 hover:text-gray-400"
+                }`}
+              >
+                <UploadCloud size={12} />
+                MLS Import
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 font-semibold">Beta</span>
+              </button>
+            </div>
 
-          {/* MLS Import Mode */}
-          {expandedSections["addMode"] && (
-            <MlsImportMock />
-          )}
-        </div>
+            {!expandedSections["addMode"] && <PropertyCreator />}
+            {expandedSections["addMode"] && <MlsImportMock />}
+          </div>
+        )}
       </div>
 
       {/* ── Existing Properties Editor ── */}

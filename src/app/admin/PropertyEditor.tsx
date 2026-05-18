@@ -256,30 +256,47 @@ export default function PropertyEditor() {
         <button
           onClick={saveAll}
           disabled={totalDirty === 0 || saving}
-          className={`flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-xl transition-all ${
+          className={`relative flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-xl transition-all duration-300 ${
             saveSuccess
               ? "bg-[#4ADE80] text-black"
               : totalDirty > 0
-              ? "bg-[#4ADE80] hover:bg-[#22C55E] text-black shadow-lg shadow-[rgba(74,222,128,0.25)]"
+              ? "bg-[#4ADE80] hover:bg-[#22C55E] text-black"
               : "bg-[rgba(255,255,255,0.06)] text-gray-600 cursor-not-allowed"
           }`}
+          style={totalDirty > 0 && !saveSuccess ? {
+            boxShadow: "0 0 0 0 rgba(74,222,128,0.7)",
+            animation: "savePulse 2s infinite",
+          } : {}}
         >
           {saving ? (
             <><Loader2 size={16} className="animate-spin" /> Saving…</>
           ) : saveSuccess ? (
-            <><CheckCircle2 size={16} /> All Changes Saved!</>
+            <><CheckCircle2 size={16} /> Saved!</>
           ) : (
-            <><Save size={16} /> Save Changes {totalDirty > 0 && `(${totalDirty})`}</>
+            <><Save size={16} /> Save {totalDirty > 0 && `(${totalDirty})`}</>
           )}
         </button>
       </div>
 
+      {/* Sticky floating save bar */}
       {totalDirty > 0 && (
-        <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-[rgba(250,204,21,0.06)] border border-[rgba(250,204,21,0.2)]">
-          <AlertCircle size={15} className="text-[#FACC15] flex-shrink-0" />
-          <p className="text-xs text-[#FACC15]">
-            You have <strong>{totalDirty} unsaved change{totalDirty > 1 ? "s" : ""}</strong>. Click <strong>Save Changes</strong> above to publish.
-          </p>
+        <div className="sticky top-16 z-30 -mx-1">
+          <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.35)] backdrop-blur-sm">
+            <div className="flex items-center gap-2">
+              <AlertCircle size={15} className="text-[#FACC15] flex-shrink-0" />
+              <p className="text-xs text-[#FACC15] font-semibold">
+                <strong>{totalDirty} unsaved change{totalDirty > 1 ? "s" : ""}</strong> — don't forget to save!
+              </p>
+            </div>
+            <button
+              onClick={saveAll}
+              disabled={saving}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FACC15] hover:bg-[#EAB308] text-black text-xs font-black transition-all shadow-lg"
+            >
+              {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+              {saving ? "Saving…" : "Save Now"}
+            </button>
+          </div>
         </div>
       )}
 
@@ -357,9 +374,14 @@ export default function PropertyEditor() {
                           const isHero = url === hero;
                           const isDel = imgDeleting === url;
                           return (
-                            <div key={url + i} className={`rounded-xl overflow-hidden border-2 ${isHero ? "border-[#FACC15]" : "border-[rgba(255,255,255,0.08)]"}` }>
+                            <div key={url + i} className={`relative rounded-xl overflow-hidden border-2 ${isHero ? "border-[#FACC15]" : "border-[rgba(255,255,255,0.08)]"}` }>
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={url} alt={`${prop.name} ${i}`} className={`w-full h-16 object-cover ${isDel ? "opacity-30" : ""}`} />
+                              {isHero && (
+                                <div className="absolute top-1 left-1 flex items-center gap-0.5 bg-[#FACC15] text-black text-[7px] font-black px-1.5 py-0.5 rounded-full leading-none shadow-md">
+                                  <Star size={6} fill="currentColor" /> HERO
+                                </div>
+                              )}
                               <div className="flex items-center justify-between px-1.5 py-1 bg-[rgba(0,0,0,0.55)]">
                                 {isHero ? (
                                   <span className="text-[8px] font-black text-[#FACC15] flex items-center gap-0.5"><Star size={7} fill="currentColor" /> HERO</span>
