@@ -6,6 +6,7 @@ import { Phone, ArrowRight, Check, Wifi, Coffee, Users, Clock, Monitor, Lock, St
 import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import CoWorkHeroCarousel from "@/components/CoWorkHeroCarousel";
+import { fetchImageOverrides, resolveAllImages } from "@/lib/property-image-overrides";
 
 export const metadata: Metadata = {
   title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN",
@@ -78,14 +79,21 @@ const amenities = [
   { icon: <Lock size={20} />, label: "Secure Building" },
 ];
 
-const gallery = [
-  { src: "/property-images/cowork-shared-office.jpg", alt: "Bristol CoWork shared workspace area" },
-  { src: "/property-images/cowork-conference-room.jpg", alt: "Bristol CoWork conference room" },
-  { src: "/property-images/cowork-lobby-waiting.jpg", alt: "Bristol CoWork lobby and reception" },
-  { src: "/property-images/cowork-private-office.jpg", alt: "Bristol CoWork private office suite" },
+// Static fallback images (used when no admin override exists)
+const STATIC_IMAGES = [
+  "/property-images/cowork-shared-office.jpg",
+  "/property-images/cowork-conference-room.jpg",
+  "/property-images/cowork-lobby-waiting.jpg",
+  "/property-images/cowork-private-office.jpg",
 ];
 
-export default function CoWorkPage() {
+export default async function CoWorkPage() {
+  const overrides = await fetchImageOverrides();
+  const liveUrls = resolveAllImages("bristol-cowork", STATIC_IMAGES, STATIC_IMAGES[0], overrides);
+  const gallery = liveUrls.map((src, i) => ({
+    src,
+    alt: `Bristol CoWork interior view ${i + 1}`,
+  }));
   return (
     <>
       <script

@@ -100,27 +100,34 @@ export async function PATCH(req: NextRequest) {
   if (!propertyId)
     return NextResponse.json({ error: "propertyId required" }, { status: 400 });
 
-  const body: Record<string, unknown> = {
-    property_id: propertyId,
-    updated_at: new Date().toISOString(),
-  };
+  const body: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (heroUrl !== undefined) { body.hero_url = heroUrl; body.image_url = heroUrl; }
+  if (allUrls !== undefined) { body.all_urls = allUrls; }
 
-  if (heroUrl !== undefined) {
-    body.hero_url  = heroUrl;
-    body.image_url = heroUrl; // legacy compat
-  }
-  if (allUrls !== undefined) {
-    body.all_urls = allUrls;
-  }
+  // ── Step 1: Try to UPDATE the existing row by property_id ───────────────
+  const updateRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/property_image_overrides?property_id=eq.${encodeURIComponent(propertyId)}`,
+    {
+      method: "PATCH",
+      headers: { ...H, Prefer: "return=representation" },
+      body: JSON.stringify(body),
+    }
+  );
 
-  await fetch(`${SUPABASE_URL}/rest/v1/property_image_overrides`, {
-    method: "POST",
-    headers: { ...H, Prefer: "resolution=merge-duplicates" },
-    body: JSON.stringify(body),
-  });
+  const updated = await updateRes.json();
+
+  // ── Step 2: If no row existed, INSERT a new one ─────────────────────────
+  if (!Array.isArray(updated) || updated.length === 0) {
+    await fetch(`${SUPABASE_URL}/rest/v1/property_image_overrides`, {
+      method: "POST",
+      headers: { ...H, Prefer: "resolution=merge-duplicates" },
+      body: JSON.stringify({ property_id: propertyId, ...body }),
+    });
+  }
 
   return NextResponse.json({ success: true });
 }
+
 
 /**
  * DELETE — remove a single image file from Supabase Storage AND update the DB.

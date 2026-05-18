@@ -67,7 +67,10 @@ export function resolveHeroImage(
   return overrides[propertyId]?.heroUrl || staticImage || "";
 }
 
-/** Resolve the full image array for a property (override wins over static data) */
+/**
+ * Resolve the full image array for a property, with the hero image ALWAYS first.
+ * Falls back to static data if no DB override exists.
+ */
 export function resolveAllImages(
   propertyId: string,
   staticImages: string[] | undefined,
@@ -75,7 +78,14 @@ export function resolveAllImages(
   overrides: OverrideMap
 ): string[] {
   const override = overrides[propertyId];
-  if (override?.allUrls?.length) return override.allUrls;
+  if (override?.allUrls?.length) {
+    const hero = override.heroUrl;
+    if (hero && override.allUrls.includes(hero)) {
+      // Put hero first, then the rest in their original order
+      return [hero, ...override.allUrls.filter(u => u !== hero)];
+    }
+    return override.allUrls;
+  }
   if (staticImages?.length) return staticImages;
   if (staticImage) return [staticImage];
   return [];
