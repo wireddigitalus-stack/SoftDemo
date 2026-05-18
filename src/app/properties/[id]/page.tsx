@@ -258,7 +258,8 @@ export default async function PropertyDetailPage({ params }: Props) {
 
             {/* Sidebar CTA */}
             <div className="lg:col-span-1">
-              <div className="glass rounded-2xl p-6 border border-[rgba(74,222,128,0.15)] sticky top-24">
+              <div className="sticky top-24 space-y-4">
+              <div className="glass rounded-2xl p-6 border border-[rgba(74,222,128,0.15)]">
                 <h3 className="text-lg font-bold text-white mb-1">Interested in This Space?</h3>
                 <p className="text-sm text-gray-400 mb-6">Our team responds within one business day. Inquire today to schedule a tour.</p>
 
@@ -300,7 +301,7 @@ export default async function PropertyDetailPage({ params }: Props) {
                   href={(property as any).reviewUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 glass rounded-2xl p-5 border border-[rgba(250,204,21,0.2)] hover:border-[rgba(250,204,21,0.4)] transition-all group flex items-center gap-4"
+                  className="glass rounded-2xl p-5 border border-[rgba(250,204,21,0.2)] hover:border-[rgba(250,204,21,0.4)] transition-all group flex items-center gap-4"
                 >
                   <div className="w-11 h-11 rounded-xl bg-[rgba(250,204,21,0.1)] border border-[rgba(250,204,21,0.2)] flex items-center justify-center flex-shrink-0 group-hover:bg-[rgba(250,204,21,0.18)] transition-colors">
                     <Star size={20} className="text-[#FACC15]" />
@@ -312,6 +313,7 @@ export default async function PropertyDetailPage({ params }: Props) {
                   <ArrowRight size={16} className="text-gray-600 ml-auto group-hover:text-[#FACC15] transition-colors" />
                 </a>
               )}
+              </div>
             </div>
           </div>
         </section>
