@@ -1,11 +1,11 @@
 /**
  * Shared helper — write a single entry to the activity_log table.
  * Called server-side from any API route after a successful mutation.
- * Fire-and-forget: errors are logged but never surfaced to the client.
+ * Always awaited — errors are logged to console but never surfaced to the client.
  */
 
-const SUPABASE_URL  = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SERVICE_KEY   = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export interface ActivityPayload {
   actor_email:   string;   // who did it  e.g. "robert@visionllc.com"
@@ -18,8 +18,12 @@ export interface ActivityPayload {
 }
 
 export async function writeActivityLog(payload: ActivityPayload): Promise<void> {
+  if (!SUPABASE_URL || !SERVICE_KEY) {
+    console.warn("[activity-log] Missing env vars — SUPABASE_URL or SERVICE_KEY not set.");
+    return;
+  }
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/activity_log`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/activity_log`, {
       method: "POST",
       headers: {
         "apikey":        SERVICE_KEY,
@@ -38,8 +42,11 @@ export async function writeActivityLog(payload: ActivityPayload): Promise<void> 
         created_at:    new Date().toISOString(),
       }),
     });
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`[activity-log] Insert failed (${res.status}):`, body);
+    }
   } catch (err) {
-    // Never crash the main request — just warn
-    console.warn("[activity-log] write failed:", err);
+    console.error("[activity-log] Network error:", err);
   }
 }

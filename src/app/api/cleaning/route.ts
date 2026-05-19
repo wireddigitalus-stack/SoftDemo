@@ -10,9 +10,9 @@ const H = {
 };
 
 export async function GET(req: NextRequest) {
-  const from = req.nextUrl.searchParams.get("from");
-  const to   = req.nextUrl.searchParams.get("to");
-  const date = req.nextUrl.searchParams.get("date");
+  const from   = req.nextUrl.searchParams.get("from");
+  const to     = req.nextUrl.searchParams.get("to");
+  const date   = req.nextUrl.searchParams.get("date");
   const worker = req.nextUrl.searchParams.get("worker");
 
   let url = `${SUPABASE_URL}/rest/v1/cleaning_assignments?order=scheduled_date.asc,property.asc,area.asc`;
@@ -24,68 +24,87 @@ export async function GET(req: NextRequest) {
   if (worker) url += `&worker_name=eq.${encodeURIComponent(worker)}`;
 
   const res = await fetch(url, { headers: H });
-  if (!res.ok) return NextResponse.json({ assignments: [] });
+  if (!res.ok) {
+    console.error("[cleaning GET] Supabase error:", await res.text());
+    return NextResponse.json({ assignments: [] });
+  }
   return NextResponse.json({ assignments: await res.json() });
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+
+  // Do NOT send `id` — let Supabase generate a UUID via DEFAULT gen_random_uuid()
   const assignment = {
-    id: `clean_${Date.now()}`,
-    worker_name: body.workerName?.trim() || "",
-    property: body.property?.trim() || "",
-    area: body.area?.trim() || "",
-    scheduled_date: body.scheduledDate || new Date().toISOString().split("T")[0],
-    start_time: body.startTime || null,
-    end_time: body.endTime || null,
-    completed_at: null,
-    notes: body.notes?.trim() || "",
-    status: "pending",
-    created_at: new Date().toISOString(),
+    worker_name:    body.workerName?.trim()  || "",
+    property:       body.property?.trim()    || "",
+    area:           body.area?.trim()        || "",
+    scheduled_date: body.scheduledDate       || new Date().toISOString().split("T")[0],
+    start_time:     body.startTime           || null,
+    end_time:       body.endTime             || null,
+    completed_at:   null,
+    notes:          body.notes?.trim()       || "",
+    status:         "pending",
+    created_at:     new Date().toISOString(),
   };
+
   const res = await fetch(`${SUPABASE_URL}/rest/v1/cleaning_assignments`, {
     method: "POST",
     headers: { ...H, "Prefer": "return=representation" },
     body: JSON.stringify(assignment),
   });
-  if (!res.ok) return NextResponse.json({ error: "Insert failed" }, { status: 500 });
 
-  writeActivityLog({
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("[cleaning POST] Supabase insert failed:", err);
+    return NextResponse.json({ error: "Insert failed", detail: err }, { status: 500 });
+  }
+
+  const [saved] = await res.json() as Array<{ id: string }>;
+
+  await writeActivityLog({
     actor_email:   body.actorEmail  || "unknown",
     actor_name:    body.actorName   || "Admin",
     action:        "created",
     resource_type: "cleaning",
     resource_name: `${assignment.property} — ${assignment.area}`,
-    resource_id:   assignment.id,
+    resource_id:   saved?.id ?? "unknown",
     metadata: { worker: assignment.worker_name, date: assignment.scheduled_date },
   });
 
-  return NextResponse.json({ success: true, assignment });
+  return NextResponse.json({ success: true, assignment: saved ?? assignment });
 }
 
 export async function PATCH(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
   const body = await req.json();
   const patch: Record<string, unknown> = {};
-  if (body.status !== undefined) patch.status = body.status;
-  if (body.completedAt !== undefined) patch.completed_at = body.completedAt;
-  if (body.notes !== undefined) patch.notes = body.notes;
-  if (body.photoUrl !== undefined) patch.photo_url = body.photoUrl;
-  if (body.completionNotes !== undefined) patch.completion_notes = body.completionNotes;
+  if (body.status           !== undefined) patch.status            = body.status;
+  if (body.completedAt      !== undefined) patch.completed_at      = body.completedAt;
+  if (body.notes            !== undefined) patch.notes             = body.notes;
+  if (body.photoUrl         !== undefined) patch.photo_url         = body.photoUrl;
+  if (body.completionNotes  !== undefined) patch.completion_notes  = body.completionNotes;
+
   const res = await fetch(`${SUPABASE_URL}/rest/v1/cleaning_assignments?id=eq.${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { ...H, "Prefer": "return=representation" },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) return NextResponse.json({ error: "Update failed" }, { status: 500 });
 
-  writeActivityLog({
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("[cleaning PATCH] Supabase update failed:", err);
+    return NextResponse.json({ error: "Update failed", detail: err }, { status: 500 });
+  }
+
+  await writeActivityLog({
     actor_email:   body.actorEmail || "unknown",
     actor_name:    body.actorName  || "Admin",
     action:        "updated",
     resource_type: "cleaning",
-    resource_name: id,
+    resource_name: body.resourceName || id,
     resource_id:   id,
     metadata: { status: body.status },
   });
@@ -96,11 +115,18 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
-  await fetch(`${SUPABASE_URL}/rest/v1/cleaning_assignments?id=eq.${encodeURIComponent(id)}`, {
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/cleaning_assignments?id=eq.${encodeURIComponent(id)}`, {
     method: "DELETE", headers: H,
   });
 
-  writeActivityLog({
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("[cleaning DELETE] Supabase delete failed:", err);
+    // Still try to log even if delete had issues
+  }
+
+  await writeActivityLog({
     actor_email:   req.nextUrl.searchParams.get("actorEmail") || "unknown",
     actor_name:    req.nextUrl.searchParams.get("actorName")  || "Admin",
     action:        "deleted",

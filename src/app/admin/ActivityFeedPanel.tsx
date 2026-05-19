@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Activity, Users, Wrench, Sparkles, Trash2, PenLine,
-  Plus, RefreshCw, X, Clock,
+  Plus, RefreshCw, X, Clock, User,
 } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -66,14 +66,25 @@ export default function ActivityFeedPanel({ onClose }: Props) {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | ActivityLog["resource_type"]>("all");
+  const [actorFilter, setActorFilter] = useState<string>("all");   // ← NEW: filter by actor email
   const [migrationSql, setMigrationSql] = useState<string | null>(null);
+
+  // Derive unique actors from loaded logs for the actor-filter pills
+  const uniqueActors = React.useMemo(() => {
+    const map = new Map<string, string>(); // email → display name
+    logs.forEach(l => {
+      if (l.actor_email && l.actor_email !== "unknown") {
+        map.set(l.actor_email, l.actor_name || l.actor_email);
+      }
+    });
+    return Array.from(map.entries()); // [[email, name], ...]
+  }, [logs]);
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
     try {
-      const url = filter === "all"
-        ? "/api/activity-log?limit=60"
-        : `/api/activity-log?limit=60&resource_type=${filter}`;
+      let url = "/api/activity-log?limit=80";
+      if (filter !== "all") url += `&resource_type=${filter}`;
       const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
       if (data.migrationSql) setMigrationSql(data.migrationSql);
@@ -87,23 +98,29 @@ export default function ActivityFeedPanel({ onClose }: Props) {
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
+  // Reset actor filter when type filter changes
+  useEffect(() => { setActorFilter("all"); }, [filter]);
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const deleteLog = useCallback(async (id: string) => {
     setDeletingId(id);
-    // Optimistic remove
     setLogs(prev => prev.filter(l => l.id !== id));
     try {
       await fetch(`/api/activity-log?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     } catch {
-      // If it fails, re-fetch to restore
       fetchLogs();
     } finally {
       setDeletingId(null);
     }
   }, [fetchLogs]);
 
-  const filters: Array<{ key: "all" | ActivityLog["resource_type"]; label: string }> = [
+  // Apply actor filter client-side (logs already fetched)
+  const visibleLogs = actorFilter === "all"
+    ? logs
+    : logs.filter(l => l.actor_email === actorFilter);
+
+  const typeFilters: Array<{ key: "all" | ActivityLog["resource_type"]; label: string }> = [
     { key: "all",         label: "All"         },
     { key: "tenant",      label: "Tenants"     },
     { key: "lead",        label: "Leads"       },
@@ -112,7 +129,6 @@ export default function ActivityFeedPanel({ onClose }: Props) {
   ];
 
   return (
-    // Slide-in panel — fixed right side
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
       <div
         className="relative w-full max-w-md h-full bg-[#080C14] border-l border-[rgba(255,255,255,0.06)] flex flex-col shadow-2xl"
@@ -127,7 +143,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
             </div>
             <div>
               <h2 className="text-sm font-black text-white">Activity Log</h2>
-              <p className="text-[10px] text-gray-600">Who did what & when</p>
+              <p className="text-[10px] text-gray-600">Who did what &amp; when</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -148,9 +164,9 @@ export default function ActivityFeedPanel({ onClose }: Props) {
           </div>
         </div>
 
-        {/* Filter chips */}
+        {/* Type filter chips */}
         <div className="flex gap-1.5 px-5 py-3 border-b border-[rgba(255,255,255,0.04)] overflow-x-auto scrollbar-hide">
-          {filters.map(f => (
+          {typeFilters.map(f => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
@@ -170,6 +186,50 @@ export default function ActivityFeedPanel({ onClose }: Props) {
           ))}
         </div>
 
+        {/* Actor filter chips — only shown when there are multiple actors */}
+        {uniqueActors.length > 1 && (
+          <div className="flex gap-1.5 px-5 py-2.5 border-b border-[rgba(255,255,255,0.04)] overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-1 flex-shrink-0 mr-1">
+              <User size={9} className="text-gray-600" />
+              <span className="text-[10px] text-gray-700 font-bold uppercase tracking-wider">Admin</span>
+            </div>
+            <button
+              onClick={() => setActorFilter("all")}
+              className="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full transition-all"
+              style={actorFilter === "all" ? {
+                background: "rgba(167,139,250,0.15)",
+                border: "1px solid rgba(167,139,250,0.3)",
+                color: "#A78BFA",
+              } : {
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                color: "#6b7280",
+              }}
+            >
+              Everyone
+            </button>
+            {uniqueActors.map(([email, name]) => (
+              <button
+                key={email}
+                onClick={() => setActorFilter(email)}
+                className="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full transition-all truncate max-w-[120px]"
+                title={email}
+                style={actorFilter === email ? {
+                  background: "rgba(167,139,250,0.15)",
+                  border: "1px solid rgba(167,139,250,0.3)",
+                  color: "#A78BFA",
+                } : {
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  color: "#6b7280",
+                }}
+              >
+                {name.split(" ")[0] || email.split("@")[0]}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Migration warning */}
         {migrationSql && (
           <div className="mx-5 mt-3 p-3 rounded-xl bg-yellow-950/30 border border-yellow-900/40">
@@ -184,14 +244,14 @@ export default function ActivityFeedPanel({ onClose }: Props) {
             <div className="flex items-center justify-center py-20">
               <RefreshCw size={20} className="text-gray-700 animate-spin" />
             </div>
-          ) : logs.length === 0 ? (
+          ) : visibleLogs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Activity size={28} className="text-gray-700 mb-3" />
               <p className="text-sm text-gray-600 font-bold">No activity yet</p>
               <p className="text-xs text-gray-700 mt-1">Actions will appear here as the team works.</p>
             </div>
           ) : (
-            logs.map(log => {
+            visibleLogs.map(log => {
               const typeCfg   = TYPE_CONFIG[log.resource_type] ?? TYPE_CONFIG.tenant;
               const actionCfg = ACTION_CONFIG[log.action]      ?? ACTION_CONFIG.created;
               const TypeIcon   = typeCfg.icon;
@@ -213,7 +273,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
 
                   {/* Content */}
                   <div className="flex-1 min-w-0 overflow-hidden">
-                    {/* Actor + action + resource */}
+                    {/* Actor + action + resource type badge */}
                     <p className="text-sm text-white leading-snug">
                       <span className="font-black">{log.actor_name}</span>
                       <span className="text-gray-400"> </span>
@@ -258,7 +318,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
                       </div>
                     )}
 
-                    {/* Time */}
+                    {/* Time + actor email */}
                     <div className="flex items-center gap-1 mt-1.5 min-w-0 overflow-hidden">
                       <Clock size={9} className="text-gray-700 flex-shrink-0" />
                       <span className="text-[10px] text-gray-700 flex-shrink-0" title={formatDate(log.created_at)}>
@@ -289,10 +349,10 @@ export default function ActivityFeedPanel({ onClose }: Props) {
         </div>
 
         {/* Footer */}
-        {logs.length > 0 && (
+        {visibleLogs.length > 0 && (
           <div className="px-5 py-3 border-t border-[rgba(255,255,255,0.04)]">
             <p className="text-[10px] text-gray-700 text-center">
-              Showing last {logs.length} actions · RLS protected
+              Showing {visibleLogs.length} of {logs.length} actions · RLS protected
             </p>
           </div>
         )}
