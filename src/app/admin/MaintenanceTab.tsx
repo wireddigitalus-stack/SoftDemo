@@ -599,12 +599,17 @@ export default function MaintenanceTab({ currentUserName, currentUserEmail }: { 
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/maintenance?id=${id}`, {
+    const res = await fetch(`/api/maintenance?id=${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ actorName: currentUserName || "Admin", actorEmail: currentUserEmail || "" }),
     });
-    setTickets(prev => prev.filter(t => t.id !== id));
+    if (!res.ok) {
+      console.error("[MaintenanceTab] Delete failed:", await res.text());
+      return;
+    }
+    // Re-fetch from DB to ensure admin view reflects true state
+    await fetch_();
   };
 
   const displayed = tickets
