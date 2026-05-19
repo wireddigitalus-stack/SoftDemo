@@ -3,7 +3,9 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Wrench, CheckCircle2, Clock, AlertTriangle, ChevronRight,
   Loader2, Plus, X, Send, ArrowLeft, Building2, Flame,
+  MessageSquare, Package,
 } from "lucide-react";
+import CompletionSheet from "@/components/crew/CompletionSheet";
 
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -161,67 +163,136 @@ function ReportModal({ workerName, onClose, onSubmit }: { workerName: string; on
 
 // ─── Ticket Card (field view) ─────────────────────────────────────────────────
 
-function FieldTicketCard({ ticket, onUpdate }: { ticket: Ticket; onUpdate: (id: string, status: Ticket["status"]) => Promise<void> }) {
+function FieldTicketCard({
+  ticket, onUpdate,
+}: {
+  ticket: Ticket;
+  onUpdate: (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number }) => Promise<void>;
+}) {
   const [expanding, setExpanding] = useState(false);
-  const [updating, setUpdating] = useState(false);
+  const [showSheet, setShowSheet] = useState(false);
+  const [sheetMode, setSheetMode] = useState<"complete" | "parts">("complete");
   const p = PRIORITY_CONFIG[ticket.priority];
   const isComplete = ticket.status === "complete";
-  const nextStatus: Ticket["status"] = ticket.status === "open" ? "in_progress" : ticket.status === "scheduled" ? "in_progress" : ticket.status === "in_progress" ? "complete" : "complete";
-  const nextLabel = ticket.status === "open" || ticket.status === "scheduled" ? "🚀 Start Work" : ticket.status === "in_progress" ? "✅ Mark Done" : "";
+  const isInProgress = ticket.status === "in_progress";
+  const needsParts = ticket.status === "scheduled" && ticket.notes?.includes("[PARTS NEEDED]");
+
+  const openComplete = () => { setSheetMode("complete"); setShowSheet(true); };
+  const openParts = () => { setSheetMode("parts"); setShowSheet(true); };
+
+  const handleSheetSubmit = async (data: { notes: string; minutes?: number }) => {
+    if (sheetMode === "complete") {
+      await onUpdate(ticket.id, ticket.status === "open" || ticket.status === "scheduled" ? "in_progress" : "complete", data);
+    } else {
+      // Flag as needing parts — set status back to scheduled with a note prefix
+      await onUpdate(ticket.id, "scheduled", { notes: `[PARTS NEEDED] ${data.notes}`.trim() });
+    }
+    setShowSheet(false);
+  };
 
   const advance = async () => {
     if (isComplete) return;
-    setUpdating(true);
-    await onUpdate(ticket.id, nextStatus);
-    setUpdating(false);
+    if (ticket.status === "open" || ticket.status === "scheduled") {
+      // Start work — no sheet needed
+      await onUpdate(ticket.id, "in_progress");
+    } else {
+      // Mark complete — open sheet
+      openComplete();
+    }
   };
 
+  const nextLabel = ticket.status === "open" || ticket.status === "scheduled"
+    ? "🚀 Start Work"
+    : ticket.status === "in_progress"
+    ? "✅ Mark Done"
+    : "";
+
   return (
-    <div className={`rounded-3xl border p-5 transition-all ${isComplete ? "opacity-50 border-[rgba(74,222,128,0.2)]" : ""}`}
-      style={{ backgroundColor: p.bg, borderColor: p.border }}>
-      {/* Priority + category */}
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-2xl">{p.icon}</span>
-        <div>
-          <span className="text-xs font-black tracking-widest" style={{ color: p.color }}>{p.label}</span>
-          <span className="text-xs text-gray-600 ml-2">{ticket.category}</span>
+    <>
+      <div className={`rounded-3xl border p-5 transition-all ${isComplete ? "opacity-50 border-[rgba(74,222,128,0.2)]" : ""}`}
+        style={{ backgroundColor: p.bg, borderColor: p.border }}>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-2xl">{p.icon}</span>
+          <div>
+            <span className="text-xs font-black tracking-widest" style={{ color: p.color }}>{p.label}</span>
+            <span className="text-xs text-gray-600 ml-2">{ticket.category}</span>
+          </div>
+          {isComplete && <CheckCircle2 size={18} className="text-[#4ADE80] ml-auto" />}
+          {needsParts && <Package size={16} className="text-orange-400 ml-auto" />}
         </div>
-        {isComplete && <CheckCircle2 size={18} className="text-[#4ADE80] ml-auto" />}
+
+        <h3 className="text-white font-bold text-lg leading-snug mb-2">{ticket.title}</h3>
+
+        {(ticket.building || ticket.unit) && (
+          <div className="flex items-center gap-1.5 text-sm text-gray-400 mb-2">
+            <Building2 size={13} />
+            {[ticket.building, ticket.unit].filter(Boolean).join(" · ")}
+          </div>
+        )}
+
+        {ticket.scheduledDate && (
+          <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-3">
+            <Clock size={13} /> Scheduled {fmtDate(ticket.scheduledDate)}
+          </div>
+        )}
+
+        {ticket.description && (
+          <button onClick={() => setExpanding(e => !e)} className="text-xs text-gray-500 mb-3 flex items-center gap-1 text-left">
+            {expanding ? ticket.description : ticket.description.slice(0, 80) + (ticket.description.length > 80 ? "…" : "")}
+          </button>
+        )}
+
+        {ticket.notes && !ticket.notes.startsWith("[PARTS NEEDED]") && (
+          <div className="text-xs text-gray-500 bg-[rgba(255,255,255,0.04)] rounded-xl px-3 py-2 mb-3 italic">
+            {ticket.notes}
+          </div>
+        )}
+        {needsParts && (
+          <div className="text-xs text-orange-400 bg-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.3)] rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
+            <Package size={12} /> Parts needed — {ticket.notes.replace("[PARTS NEEDED]", "").trim() || "awaiting parts"}
+          </div>
+        )}
+
+        {!isComplete && (
+          <div className="flex gap-2 mt-2">
+            {/* Primary advance button */}
+            <button onClick={advance}
+              className="flex-1 py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 transition-all active:scale-95"
+              style={{ backgroundColor: p.color, color: ticket.priority <= 2 ? "#fff" : "#000" }}>
+              <ChevronRight size={18} />
+              {nextLabel}
+            </button>
+
+            {/* Add note / need parts */}
+            {isInProgress && (
+              <button onClick={openParts}
+                title="Flag parts needed"
+                className="w-14 rounded-2xl flex items-center justify-center transition-all active:scale-90"
+                style={{ background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.35)" }}>
+                <Package size={18} className="text-orange-400" />
+              </button>
+            )}
+            <button onClick={() => { setSheetMode("complete"); setShowSheet(true); }}
+              title="Add comment"
+              className="w-14 rounded-2xl flex items-center justify-center transition-all active:scale-90"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <MessageSquare size={18} className="text-gray-400" />
+            </button>
+          </div>
+        )}
       </div>
 
-      <h3 className="text-white font-bold text-lg leading-snug mb-2">{ticket.title}</h3>
-
-      {/* Location */}
-      {(ticket.building || ticket.unit) && (
-        <div className="flex items-center gap-1.5 text-sm text-gray-400 mb-2">
-          <Building2 size={13} />
-          {[ticket.building, ticket.unit].filter(Boolean).join(" · ")}
-        </div>
-      )}
-
-      {ticket.scheduledDate && (
-        <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-3">
-          <Clock size={13} /> Scheduled {fmtDate(ticket.scheduledDate)}
-        </div>
-      )}
-
-      {/* Expand description */}
-      {ticket.description && (
-        <button onClick={() => setExpanding(e => !e)} className="text-xs text-gray-500 mb-3 flex items-center gap-1">
-          {expanding ? ticket.description : ticket.description.slice(0, 80) + (ticket.description.length > 80 ? "…" : "")}
-        </button>
-      )}
-
-      {/* Action button */}
-      {!isComplete && (
-        <button onClick={advance} disabled={updating}
-          className="w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 transition-all active:scale-95"
-          style={{ backgroundColor: p.color, color: ticket.priority <= 2 ? "#fff" : "#000" }}>
-          {updating ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight size={18} />}
-          {updating ? "Updating…" : nextLabel}
-        </button>
-      )}
-    </div>
+      <CompletionSheet
+        isOpen={showSheet}
+        onClose={() => setShowSheet(false)}
+        onSubmit={handleSheetSubmit}
+        showTime={sheetMode === "complete" && isInProgress}
+        accentColor={sheetMode === "parts" ? "#F97316" : p.color}
+        title={sheetMode === "parts" ? "🔧 Flag Parts Needed" : isInProgress ? "✅ Mark Job Done" : "📝 Add Note"}
+        subtitle={ticket.title}
+        submitLabel={sheetMode === "parts" ? "⚙️ Flag — Awaiting Parts" : isInProgress ? "✅ Complete Job" : "💾 Save Note"}
+      />
+    </>
   );
 }
 
@@ -368,7 +439,7 @@ export default function MaintenanceStaffPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
   const [showReport, setShowReport] = useState(false);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(true); // default to All Open
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -391,12 +462,14 @@ export default function MaintenanceStaffPage() {
         const all = data.tickets.map(rowToTicket) as Ticket[];
         const nonCancelled = all.filter(t => t.status !== "cancelled");
         if (showAll) {
-          // "All Open" — every non-cancelled ticket
           setTickets(nonCancelled);
         } else {
-          // "My Tickets" — only tickets assigned to this worker (case-insensitive, trimmed)
+          // My Tickets — case-insensitive trimmed match, includes() as fallback
           const myName = workerName.trim().toLowerCase();
-          setTickets(nonCancelled.filter(t => t.assignedTo.trim().toLowerCase() === myName));
+          setTickets(nonCancelled.filter(t => {
+            const assigned = t.assignedTo.trim().toLowerCase();
+            return assigned === myName || assigned.includes(myName) || myName.includes(assigned);
+          }));
         }
       }
     } finally { setLoading(false); }
@@ -404,14 +477,16 @@ export default function MaintenanceStaffPage() {
 
   useEffect(() => { fetchTickets(); }, [fetchTickets]);
 
-  const handleUpdate = async (id: string, status: Ticket["status"]) => {
+  const handleUpdate = async (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number }) => {
     const patch: Record<string, unknown> = { status };
     if (status === "complete") patch.completedDate = new Date().toISOString().split("T")[0];
+    if (meta?.notes) patch.notes = meta.notes;
+    if (meta?.minutes) patch.actualMinutes = meta.minutes;
     await fetch(`/api/maintenance?id=${id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
     });
-    setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+    setTickets(prev => prev.map(t => t.id === id ? { ...t, status, notes: meta?.notes ?? t.notes } : t));
   };
 
   if (!workerName) return <PinKeypad onAuth={handleSelectName} />;

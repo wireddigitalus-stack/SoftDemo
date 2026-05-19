@@ -384,6 +384,30 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
     onRefresh();
   };
 
+  // PIN reset state — tracks which user is being edited + new PIN value
+  const [editingPinId, setEditingPinId] = useState<string | null>(null);
+  const [newPin, setNewPin] = useState("");
+  const [savingPin, setSavingPin] = useState(false);
+
+  const startPinEdit = (u: AllowedUser) => {
+    setEditingPinId(u.id);
+    setNewPin(u.pin || "");
+  };
+
+  const resetPin = async (id: string) => {
+    if (newPin.length !== 6) return;
+    setSavingPin(true);
+    await fetch(`/api/allowed-users?id=${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pin: newPin }),
+    });
+    setSavingPin(false);
+    setEditingPinId(null);
+    setNewPin("");
+    onRefresh();
+  };
+
   return (
     <div className="rounded-2xl border bg-[rgba(255,255,255,0.02)] p-5"
       style={{ borderColor: `${color}22`, boxShadow: `0 0 20px ${color}10` }}>
@@ -482,12 +506,34 @@ function UserSection({ title, role, icon, color, users, onRefresh }: {
               </div>
               <p className="text-xs text-gray-500 truncate">{u.email || "(PIN-only)"}</p>
               {isStaffRole && u.pin && (
-                <button onClick={() => { navigator.clipboard.writeText(u.pin!); }}
-                  title="Copy PIN"
-                  className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-white transition-colors mt-0.5">
-                  <span className="font-mono tracking-wider bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 rounded">PIN: {u.pin}</span>
-                  📋
-                </button>
+                <div className="mt-1">
+                  {editingPinId === u.id ? (
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <input
+                        value={newPin}
+                        onChange={e => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                        placeholder="6-digit PIN"
+                        className="w-28 bg-[rgba(255,255,255,0.07)] border border-[rgba(250,204,21,0.4)] rounded-lg px-2 py-1 text-xs font-mono text-white outline-none tracking-widest"
+                      />
+                      <button
+                        onClick={() => setNewPin(Math.floor(100000 + Math.random() * 900000).toString())}
+                        className="text-[10px] text-gray-500 hover:text-white px-1.5 py-1 rounded-lg border border-[rgba(255,255,255,0.08)] transition-colors"
+                      >Gen</button>
+                      <button
+                        onClick={() => resetPin(u.id)}
+                        disabled={newPin.length !== 6 || savingPin}
+                        className="text-[10px] font-bold px-2 py-1 rounded-lg bg-[rgba(250,204,21,0.15)] border border-[rgba(250,204,21,0.35)] text-[#FACC15] disabled:opacity-40 transition-all"
+                      >{savingPin ? "…" : "Save"}</button>
+                      <button onClick={() => setEditingPinId(null)} className="text-gray-600 hover:text-white transition-colors"><X size={12} /></button>
+                    </div>
+                  ) : (
+                    <button onClick={() => startPinEdit(u)}
+                      className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-colors mt-0.5">
+                      <span className="font-mono tracking-wider bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 rounded">PIN: {u.pin}</span>
+                      <span className="text-[10px] text-gray-600 hover:text-[#FACC15]" title="Reset PIN">✏️</span>
+                    </button>
+                  )}
+                </div>
               )}
             </div>
             {!isOwner && (

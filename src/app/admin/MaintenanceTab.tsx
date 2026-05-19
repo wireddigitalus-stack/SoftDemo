@@ -199,7 +199,16 @@ function TicketForm({ initial, onSave, onCancel, currentUserName }:
   const [form, setForm] = useState<Partial<Ticket>>({ ...initial });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [knownStaff, setKnownStaff] = useState<string[]>([]);
   const set = (k: keyof Ticket, v: unknown) => setForm(f => ({ ...f, [k]: v }));
+
+  // Load real maintenance staff names for autocomplete
+  useEffect(() => {
+    fetch("/api/allowed-users?role=maintenance")
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d.users)) setKnownStaff(d.users.map((u: { name: string }) => u.name).filter(Boolean)); })
+      .catch(() => {});
+  }, []);
 
   const handleSave = async () => {
     if (!form.title?.trim()) { setError("Title is required."); return; }
@@ -261,7 +270,11 @@ function TicketForm({ initial, onSave, onCancel, currentUserName }:
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label className={LABEL}>Assigned To</label>
-          <input value={form.assignedTo || ""} onChange={e => set("assignedTo", e.target.value)} placeholder="Mike D." className={FIELD} />
+          <input value={form.assignedTo || ""} onChange={e => set("assignedTo", e.target.value)}
+            placeholder="Technician name" list="maint-staff-list" className={FIELD} />
+          <datalist id="maint-staff-list">
+            {knownStaff.map(n => <option key={n} value={n} />)}
+          </datalist>
         </div>
         <div>
           <label className={LABEL}>Reported By</label>
