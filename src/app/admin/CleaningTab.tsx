@@ -223,6 +223,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
   const [recurring, setRecurring] = useState<RecurringType>("none");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [newPinInfo, setNewPinInfo] = useState<{ name: string; pin: string } | null>(null);
 
   const addArea = () => setAreas(a => [...a, ""]);
   const setArea = (i: number, v: string) => setAreas(a => a.map((x, j) => j === i ? v : x));
@@ -274,6 +275,18 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
         setError(`Save failed: ${errText || "check server logs"}`);
         return;
       }
+      // Auto-provision this worker in allowed_users if they don't exist yet
+      try {
+        const staffRes = await fetch("/api/ensure-staff", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: workerName.trim(), role: "cleaning" }),
+        });
+        const staffData = await staffRes.json();
+        if (staffData.isNew && staffData.pin) {
+          setNewPinInfo({ name: workerName.trim(), pin: staffData.pin });
+        }
+      } catch { /* non-critical — job already saved */ }
       onSave();
     } catch (e) { setError(`Failed to save: ${e instanceof Error ? e.message : "Network error"}`); }
     finally { setSaving(false); }
@@ -302,6 +315,18 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
         setError(`Save failed: ${errText || "check server logs"}`);
         return;
       }
+      // Auto-provision this worker in allowed_users if they don't exist yet
+      try {
+        const staffRes = await fetch("/api/ensure-staff", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: workerName.trim(), role: "cleaning" }),
+        });
+        const staffData = await staffRes.json();
+        if (staffData.isNew && staffData.pin) {
+          setNewPinInfo({ name: workerName.trim(), pin: staffData.pin });
+        }
+      } catch { /* non-critical */ }
       onSave();
     } catch (e) { setError(`Failed to save: ${e instanceof Error ? e.message : "Network error"}`); }
     finally { setSaving(false); }
@@ -489,6 +514,22 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
       )}
 
       {error && <p className="text-xs text-red-400 flex items-center gap-1"><AlertTriangle size={11} />{error}</p>}
+
+      {newPinInfo && (
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.3)]">
+          <span className="text-lg leading-none">🔐</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-black text-[#4ADE80]">New staff portal access created for {newPinInfo.name}</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              PIN: <span className="font-mono font-black text-white tracking-widest">{newPinInfo.pin}</span>
+              <span className="text-gray-600 ml-2">— share this with them to log into the staff portal</span>
+            </p>
+          </div>
+          <button onClick={() => setNewPinInfo(null)} className="text-gray-600 hover:text-white transition-colors flex-shrink-0">
+            <X size={12} />
+          </button>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <button onClick={submit} disabled={saving}
@@ -726,8 +767,6 @@ export default function CleaningTab({ currentUserName, currentUserEmail }: { cur
   const [viewMode, setViewMode] = useState<"today" | "week">("today");
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
   const [showForm, setShowForm] = useState(false);
-  const [showingDemo, setShowingDemo] = useState(false);
-  const [demoDismissed, setDemoDismissed] = useState(false);
   const today = toISO(new Date());
 
   // Stable worker color index — persists across re-renders
@@ -742,13 +781,7 @@ export default function CleaningTab({ currentUserName, currentUserEmail }: { cur
       const res = await fetch(`/api/cleaning?from=${from}&to=${to}`);
       const data = await res.json();
       if (Array.isArray(data.assignments)) {
-        if (data.assignments.length === 0) {
-          setAssignments(getDemoAssignments());
-          setShowingDemo(true);
-        } else {
-          setAssignments(data.assignments.map(rowToAssignment));
-          setShowingDemo(false);
-        }
+        setAssignments(data.assignments.map(rowToAssignment));
         setSetupError(false);
       } else { setSetupError(true); }
     } catch { setSetupError(true); }
@@ -772,17 +805,6 @@ export default function CleaningTab({ currentUserName, currentUserEmail }: { cur
 
   return (
     <div className="mt-6">
-      {/* Demo mode banner */}
-      {showingDemo && !demoDismissed && (
-        <div className="flex items-start justify-between gap-3 mb-4 px-4 py-3 rounded-xl border border-[rgba(74,222,128,0.4)] bg-[rgba(74,222,128,0.07)]">
-          <div>
-            <p className="text-xs font-black text-[#4ADE80] flex items-center gap-1.5">📊 Demo Mode — sample schedule only</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">Create your first real assignment to replace this. Nothing shown here is saved to your database.</p>
-          </div>
-          <button onClick={() => setDemoDismissed(true)} className="flex-shrink-0 text-gray-600 hover:text-white transition-colors mt-0.5"><X size={14} /></button>
-        </div>
-      )}
-
       <SummaryBanner assignments={assignments} today={today} />
 
       {/* Setup error */}

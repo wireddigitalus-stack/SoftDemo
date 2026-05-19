@@ -521,9 +521,7 @@ export default function MaintenanceTab({ currentUserName, currentUserEmail }: { 
   const [statusFilter, setStatusFilter] = useState<"all" | Ticket["status"]>("all");
   const [priorityFilter, setPriorityFilter] = useState<"all" | 1 | 2 | 3 | 4>("all");
   const [sortBy, setSortBy] = useState<"priority" | "date" | "building">("priority");
-
-  const [showingDemo, setShowingDemo] = useState(false);
-  const [demoDismissed, setDemoDismissed] = useState(false);
+  const [newPinInfo, setNewPinInfo] = useState<{ name: string; pin: string } | null>(null);
 
   const fetch_ = useCallback(async () => {
     setLoading(true);
@@ -531,13 +529,7 @@ export default function MaintenanceTab({ currentUserName, currentUserEmail }: { 
       const res = await fetch("/api/maintenance");
       const data = await res.json();
       if (Array.isArray(data.tickets)) {
-        if (data.tickets.length === 0) {
-          setTickets(getDemoTickets());
-          setShowingDemo(true);
-        } else {
-          setTickets(data.tickets.map(rowToTicket));
-          setShowingDemo(false);
-        }
+        setTickets(data.tickets.map(rowToTicket));
         setSetupError(false);
       } else { setSetupError(true); }
     } catch { setSetupError(true); }
@@ -561,6 +553,20 @@ export default function MaintenanceTab({ currentUserName, currentUserEmail }: { 
       }),
     });
     if (!res.ok) throw new Error();
+    // Auto-provision the assigned technician in allowed_users
+    if (form.assignedTo?.trim()) {
+      try {
+        const staffRes = await fetch("/api/ensure-staff", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: form.assignedTo.trim(), role: "maintenance" }),
+        });
+        const staffData = await staffRes.json();
+        if (staffData.isNew && staffData.pin) {
+          setNewPinInfo({ name: form.assignedTo.trim(), pin: staffData.pin });
+        }
+      } catch { /* non-critical */ }
+    }
     setShowForm(false); await fetch_();
   };
 
@@ -613,18 +619,23 @@ export default function MaintenanceTab({ currentUserName, currentUserEmail }: { 
 
   return (
     <div className="mt-6">
-      {/* Demo mode banner */}
-      {showingDemo && !demoDismissed && (
-        <div className="flex items-start justify-between gap-3 mb-4 px-4 py-3 rounded-xl border border-[rgba(250,204,21,0.4)] bg-[rgba(250,204,21,0.08)]">
-          <div>
-            <p className="text-xs font-black text-[#FACC15] flex items-center gap-1.5">📊 Demo Mode — sample data only</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">Add your first real ticket to replace this. Nothing shown here is saved to your database.</p>
+      <SummaryBanner tickets={tickets} />
+
+      {newPinInfo && (
+        <div className="flex items-start gap-3 mb-4 p-3 rounded-xl bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.3)]">
+          <span className="text-lg leading-none">🔐</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-black text-[#FACC15]">New staff portal access created for {newPinInfo.name}</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              PIN: <span className="font-mono font-black text-white tracking-widest">{newPinInfo.pin}</span>
+              <span className="text-gray-600 ml-2">— share this with them to log into the staff portal</span>
+            </p>
           </div>
-          <button onClick={() => setDemoDismissed(true)} className="flex-shrink-0 text-gray-600 hover:text-white transition-colors mt-0.5"><X size={14} /></button>
+          <button onClick={() => setNewPinInfo(null)} className="text-gray-600 hover:text-white transition-colors flex-shrink-0">
+            <X size={12} />
+          </button>
         </div>
       )}
-
-      <SummaryBanner tickets={tickets} />
 
       {/* Setup error */}
       {setupError && !loading && (
