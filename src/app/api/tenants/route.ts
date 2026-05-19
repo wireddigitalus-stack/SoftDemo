@@ -132,24 +132,36 @@ export async function PATCH(req: NextRequest) {
     const responseText = await res.text();
 
     if (res.status === 204 || res.status === 200) {
-      // Audit log — fire and forget
+      // Build human-readable metadata from the frontend diff (_changes) if provided
+      const frontendChanges = body._changes as Record<string, { from: unknown; to: unknown }> | undefined;
+      let metadata: Record<string, unknown>;
+
+      if (frontendChanges && Object.keys(frontendChanges).length > 0) {
+        // Show "field: old → new" for each changed field (max 3 shown as chips)
+        metadata = Object.fromEntries(
+          Object.entries(frontendChanges).map(([field, { from, to }]) => [
+            field,
+            `${from ?? "—"} → ${to ?? "—"}`,
+          ])
+        );
+      } else {
+        // Fallback: list which patch keys were touched
+        const keys = Object.keys(patch).map(k => k.replace(/_/g, " "));
+        metadata = { changed: keys.length <= 2 ? keys.join(", ") : `${keys.slice(0, 2).join(", ")} +${keys.length - 2} more` };
+      }
+
       writeActivityLog({
-        actor_email:   (body.actorEmail  as string) || "unknown",
-        actor_name:    (body.actorName   as string) || "Admin",
+        actor_email:   (body.actorEmail as string) || "unknown",
+        actor_name:    (body.actorName  as string) || "Admin",
         action:        "updated",
         resource_type: "tenant",
-        resource_name: (body.name        as string) || (id as string),
+        resource_name: (body.name       as string) || (id as string),
         resource_id:   id as string,
-        metadata: {
-          changed: (() => {
-            const keys = Object.keys(patch).map(k => k.replace(/_/g, " "));
-            if (keys.length <= 2) return keys.join(", ");
-            return `${keys.slice(0, 2).join(", ")} +${keys.length - 2} more`;
-          })(),
-        },
+        metadata,
       });
       return NextResponse.json({ success: true });
     }
+
 
     // If Supabase complains about a missing column, strip it and retry once
     if (res.status === 400 && responseText.includes("column")) {

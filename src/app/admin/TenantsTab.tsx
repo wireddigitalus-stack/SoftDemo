@@ -654,6 +654,30 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
 
   const handleSaveEdit = async (form: Partial<Tenant>) => {
     if (!editingTenant) return;
+
+    // ── Compute only the fields that actually changed ─────────────────────────
+    type FieldKey = keyof Tenant;
+    const TRACKED: FieldKey[] = [
+      "name", "contactName", "email", "phone",
+      "building", "unit", "rep",
+      "monthlyRent", "utilitiesFee", "securityDeposit", "nnnFee",
+      "leaseStart", "leaseEnd", "renewalDate", "leaseAlertDays",
+      "escalationPct", "escalationDate", "status", "notes",
+    ];
+    const changes: Record<string, { from: unknown; to: unknown }> = {};
+    for (const key of TRACKED) {
+      const oldVal = editingTenant[key] ?? null;
+      const newVal = (form as Record<string, unknown>)[key] ?? null;
+      // Normalise numbers for comparison
+      const norm = (v: unknown) => (v === "" || v === undefined) ? null : v;
+      if (String(norm(oldVal)) !== String(norm(newVal))) {
+        changes[String(key).replace(/([A-Z])/g, " $1").toLowerCase().trim()] = {
+          from: oldVal,
+          to:   newVal,
+        };
+      }
+    }
+
     const res = await fetch(`/api/tenants?id=${editingTenant.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -669,8 +693,10 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
-        actorName: currentUserName || "Admin",
+        actorName:  currentUserName  || "Admin",
         actorEmail: currentUserEmail || "",
+        // Pass the diff so the audit log shows what actually changed
+        _changes: changes,
       }),
     });
     const data = await res.json().catch(() => ({}));
