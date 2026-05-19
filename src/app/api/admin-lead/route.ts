@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     // Audit log — fire and forget
     writeActivityLog({
       actor_email:   body.actorEmail  || "unknown",
-      actor_name:    body.actorName   || "Admin",
+      actor_name:    body.actorName   || "Staff",
       action:        "created",
       resource_type: "lead",
       resource_name: lead.name,

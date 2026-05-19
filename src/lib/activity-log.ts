@@ -33,7 +33,7 @@ export async function writeActivityLog(payload: ActivityPayload): Promise<void> 
       },
       body: JSON.stringify({
         actor_email:   payload.actor_email   || "unknown",
-        actor_name:    payload.actor_name    || "Admin",
+        actor_name:    payload.actor_name    || "Staff",
         action:        payload.action,
         resource_type: payload.resource_type,
         resource_name: payload.resource_name || "",

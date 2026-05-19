@@ -167,6 +167,7 @@ function FieldTicketCard({
   ticket, onUpdate,
 }: {
   ticket: Ticket;
+  workerName: string;
   onUpdate: (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number }) => Promise<void>;
 }) {
   const [expanding, setExpanding] = useState(false);
@@ -478,7 +479,7 @@ export default function MaintenanceStaffPage() {
   useEffect(() => { fetchTickets(); }, [fetchTickets]);
 
   const handleUpdate = async (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number }) => {
-    const patch: Record<string, unknown> = { status };
+    const patch: Record<string, unknown> = { status, actorName: workerName };
     if (status === "complete") patch.completedDate = new Date().toISOString().split("T")[0];
     if (meta?.notes) patch.notes = meta.notes;
     if (meta?.minutes) patch.actualMinutes = meta.minutes;
@@ -569,13 +570,13 @@ export default function MaintenanceStaffPage() {
           <>
             {/* Open tickets */}
             {open.sort((a, b) => a.priority - b.priority).map(t => (
-              <FieldTicketCard key={t.id} ticket={t} onUpdate={handleUpdate} />
+              <FieldTicketCard key={t.id} ticket={t} workerName={workerName} onUpdate={handleUpdate} />
             ))}
             {/* Completed */}
             {done.length > 0 && (
               <>
                 <p className="text-xs font-bold text-gray-600 uppercase tracking-widest pt-4">Completed today</p>
-                {done.map(t => <FieldTicketCard key={t.id} ticket={t} onUpdate={handleUpdate} />)}
+                {done.map(t => <FieldTicketCard key={t.id} ticket={t} workerName={workerName} onUpdate={handleUpdate} />)}
               </>
             )}
           </>

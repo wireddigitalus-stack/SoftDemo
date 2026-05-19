@@ -100,12 +100,22 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Tenant Profiles",
       body: "Each tenant card stores their name, unit, phone, email, lease dates, and payment status. Click on a tenant to expand or edit their profile.",
     },
+    {
+      emoji: "💬",
+      title: "Tenant Notes",
+      body: "Click 'Add Note' on any tenant card to log internal team commentary — lease renewal discussions, maintenance issues, or payment follow-ups. Notes are timestamped with the author's name and visible to all admins.",
+    },
+    {
+      emoji: "📊",
+      title: "Activity Trail",
+      body: "Every tenant action — adding, editing, status changes, and notes — is logged in the Activity tab with the name of the admin who performed it. Use this for audit trails and team accountability.",
+    },
   ],
   maintenance: [
     {
       emoji: "🔧",
       title: "Creating a Work Order",
-      body: "Click '+ New Work Order' to log a maintenance request. Set priority (Low / Medium / High / Urgent) and assign it to a team member.",
+      body: "Click '+ New Work Order' to log a maintenance request. Set priority (Low / Medium / High / Urgent) and assign it to a team member. The ticket appears instantly in both the admin dashboard and the staff portal.",
     },
     {
       emoji: "🖨️",
@@ -114,13 +124,18 @@ const TIPS: Record<TabKey, Tip[]> = {
     },
     {
       emoji: "✅",
-      title: "Marking Complete",
-      body: "When a job is done, click the green checkmark on the work order to mark it complete. Completed orders move off the active list automatically.",
+      title: "Completing Jobs from the Portal",
+      body: "Staff complete jobs directly from /staff/maintenance. They tap 'Complete', then log notes about the work performed, actual time spent (in minutes), and close the ticket. All metadata is saved to the admin dashboard.",
+    },
+    {
+      emoji: "🛠️",
+      title: "Parts Needed Workflow",
+      body: "If a tech discovers they need parts, they tap 'Need Parts' in the completion sheet. The ticket flips back to 'Scheduled' with a [PARTS NEEDED] flag visible in the admin queue — so you know exactly which jobs are waiting on materials.",
     },
     {
       emoji: "📱",
       title: "Staff Portal Access",
-      body: "Your maintenance team has a dedicated portal at /staff/maintenance. They log in with a 6-digit PIN (no email needed) and see only their work orders. Manage PINs in Settings > Portal Access.",
+      body: "Your maintenance team has a dedicated portal at /staff/maintenance. They log in with a 6-digit PIN (no email needed) and see their assigned tickets. The portal has two views: 'My Tickets' (assigned to them) and 'All Open' (every pending job). Manage PINs in Settings > Portal Access.",
     },
     {
       emoji: "📸",
@@ -128,16 +143,26 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "Staff can attach photos to work orders from their portal — perfect for documenting issues before and after repair. Photos sync to the admin dashboard in real-time.",
     },
     {
+      emoji: "💬",
+      title: "Admin Notes on Tickets",
+      body: "Click 'Add Note' on any work order from the admin dashboard. Notes are timestamped with the author's name and visible to all admins — great for tracking updates, vendor calls, or scheduling changes.",
+    },
+    {
       emoji: "🚨",
       title: "Priority Levels Matter",
       body: "Set priority correctly: Urgent = safety hazard or water leak (respond same-day), High = tenant can't operate normally, Medium = cosmetic or minor, Low = scheduled improvement. Your team should tackle Urgent first — always.",
+    },
+    {
+      emoji: "📊",
+      title: "Activity Trail",
+      body: "Every maintenance action — creation, status change, completion, and parts request — is logged in the Activity tab with the name of the person who performed it. Use this for accountability and reporting.",
     },
   ],
   cleaning: [
     {
       emoji: "📅",
-      title: "The Schedule Grid",
-      body: "The Cleaning tab shows a weekly grid. Each cell represents a cleaning task for a specific day and property zone. Green = done, gray = pending.",
+      title: "Creating Cleaning Jobs",
+      body: "Click '+ New Job' in the Cleaning tab to create a task. Assign it to a staff member, set the area/zone, and it appears instantly in both the dashboard and the staff portal.",
     },
     {
       emoji: "🖨️",
@@ -145,14 +170,14 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "Use the 'Print Schedule' button to hand a printed weekly schedule to your cleaning crew — no login required for them.",
     },
     {
-      emoji: "✔️",
-      title: "Checking Off Tasks",
-      body: "Click any task cell to mark it as completed. The dashboard keeps a running log so you can review what was cleaned and when.",
+      emoji: "✅",
+      title: "Completing Jobs from the Portal",
+      body: "Cleaning staff tap 'Complete' on their assigned job, then log notes (what was cleaned, any issues found) and actual time spent. The completion flows back to the admin dashboard with full details.",
     },
     {
       emoji: "📱",
       title: "Staff Portal Access",
-      body: "Cleaning staff have their own portal at /staff/cleaning. They log in with a 6-digit PIN and see only their tasks. No email or app download required — it works on any phone browser.",
+      body: "Cleaning staff have their own portal at /staff/cleaning. They log in with a 6-digit PIN and see their assigned tasks. The portal works on any phone browser — no app download needed.",
     },
     {
       emoji: "🏢",
@@ -161,8 +186,8 @@ const TIPS: Record<TabKey, Tip[]> = {
     },
     {
       emoji: "📊",
-      title: "Completion History",
-      body: "The dashboard tracks every cleaning task completion with timestamps and the staff member who marked it done. Use this for accountability reviews and tenant reporting.",
+      title: "Activity Trail",
+      body: "Every cleaning action — job creation, assignment, and completion — is logged in the Activity tab with the staff member's name and timestamp. Use this for accountability reviews and tenant reporting.",
     },
   ],
   analytics: [
@@ -436,12 +461,17 @@ const TIPS: Record<TabKey, Tip[]> = {
     {
       emoji: "👤",
       title: "Managing Team Access",
-      body: "The Portal Access section manages who can log into the Admin, Maintenance, and Cleaning portals. Each person gets a 6-digit PIN — no email/password needed for staff portals. Add or remove team members, regenerate PINs, and copy PINs to share with your crew.",
+      body: "The Portal Access section manages who can log into the Admin, Maintenance, and Cleaning portals. Each person gets a 6-digit PIN — no email/password needed for staff portals. Add or remove team members and manage PINs right from the staff list.",
     },
     {
       emoji: "🔑",
       title: "Staff PIN System",
-      body: "Maintenance and cleaning staff log in using a 6-digit PIN on a keypad — no Gmail required. You can generate random PINs for each person from the settings panel. Click the copy icon next to any PIN to send it via text. Default PIN for new staff is 123456 — change it immediately.",
+      body: "Maintenance and cleaning staff log in using a 6-digit PIN on a keypad — no Gmail required. PINs are fully editable: click the pencil icon next to any staff member's PIN to type a custom one, or click the dice icon to auto-generate a random 6-digit PIN. Changes save instantly. Default PIN for new staff is 123456 — change it immediately.",
+    },
+    {
+      emoji: "🔄",
+      title: "Resetting a PIN",
+      body: "Lost or compromised PIN? Click the pencil icon on the staff row, then the dice button to generate a new random PIN instantly. The old PIN stops working immediately — share the new one via text using the copy button.",
     },
     {
       emoji: "📲",
@@ -467,6 +497,11 @@ const TIPS: Record<TabKey, Tip[]> = {
       emoji: "📊",
       title: "Data Export",
       body: "Download all leads as a CSV file from the Data Import/Export section. The export includes every field: name, email, phone, score, source, status, notes, and timestamps. Great for importing into a CRM or sharing with partners.",
+    },
+    {
+      emoji: "👁️",
+      title: "Activity Log Identity",
+      body: "Every action in the dashboard is logged with the name of the admin who performed it — not just 'Admin.' The system reads your name from your user profile. Make sure each admin account has a proper name set in the staff list for accurate audit trails.",
     },
     {
       emoji: "🗑️",

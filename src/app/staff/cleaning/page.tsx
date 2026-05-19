@@ -492,12 +492,15 @@ export default function CleaningStaffPage() {
 
   const handleComplete = async (id: string, data: { notes: string; photoUrl?: string }) => {
     const completedAt = new Date().toISOString();
+    const assignment = assignments.find(a => a.id === id);
     await fetch(`/api/cleaning?id=${id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         status: "done", completedAt,
         completionNotes: data.notes || undefined,
         photoUrl: data.photoUrl || undefined,
+        actorName: workerName,
+        resourceName: assignment ? `${assignment.property} — ${assignment.area}` : id,
       }),
     });
     setAssignments(prev => prev.map(a => a.id === id ? { ...a, status: "done", completedAt } : a));

@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 
   await writeActivityLog({
     actor_email:   body.actorEmail  || "unknown",
-    actor_name:    body.actorName   || "Admin",
+    actor_name:    body.actorName   || "Staff",
     action:        "created",
     resource_type: "cleaning",
     resource_name: `${assignment.property} — ${assignment.area}`,
@@ -101,7 +101,7 @@ export async function PATCH(req: NextRequest) {
 
   await writeActivityLog({
     actor_email:   body.actorEmail || "unknown",
-    actor_name:    body.actorName  || "Admin",
+    actor_name:    body.actorName  || "Staff",
     action:        "updated",
     resource_type: "cleaning",
     resource_name: body.resourceName || id,
@@ -128,7 +128,7 @@ export async function DELETE(req: NextRequest) {
 
   await writeActivityLog({
     actor_email:   req.nextUrl.searchParams.get("actorEmail") || "unknown",
-    actor_name:    req.nextUrl.searchParams.get("actorName")  || "Admin",
+    actor_name:    req.nextUrl.searchParams.get("actorName")  || "Staff",
     action:        "deleted",
     resource_type: "cleaning",
     resource_name: req.nextUrl.searchParams.get("name")       || id,

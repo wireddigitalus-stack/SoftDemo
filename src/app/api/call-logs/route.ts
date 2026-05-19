@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({
       lead_id,
       lead_name: lead_name || "",
-      called_by: called_by || "Admin",
+      called_by: called_by || "Staff",
       notes: notes || "",
       outcome,
       follow_up_date: follow_up_date || null,
