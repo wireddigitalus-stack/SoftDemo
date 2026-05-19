@@ -252,7 +252,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
     setSaving(true); setError("");
     const dates = getDates();
     try {
-      await Promise.all(
+      const responses = await Promise.all(
         dates.flatMap(d =>
           validAreas.map(area =>
             fetch("/api/cleaning", {
@@ -268,8 +268,14 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
           )
         )
       );
+      const failed = responses.filter(r => !r.ok);
+      if (failed.length > 0) {
+        const errText = await failed[0].text().catch(() => "Server error");
+        setError(`Save failed: ${errText || "check server logs"}`);
+        return;
+      }
       onSave();
-    } catch { setError("Failed to save. Try again."); }
+    } catch (e) { setError(`Failed to save: ${e instanceof Error ? e.message : "Network error"}`); }
     finally { setSaving(false); }
   };
 
@@ -281,7 +287,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
     if (!workerName.trim() || !property.trim()) { setError("Worker and property are required."); return; }
     setSaving(true); setError("");
     try {
-      await fetch("/api/cleaning", {
+      const res = await fetch("/api/cleaning", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           workerName: workerName.trim(), property: property.trim(),
@@ -291,8 +297,13 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
           actorEmail: currentUserEmail || "",
         }),
       });
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "Server error");
+        setError(`Save failed: ${errText || "check server logs"}`);
+        return;
+      }
       onSave();
-    } catch { setError("Failed to save. Try again."); }
+    } catch (e) { setError(`Failed to save: ${e instanceof Error ? e.message : "Network error"}`); }
     finally { setSaving(false); }
   };
 
