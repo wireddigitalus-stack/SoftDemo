@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     scheduled_date: body.scheduledDate || null,
     completed_date: body.completedDate || null,
     notes: body.notes?.trim() || "",
+    parts_needed: body.partsNeeded ?? false,
     source: body.source || "admin",
     created_at: new Date().toISOString(),
   };
@@ -72,6 +73,7 @@ export async function PATCH(req: NextRequest) {
     estimatedHours: "estimated_hours", scheduledDate: "scheduled_date",
     completedDate: "completed_date", notes: "notes",
     photoUrl: "photo_url", completionNotes: "completion_notes", actualMinutes: "actual_minutes",
+    partsNeeded: "parts_needed",
   };
   const patch: Record<string, unknown> = {};
   Object.entries(map).forEach(([js, db]) => { if (body[js] !== undefined) patch[db] = body[js]; });

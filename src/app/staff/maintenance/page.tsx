@@ -25,6 +25,7 @@ interface Ticket {
   estimatedHours: number;
   scheduledDate: string | null;
   notes: string;
+  partsNeeded: boolean;
   createdAt: string;
 }
 
@@ -56,6 +57,7 @@ function rowToTicket(r: Record<string, unknown>): Ticket {
     estimatedHours: Number(r.estimated_hours) || 0,
     scheduledDate: (r.scheduled_date as string) || null,
     notes: (r.notes as string) || "",
+    partsNeeded: !!(r.parts_needed),
     createdAt: (r.created_at as string) || new Date().toISOString(),
   };
 }
@@ -168,7 +170,7 @@ function FieldTicketCard({
 }: {
   ticket: Ticket;
   workerName: string;
-  onUpdate: (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number }) => Promise<void>;
+  onUpdate: (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number; partsNeeded?: boolean }) => Promise<void>;
 }) {
   const [expanding, setExpanding] = useState(false);
   const [showSheet, setShowSheet] = useState(false);
@@ -176,7 +178,7 @@ function FieldTicketCard({
   const p = PRIORITY_CONFIG[ticket.priority];
   const isComplete = ticket.status === "complete";
   const isInProgress = ticket.status === "in_progress";
-  const needsParts = ticket.status === "scheduled" && ticket.notes?.includes("[PARTS NEEDED]");
+  const needsParts = !!ticket.partsNeeded;
 
   const openComplete = () => { setSheetMode("complete"); setShowSheet(true); };
   const openParts = () => { setSheetMode("parts"); setShowSheet(true); };
@@ -186,7 +188,7 @@ function FieldTicketCard({
       await onUpdate(ticket.id, ticket.status === "open" || ticket.status === "scheduled" ? "in_progress" : "complete", data);
     } else {
       // Flag as needing parts — set status back to scheduled with a note prefix
-      await onUpdate(ticket.id, "scheduled", { notes: `[PARTS NEEDED] ${data.notes}`.trim() });
+      await onUpdate(ticket.id, "scheduled", { notes: data.notes, partsNeeded: true });
     }
     setShowSheet(false);
   };
@@ -243,14 +245,14 @@ function FieldTicketCard({
           </button>
         )}
 
-        {ticket.notes && !ticket.notes.startsWith("[PARTS NEEDED]") && (
+        {ticket.notes && !needsParts && (
           <div className="text-xs text-gray-500 bg-[rgba(255,255,255,0.04)] rounded-xl px-3 py-2 mb-3 italic">
             {ticket.notes}
           </div>
         )}
         {needsParts && (
           <div className="text-xs text-orange-400 bg-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.3)] rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
-            <Package size={12} /> Parts needed — {ticket.notes.replace("[PARTS NEEDED]", "").trim() || "awaiting parts"}
+            <Package size={12} /> Parts needed — {ticket.notes || "awaiting parts"}
           </div>
         )}
 
@@ -478,16 +480,17 @@ export default function MaintenanceStaffPage() {
 
   useEffect(() => { fetchTickets(); }, [fetchTickets]);
 
-  const handleUpdate = async (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number }) => {
+  const handleUpdate = async (id: string, status: Ticket["status"], meta?: { notes?: string; minutes?: number; partsNeeded?: boolean }) => {
     const patch: Record<string, unknown> = { status, actorName: workerName };
-    if (status === "complete") patch.completedDate = new Date().toISOString().split("T")[0];
-    if (meta?.notes) patch.notes = meta.notes;
+    if (status === "complete") { patch.completedDate = new Date().toISOString().split("T")[0]; patch.partsNeeded = false; }
+    if (meta?.notes !== undefined) patch.notes = meta.notes;
     if (meta?.minutes) patch.actualMinutes = meta.minutes;
+    if (meta?.partsNeeded !== undefined) patch.partsNeeded = meta.partsNeeded;
     await fetch(`/api/maintenance?id=${id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
     });
-    setTickets(prev => prev.map(t => t.id === id ? { ...t, status, notes: meta?.notes ?? t.notes } : t));
+    setTickets(prev => prev.map(t => t.id === id ? { ...t, status, notes: meta?.notes ?? t.notes, partsNeeded: meta?.partsNeeded ?? (status === "complete" ? false : t.partsNeeded) } : t));
   };
 
   if (!workerName) return <PinKeypad onAuth={handleSelectName} />;

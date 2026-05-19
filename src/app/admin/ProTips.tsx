@@ -130,7 +130,7 @@ const TIPS: Record<TabKey, Tip[]> = {
     {
       emoji: "🛠️",
       title: "Parts Needed Workflow",
-      body: "If a tech discovers they need parts, they tap 'Need Parts' in the completion sheet. The ticket flips back to 'Scheduled' with a [PARTS NEEDED] flag visible in the admin queue — so you know exactly which jobs are waiting on materials.",
+      body: "If a tech discovers they need parts, they tap 'Need Parts' in the completion sheet. The ticket flips back to 'Scheduled' with a dedicated parts_needed flag in the database — visible as an orange badge in both the staff portal and admin queue so you know exactly which jobs are waiting on materials.",
     },
     {
       emoji: "📱",
