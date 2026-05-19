@@ -496,7 +496,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
 // ─── Week Grid ────────────────────────────────────────────────────────────────
 
 function WeekGrid({ assignments, weekStart, workerIndex, onDelete }:
-  { assignments: Assignment[]; weekStart: Date; workerIndex: Map<string, number>; onDelete: (id: string) => void }) {
+  { assignments: Assignment[]; weekStart: Date; workerIndex: Map<string, number>; onDelete: (id: string, name: string) => void }) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const dayISOs = days.map(toISO);
 
@@ -568,7 +568,7 @@ function WeekGrid({ assignments, weekStart, workerIndex, onDelete }:
                           {a.workerName.split(" ")[0]}
                         </span>
                         <button
-                          onClick={() => onDelete(a.id)}
+                          onClick={() => onDelete(a.id, `${a.property} — ${a.area}`)}
                           className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 flex-shrink-0 transition-all">
                           <X size={9} />
                         </button>
@@ -588,7 +588,7 @@ function WeekGrid({ assignments, weekStart, workerIndex, onDelete }:
 // ─── Today View ───────────────────────────────────────────────────────────────
 
 function TodayView({ assignments, today, workerIndex, onDelete }:
-  { assignments: Assignment[]; today: string; workerIndex: Map<string, number>; onDelete: (id: string) => void }) {
+  { assignments: Assignment[]; today: string; workerIndex: Map<string, number>; onDelete: (id: string, name: string) => void }) {
   const todayA = assignments.filter(a => a.scheduledDate === today);
   const byProp = todayA.reduce<Record<string, Assignment[]>>((acc, a) => {
     if (!acc[a.property]) acc[a.property] = [];
@@ -652,7 +652,7 @@ function TodayView({ assignments, today, workerIndex, onDelete }:
                       : a.status === "in_progress" ? "bg-[rgba(250,204,21,0.12)] text-[#FACC15]"
                       : "bg-[rgba(255,255,255,0.05)] text-gray-500"
                     }`}>{a.status.replace("_", " ")}</span>
-                    <button onClick={() => onDelete(a.id)}
+                    <button onClick={() => onDelete(a.id, `${a.property} — ${a.area}`)}
                       className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 flex-shrink-0 transition-all">
                       <Trash2 size={13} />
                     </button>
@@ -746,12 +746,12 @@ export default function CleaningTab({ currentUserName, currentUserEmail }: { cur
 
   useEffect(() => { fetchAssignments(); }, [fetchAssignments]);
 
-  const handleDelete = async (id: string) => {
-    await fetch(`/api/cleaning?id=${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ actorName: currentUserName || "Admin", actorEmail: currentUserEmail || "" }),
-    });
+  const handleDelete = async (id: string, name?: string) => {
+    const params = new URLSearchParams({ id });
+    if (currentUserName)  params.set("actorName",  currentUserName);
+    if (currentUserEmail) params.set("actorEmail", currentUserEmail);
+    if (name)             params.set("name",        name);
+    await fetch(`/api/cleaning?${params.toString()}`, { method: "DELETE" });
     setAssignments(prev => prev.filter(a => a.id !== id));
   };
 

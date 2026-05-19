@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
 
     // Persist to Supabase via direct REST API (supabase-js was silently failing)
     try {
-      const SUPABASE_URL = process.env.SUPABASE_URL!;
+      const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!;
       const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
       const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
         method: "POST",

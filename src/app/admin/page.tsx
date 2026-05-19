@@ -2354,7 +2354,7 @@ export default function AdminPage() {
         {/* ═══ Premium Dashboard Navigation ═══════════════════════════════════ */}
 
         {/* Mobile/Tablet: Horizontal compact pill nav */}
-        <div className="sm:hidden sticky top-14 z-40 bg-[#080C14] -mx-4 px-4 mb-6">
+        <div className="sm:hidden sticky top-16 z-40 bg-[#080C14] -mx-4 px-4 mb-6">
           <div className="scrollbar-none flex items-center gap-1 overflow-x-auto py-2 pr-6" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {([
               { key: "leads",       label: `Leads (${activeLeads.length})`, icon: TrendingUp, color: "#4ADE80" },
@@ -2391,7 +2391,7 @@ export default function AdminPage() {
         </div>
 
         {/* Desktop/Tablet: Premium two-row grid nav */}
-        <div className="hidden sm:block sticky top-14 z-40 bg-[#080C14] -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 pb-5 mb-6">
+        <div className="hidden sm:block sticky top-16 z-40 bg-[#080C14] -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 pb-5 mb-6">
           <div className="grid grid-cols-5 gap-2">
             {([
               { key: "leads",       label: "Leads",       count: activeLeads.length, icon: TrendingUp, color: "#4ADE80",  desc: "Inquiries" },

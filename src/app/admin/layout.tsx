@@ -27,9 +27,9 @@ export default function AdminLayout({
   return (
     <>
       <AdminHeader />
-      {/* pt-14 clears the fixed 56px admin header */}
+      {/* pt-16 gives 4px of breathing room below the fixed 56px (h-14) admin header */}
       {/* Suspense required for useSearchParams() in Next.js 15 production builds */}
-      <div className="pt-14">
+      <div className="pt-16">
         <Suspense fallback={<div className="min-h-screen bg-[#040812]" />}>
           {children}
         </Suspense>
