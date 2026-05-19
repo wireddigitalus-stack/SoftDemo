@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     // Audit log — fire and forget
     writeActivityLog({
       actor_email:   body.actorEmail  || "unknown",
-      actor_name:    body.actorName   || "Admin",
+      actor_name:    body.actorName || body.actorEmail?.split("@")[0] || "Staff",
       action:        "created",
       resource_type: "tenant",
       resource_name: tenant.name,
@@ -152,7 +152,7 @@ export async function PATCH(req: NextRequest) {
 
       writeActivityLog({
         actor_email:   (body.actorEmail as string) || "unknown",
-        actor_name:    (body.actorName  as string) || "Admin",
+        actor_name:    (body.actorName as string) || (body.actorEmail as string)?.split("@")[0] || "Staff",
         action:        "updated",
         resource_type: "tenant",
         resource_name: (body.name       as string) || (id as string),
@@ -204,7 +204,7 @@ export async function DELETE(req: NextRequest) {
   // Audit log — fire and forget
   writeActivityLog({
     actor_email:   req.nextUrl.searchParams.get("actorEmail") || "unknown",
-    actor_name:    req.nextUrl.searchParams.get("actorName")  || "Admin",
+    actor_name:    req.nextUrl.searchParams.get("actorName") || req.nextUrl.searchParams.get("actorEmail")?.split("@")[0] || "Staff",
     action:        "deleted",
     resource_type: "tenant",
     resource_name: req.nextUrl.searchParams.get("name")       || id,

@@ -381,7 +381,7 @@ function TenantCard({
     if (!note.trim()) return;
     setSavingNote(true);
     const timestamp = new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-    const author = currentUserName || "Admin";
+    const author = currentUserName || "Staff";
     const newEntry = `[${timestamp} — ${author}] ${note.trim()}`;
     const updated = localNotes ? `${localNotes}\n${newEntry}` : newEntry;
     try {
@@ -643,7 +643,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
-        actorName: currentUserName || "Admin",
+        actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff",
         actorEmail: currentUserEmail || "",
       }),
     });
@@ -695,7 +695,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
-        actorName:  currentUserName  || "Admin",
+        actorName:  currentUserName  || currentUserEmail?.split("@")[0] || "Staff",
         actorEmail: currentUserEmail || "",
         // Pass the diff so the audit log shows what actually changed
         _changes: changes,
@@ -711,7 +711,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
     await fetch(`/api/tenants?id=${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ actorName: currentUserName || "Admin", actorEmail: currentUserEmail || "" }),
+      body: JSON.stringify({ actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff", actorEmail: currentUserEmail || "" }),
     });
     setTenants(prev => prev.filter(t => t.id !== id));
   };

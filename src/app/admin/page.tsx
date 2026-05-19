@@ -1786,7 +1786,7 @@ function AddLeadPanel({ onLeadAdded, currentUserName, currentUserEmail }: { onLe
             spaceType: form.spaceType, budget: form.budget,
             timeline: form.timeline, teamSize: form.teamSize,
             additionalInfo: form.notes, utm_source: "manual", utm_medium: "admin", utm_campaign: "",
-            actorName: currentUserName || "Admin",
+            actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff",
             actorEmail: currentUserEmail || "",
           }),
         });
@@ -1804,7 +1804,7 @@ function AddLeadPanel({ onLeadAdded, currentUserName, currentUserEmail }: { onLe
             additionalInfo: form.notes,
             score: form.manualScore, scoreLabel: label,
             reasoning: "Manually entered and scored by admin.",
-            actorName: currentUserName || "Admin",
+            actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff",
             actorEmail: currentUserEmail || "",
           }),
         });
@@ -2014,7 +2014,7 @@ export default function AdminPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             actor_email:   currentUser?.email   || "unknown",
-            actor_name:    currentUser?.name    || "Admin",
+            actor_name:    currentUser?.name || currentUser?.email?.split("@")[0] || "Staff",
             action:        "deleted",
             resource_type: "lead",
             resource_name: lead?.name || id,
@@ -2087,13 +2087,25 @@ export default function AdminPage() {
         // If table doesn't exist yet, fall through and allow access
         // (prevents lockout before first DB setup)
       }
-      const name = data.user.user_metadata?.full_name || email.split("@")[0] || "Team";
+      // Prefer the name stored in allowed_users (admin-set), fall back to Google metadata
+      let resolvedName = data.user.user_metadata?.full_name || email.split("@")[0] || "Team";
+      try {
+        const { data: userRow } = await supabaseBrowser
+          .from("allowed_users")
+          .select("name")
+          .eq("email", email.toLowerCase())
+          .maybeSingle();
+        if (userRow?.name && userRow.name.trim() && userRow.name.trim().toLowerCase() !== "admin") {
+          resolvedName = userRow.name.trim();
+        }
+      } catch { /**/ }
       setCurrentUser({
-        name,
+        name: resolvedName,
         email,
         avatar: data.user.user_metadata?.avatar_url,
       });
-      try { localStorage.setItem("vision_commenter", name); } catch { /**/ }
+      try { localStorage.setItem("vision_commenter", resolvedName); } catch { /**/ }
+
       setAuthChecking(false);
     });
   }, [router]);
@@ -2390,7 +2402,7 @@ export default function AdminPage() {
             leadName={activeCallLog.leadName}
             phone={activeCallLog.phone}
             existingLogs={callLogs.filter(l => l.lead_id === activeCallLog.leadId)}
-            currentUser={currentUser?.name || "Admin"}
+            currentUser={currentUser?.name || currentUser?.email?.split("@")[0] || "Staff"}
             onSave={log => setCallLogs(prev => [log, ...prev.filter(l => l.id !== log.id)])}
             onDelete={id => setCallLogs(prev => prev.filter(l => l.id !== id))}
             onClose={() => setActiveCallLog(null)}

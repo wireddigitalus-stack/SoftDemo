@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   writeActivityLog({
     actor_email:   body.actorEmail  || "unknown",
-    actor_name:    body.actorName   || "Admin",
+    actor_name:    body.actorName || body.actorEmail?.split("@")[0] || "Staff",
     action:        "created",
     resource_type: "maintenance",
     resource_name: ticket.title,
@@ -84,7 +84,7 @@ export async function PATCH(req: NextRequest) {
 
   writeActivityLog({
     actor_email:   body.actorEmail || "unknown",
-    actor_name:    body.actorName  || "Admin",
+    actor_name:    body.actorName || body.actorEmail?.split("@")[0] || "Staff",
     action:        "updated",
     resource_type: "maintenance",
     resource_name: body.title     || id,
@@ -104,7 +104,7 @@ export async function DELETE(req: NextRequest) {
 
   writeActivityLog({
     actor_email:   req.nextUrl.searchParams.get("actorEmail") || "unknown",
-    actor_name:    req.nextUrl.searchParams.get("actorName")  || "Admin",
+    actor_name:    req.nextUrl.searchParams.get("actorName") || req.nextUrl.searchParams.get("actorEmail")?.split("@")[0] || "Staff",
     action:        "deleted",
     resource_type: "maintenance",
     resource_name: req.nextUrl.searchParams.get("name")       || id,

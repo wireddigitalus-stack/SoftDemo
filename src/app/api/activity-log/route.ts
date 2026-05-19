@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       headers: { ...H, "Prefer": "return=minimal" },
       body: JSON.stringify({
         actor_email:   actor_email   || "unknown",
-        actor_name:    actor_name    || "Admin",
+        actor_name:    actor_name || actor_email?.split("@")[0] || "Staff",
         action,
         resource_type,
         resource_name: resource_name || "",

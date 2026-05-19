@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
         // Audit log — fire and forget
         writeActivityLog({
           actor_email:   actorEmail   || "unknown",
-          actor_name:    actorName    || "Admin",
+          actor_name:    actorName || actorEmail?.split("@")[0] || "Staff",
           action:        "created",
           resource_type: "lead",
           resource_name: lead.name,

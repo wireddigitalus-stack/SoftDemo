@@ -275,7 +275,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
                 workerName: workerName.trim(), property: property.trim(),
                 area: area.trim(), scheduledDate: d,
                 startTime: startTime || null, endTime: endTime || null,
-                actorName: currentUserName || "Admin",
+                actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff",
                 actorEmail: currentUserEmail || "",
               }),
             })
@@ -319,7 +319,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
           workerName: workerName.trim(), property: property.trim(),
           area: "General", scheduledDate: date,
           startTime: null, endTime: null,
-          actorName: currentUserName || "Admin",
+          actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff",
           actorEmail: currentUserEmail || "",
         }),
       });
