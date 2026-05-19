@@ -389,12 +389,15 @@ export default function MaintenanceStaffPage() {
       const data = await res.json();
       if (Array.isArray(data.tickets)) {
         const all = data.tickets.map(rowToTicket) as Ticket[];
-        // Show mine + unassigned if showAll
-        const mine = all.filter(t =>
-          t.assignedTo.toLowerCase() === workerName.toLowerCase() ||
-          (showAll && t.assignedTo === "")
-        ).filter(t => t.status !== "cancelled");
-        setTickets(mine);
+        const nonCancelled = all.filter(t => t.status !== "cancelled");
+        if (showAll) {
+          // "All Open" — every non-cancelled ticket
+          setTickets(nonCancelled);
+        } else {
+          // "My Tickets" — only tickets assigned to this worker (case-insensitive, trimmed)
+          const myName = workerName.trim().toLowerCase();
+          setTickets(nonCancelled.filter(t => t.assignedTo.trim().toLowerCase() === myName));
+        }
       }
     } finally { setLoading(false); }
   }, [workerName, showAll]);
@@ -482,8 +485,10 @@ export default function MaintenanceStaffPage() {
         ) : open.length === 0 ? (
           <div className="text-center py-20">
             <CheckCircle2 size={48} className="text-[#4ADE80] mx-auto mb-3" />
-            <p className="text-white font-bold text-lg">All caught up!</p>
-            <p className="text-gray-600 text-sm mt-1">No open tickets assigned to you.</p>
+            <p className="text-white font-bold text-lg">{showAll ? "Queue is clear!" : "All caught up!"}</p>
+            <p className="text-gray-600 text-sm mt-1">
+              {showAll ? "No open tickets in the system." : "No open tickets assigned to you. Switch to \"All Open\" to see the full queue."}
+            </p>
           </div>
         ) : (
           <>
