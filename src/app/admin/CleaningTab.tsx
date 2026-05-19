@@ -224,6 +224,19 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [newPinInfo, setNewPinInfo] = useState<{ name: string; pin: string } | null>(null);
+  const [knownWorkers, setKnownWorkers] = useState<string[]>([]);
+
+  // Load real cleaning staff names for the datalist autocomplete
+  useEffect(() => {
+    fetch("/api/allowed-users?role=cleaning")
+      .then(r => r.json())
+      .then(d => {
+        if (Array.isArray(d.users)) {
+          setKnownWorkers(d.users.map((u: { name: string }) => u.name).filter(Boolean));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const addArea = () => setAreas(a => [...a, ""]);
   const setArea = (i: number, v: string) => setAreas(a => a.map((x, j) => j === i ? v : x));
@@ -376,7 +389,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
             <label style={{ color: "#94A3B8", fontSize: 13, fontWeight: 700, display: "block", marginBottom: 8 }}>Cleaner</label>
             <input
               value={workerName} onChange={e => setWorkerName(e.target.value)}
-              placeholder="Sarah M."
+              placeholder="Cleaner name"
               list="cleaner-suggestions-q"
               style={{
                 width: "100%", padding: "14px 16px", borderRadius: 12,
@@ -385,7 +398,7 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
               }}
             />
             <datalist id="cleaner-suggestions-q">
-              {["Sarah M.","Linda K.","Priya R.","Jess T."].map(n => <option key={n} value={n}/>)}
+              {knownWorkers.map(n => <option key={n} value={n}/>)}
             </datalist>
           </div>
           {/* Property */}
@@ -437,9 +450,9 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
         <div>
           <label className={LABEL}>Cleaner Name *</label>
           <input value={workerName} onChange={e => setWorkerName(e.target.value)}
-            placeholder="Sarah M." list="cleaner-suggestions" className={FIELD} />
+            placeholder="Cleaner name" list="cleaner-suggestions" className={FIELD} />
           <datalist id="cleaner-suggestions">
-            {["Sarah M.", "Linda K.", "Priya R.", "Jess T."].map(n => <option key={n} value={n} />)}
+            {knownWorkers.map(n => <option key={n} value={n} />)}
           </datalist>
         </div>
         <div>
@@ -741,22 +754,26 @@ function WorkerLegend({ assignments, workerIndex }: { assignments: Assignment[];
 
 // ─── Setup SQL Banner ─────────────────────────────────────────────────────────
 
-const SETUP_SQL = `CREATE TABLE IF NOT EXISTS cleaning_assignments (
-  id TEXT PRIMARY KEY,
-  worker_name TEXT DEFAULT '',
-  property TEXT DEFAULT '',
-  area TEXT DEFAULT '',
+const SETUP_SQL = `DROP TABLE IF EXISTS cleaning_assignments;
+
+CREATE TABLE cleaning_assignments (
+  id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  worker_name   TEXT DEFAULT '',
+  property      TEXT DEFAULT '',
+  area          TEXT DEFAULT '',
   scheduled_date DATE NOT NULL,
-  start_time TEXT,
-  end_time TEXT,
-  completed_at TIMESTAMPTZ,
-  notes TEXT DEFAULT '',
-  status TEXT DEFAULT 'pending',
-  created_at TIMESTAMPTZ DEFAULT now()
+  start_time    TEXT,
+  end_time      TEXT,
+  completed_at  TIMESTAMPTZ,
+  notes         TEXT DEFAULT '',
+  status        TEXT DEFAULT 'pending',
+  created_at    TIMESTAMPTZ DEFAULT now()
 );
 ALTER TABLE cleaning_assignments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "anon_all_cleaning" ON cleaning_assignments
-  FOR ALL TO anon USING (true) WITH CHECK (true);`;
+  FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "service_all_cleaning" ON cleaning_assignments
+  FOR ALL TO service_role USING (true) WITH CHECK (true);`;
 
 // ─── Main CleaningTab ─────────────────────────────────────────────────────────
 
