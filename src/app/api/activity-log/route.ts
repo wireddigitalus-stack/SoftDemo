@@ -48,3 +48,41 @@ ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
     headers: { "Cache-Control": "no-store, no-cache" },
   });
 }
+
+// POST /api/activity-log  — write a single audit entry from the client side
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { actor_email, actor_name, action, resource_type, resource_name, resource_id, metadata } = body;
+
+    if (!action || !resource_type) {
+      return NextResponse.json({ error: "action and resource_type required" }, { status: 400 });
+    }
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/activity_log`, {
+      method: "POST",
+      headers: { ...H, "Prefer": "return=minimal" },
+      body: JSON.stringify({
+        actor_email:   actor_email   || "unknown",
+        actor_name:    actor_name    || "Admin",
+        action,
+        resource_type,
+        resource_name: resource_name || "",
+        resource_id:   resource_id   || "",
+        metadata:      metadata      || {},
+        created_at:    new Date().toISOString(),
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("[activity-log POST]", err);
+      return NextResponse.json({ error: "log write failed" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("[activity-log POST] unexpected:", err);
+    return NextResponse.json({ error: "unexpected error" }, { status: 500 });
+  }
+}

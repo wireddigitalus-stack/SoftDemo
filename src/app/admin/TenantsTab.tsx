@@ -666,15 +666,17 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
     ];
     const changes: Record<string, { from: unknown; to: unknown }> = {};
     for (const key of TRACKED) {
-      const oldVal = editingTenant[key] ?? null;
-      const newVal = (form as Record<string, unknown>)[key] ?? null;
-      // Normalise numbers for comparison
-      const norm = (v: unknown) => (v === "" || v === undefined) ? null : v;
-      if (String(norm(oldVal)) !== String(norm(newVal))) {
-        changes[String(key).replace(/([A-Z])/g, " $1").toLowerCase().trim()] = {
-          from: oldVal,
-          to:   newVal,
-        };
+      const oldVal = editingTenant[key];
+      const newVal = (form as Record<string, unknown>)[key];
+      // Treat null / undefined / "" as the same empty value so untouched
+      // fields don't appear as changed
+      const norm = (v: unknown): string => {
+        if (v === null || v === undefined || v === "") return "";
+        return String(v).trim();
+      };
+      if (norm(oldVal) !== norm(newVal)) {
+        const label = String(key).replace(/([A-Z])/g, " $1").toLowerCase().trim();
+        changes[label] = { from: oldVal ?? null, to: newVal ?? null };
       }
     }
 

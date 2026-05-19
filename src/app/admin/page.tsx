@@ -1952,6 +1952,7 @@ export default function AdminPage() {
 
   // ── Delete a single lead ──
   const deleteLead = async (id: string) => {
+    const lead = leads.find(l => l.id === id);
     try {
       const res = await fetch("/api/lease-bot", {
         method: "DELETE",
@@ -1961,6 +1962,20 @@ export default function AdminPage() {
       if (res.ok) {
         setLeads(prev => prev.filter(l => l.id !== id));
         seenIdsRef.current.delete(id);
+        // Audit log
+        fetch("/api/activity-log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            actor_email:   currentUser?.email   || "unknown",
+            actor_name:    currentUser?.name    || "Admin",
+            action:        "deleted",
+            resource_type: "lead",
+            resource_name: lead?.name || id,
+            resource_id:   id,
+            metadata:      { score: lead?.score, score_label: lead?.scoreLabel },
+          }),
+        }).catch(() => {});
       }
     } catch { /* silent */ }
     setDeletingLeadId(null);
