@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { LEADS_STORE, type Lead } from "@/lib/leads-store";
 import { detectWhale } from "@/lib/whale-detector";
 import { supabaseAdmin, rowToLead } from "@/lib/supabase";
+import { writeActivityLog } from "@/lib/activity-log";
 
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -75,7 +76,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { name, email, phone, spaceType, budget, timeline, teamSize, additionalInfo,
-      utm_source, utm_medium, utm_campaign, sessionId } = body;
+      utm_source, utm_medium, utm_campaign, sessionId,
+      actorName, actorEmail } = body;
 
     if (!name || !spaceType || !budget) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -196,6 +198,22 @@ export async function POST(req: NextRequest) {
       if (!insertRes.ok) {
         const errText = await insertRes.text();
         console.error("Supabase REST insert failed:", insertRes.status, errText);
+      } else {
+        // Audit log — fire and forget
+        writeActivityLog({
+          actor_email:   actorEmail   || "unknown",
+          actor_name:    actorName    || "Admin",
+          action:        "created",
+          resource_type: "lead",
+          resource_name: lead.name,
+          resource_id:   lead.id,
+          metadata: {
+            score:       lead.score,
+            score_label: lead.scoreLabel,
+            budget:      lead.budget,
+            space_type:  lead.spaceType,
+          },
+        });
       }
     } catch (dbErr) {
       console.error("Supabase insert error:", dbErr);

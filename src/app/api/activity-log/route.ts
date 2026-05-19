@@ -86,3 +86,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "unexpected error" }, { status: 500 });
   }
 }
+
+// DELETE /api/activity-log?id=<uuid>  — remove a single log entry
+export async function DELETE(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get("id");
+  if (!id) {
+    return NextResponse.json({ error: "id required" }, { status: 400 });
+  }
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/activity_log?id=eq.${encodeURIComponent(id)}`,
+      { method: "DELETE", headers: { ...H, "Prefer": "return=minimal" } }
+    );
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("[activity-log DELETE]", err);
+      return NextResponse.json({ error: "delete failed" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("[activity-log DELETE] unexpected:", err);
+    return NextResponse.json({ error: "unexpected error" }, { status: 500 });
+  }
+}

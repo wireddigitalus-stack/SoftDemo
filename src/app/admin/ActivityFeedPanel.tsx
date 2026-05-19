@@ -87,6 +87,22 @@ export default function ActivityFeedPanel({ onClose }: Props) {
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const deleteLog = useCallback(async (id: string) => {
+    setDeletingId(id);
+    // Optimistic remove
+    setLogs(prev => prev.filter(l => l.id !== id));
+    try {
+      await fetch(`/api/activity-log?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    } catch {
+      // If it fails, re-fetch to restore
+      fetchLogs();
+    } finally {
+      setDeletingId(null);
+    }
+  }, [fetchLogs]);
+
   const filters: Array<{ key: "all" | ActivityLog["resource_type"]; label: string }> = [
     { key: "all",         label: "All"         },
     { key: "tenant",      label: "Tenants"     },
@@ -254,9 +270,17 @@ export default function ActivityFeedPanel({ onClose }: Props) {
                     </div>
                   </div>
 
-                  {/* Action icon badge */}
-                  <div className="flex-shrink-0 mt-1">
+                  {/* Right column: action icon + delete on hover */}
+                  <div className="flex-shrink-0 flex flex-col items-center gap-2 mt-0.5">
                     <ActionIcon size={11} style={{ color: actionCfg.color }} />
+                    <button
+                      onClick={() => deleteLog(log.id)}
+                      disabled={deletingId === log.id}
+                      title="Remove this entry"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity w-5 h-5 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] flex items-center justify-center hover:bg-[rgba(239,68,68,0.25)] hover:border-[rgba(239,68,68,0.5)] active:scale-95"
+                    >
+                      <X size={9} className="text-red-400" />
+                    </button>
                   </div>
                 </div>
               );
