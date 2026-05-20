@@ -57,9 +57,23 @@ function buildingMatch(building: string, propertyName: string): boolean {
   const b = norm(building);
   const p = norm(propertyName);
   if (!b || !p) return false;
-  // exact normalized match, or one contains a 6-char prefix of the other
-  const prefix = Math.min(6, Math.min(b.length, p.length));
-  return b === p || b.includes(p.slice(0, prefix)) || p.includes(b.slice(0, prefix));
+  // Exact normalized match
+  if (b === p) return true;
+  // Token-based: extract significant words (≥3 chars) from both sides
+  const toWords = (s: string) => s.toLowerCase().replace(/[^a-z\s]/g, "").trim().split(/\s+/).filter(w => w.length >= 3);
+  const bWords = toWords(building);
+  const pWords = toWords(propertyName);
+  // Either all building words exist in property name, or all property words exist in building
+  // Both must have ≥2 words to avoid single-word false positives
+  if (bWords.length >= 2) {
+    const pText = propertyName.toLowerCase().replace(/[^a-z\s]/g, "");
+    if (bWords.every(w => pText.includes(w))) return true;
+  }
+  if (pWords.length >= 2) {
+    const bText = building.toLowerCase().replace(/[^a-z\s]/g, "");
+    if (pWords.every(w => bText.includes(w))) return true;
+  }
+  return false;
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
