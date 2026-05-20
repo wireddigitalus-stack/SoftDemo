@@ -9,6 +9,7 @@ type Tip = { title: string; body: string; emoji: string };
 export type TabKey =
   | "leads"
   | "tenants"
+  | "propdetails"
   | "analytics"
   | "maintenance"
   | "cleaning"
@@ -109,6 +110,58 @@ const TIPS: Record<TabKey, Tip[]> = {
       emoji: "📊",
       title: "Activity Trail",
       body: "Every tenant action — adding, editing, status changes, and notes — is logged in the Activity tab with the name of the admin who performed it. Use this for audit trails and team accountability.",
+    },
+  ],
+  propdetails: [
+    {
+      emoji: "🎯",
+      title: "Occupancy Ring — What It Measures",
+      body: "The circular gauge on each property card is your Occupancy Rate: (matched tenants ÷ Total Units) × 100%. Green = fully occupied, yellow = partially filled, gray = no tenants linked. It pulls tenant data live from the Tenants tab.",
+    },
+    {
+      emoji: "🔢",
+      title: "Set Total Units First",
+      body: "Expand 'Property Financials' on any card and set the Total Units field to the real number of leasable units. Without this, the system defaults to counting linked tenants — which always shows 100%. For accurate occupancy, set the real count (e.g., City Centre = 20 units).",
+    },
+    {
+      emoji: "💰",
+      title: "P&L Financials",
+      body: "Each property card tracks Revenue (sum of tenant rents), Expenses (taxes, insurance, electric, water, other), and Net P&L. Expand 'Property Financials' to enter your numbers. The system auto-calculates monthly breakdowns from annual figures.",
+    },
+    {
+      emoji: "📊",
+      title: "Portfolio KPI Bar",
+      body: "The summary bar at the top shows total properties, total tenants, combined revenue, and net P&L across your entire portfolio. These numbers update automatically as you add tenants and fill in property financials.",
+    },
+    {
+      emoji: "🏢",
+      title: "How Tenants Link to Properties",
+      body: "Tenants connect to properties by their 'Building' field in the Tenants tab. Make sure the building name matches the property name — e.g., type 'Centre Point' (not just 'Centre') so the system can match it correctly. Both partial and exact matches work as long as all key words are present.",
+    },
+    {
+      emoji: "⚠️",
+      title: "Lease Expiry Alerts",
+      body: "Tenants with leases expiring within 90 days show a yellow 'Xd left' badge. Expired leases show red. A banner at the bottom of the tab warns you of total upcoming expirations — use this to plan renewal conversations early.",
+    },
+    {
+      emoji: "📈",
+      title: "Vacancy Trend Tracking",
+      body: "Set each property's trend to Improving (↑), Stable (→), or Declining (↓) in the financials section. This shows as a colored badge on the card header — helpful for quarterly reviews and investor reporting.",
+    },
+    {
+      emoji: "🖨️",
+      title: "Print Portfolio Report",
+      body: "Click 'Print Report' to generate a formatted portfolio summary with every property's occupancy, revenue, expenses, P&L, tenant list, and lease dates. Use 'Save as PDF' in the print dialog for a clean one-click investor report.",
+    },
+    {
+      emoji: "📉",
+      title: "P&L History Chart",
+      body: "The Portfolio P&L History chart shows revenue and expense trends over time. Each time you save property financials, a snapshot is recorded. Over weeks and months this builds into a visual trend line for board meetings and lender reviews.",
+    },
+    {
+      emoji: "🏆",
+      title: "CEO Overview Card",
+      body: "The top-level Portfolio Overview card gives you the executive summary: total portfolio value, weighted occupancy across all properties, average rent per unit, and overall health score. It's designed to answer 'how's the portfolio doing?' in one glance.",
     },
   ],
   maintenance: [
@@ -726,6 +779,7 @@ export default function ProTips({ activeTab }: ProTipsProps) {
   const tabLabel: Record<TabKey, string> = {
     leads: "Leads",
     tenants: "Tenants",
+    propdetails: "Property Details",
     maintenance: "Maintenance",
     cleaning: "Cleaning",
     analytics: "Analytics",
