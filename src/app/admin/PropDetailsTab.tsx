@@ -4,7 +4,7 @@ import {
   Building2, Users, DollarSign, TrendingUp, AlertTriangle,
   Clock, CheckCircle2, Home, Loader2, RefreshCw, Save,
   ChevronDown, ChevronUp, Zap, Droplets, ShieldCheck, Receipt,
-  MoreHorizontal, TrendingDown, Minus, Printer, X,
+  MoreHorizontal, TrendingDown, Minus, Printer, X, Pencil, Plus, Trash2,
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
 import type { Tenant } from "./TenantsTab";
@@ -23,6 +23,7 @@ interface PropDetail {
   other_monthly: number;
   trend: "up" | "stable" | "down";
   notes: string;
+  display_name: string | null;
 }
 
 type Trend = "up" | "stable" | "down";
@@ -36,7 +37,20 @@ type DetailForm = {
   otherMonthly: string;
   trend: Trend;
   notes: string;
+  displayName: string;
 };
+
+// Unified shape used by PropertyCard — works for both static (data.ts) and DB properties
+interface PropertyItem {
+  id: string;
+  name: string;
+  type: string;
+  city: string;
+  address?: string;
+  sqft: string;
+  status?: string;
+  isDynamic?: boolean; // true if from Supabase properties table
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -149,7 +163,7 @@ function TrendSelector({ value, onChange }: { value: Trend; onChange: (v: Trend)
 // ── PrintReport ───────────────────────────────────────────────────────────────
 
 interface PrintData {
-  property: typeof PROPERTIES[number];
+  property: PropertyItem;
   tenants: Tenant[];
   detail?: PropDetail;
 }
@@ -227,7 +241,7 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
               <div key={property.id} className="border border-gray-200 rounded-xl overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
                   <div>
-                    <h2 className="font-black text-gray-900 text-sm">{property.name}</h2>
+                    <h2 className="font-black text-gray-900 text-sm">{d?.display_name || property.name}</h2>
                     <p className="text-xs text-gray-500">{property.city} · {property.type}</p>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
@@ -288,24 +302,25 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
 
 // ── PropertyCard ──────────────────────────────────────────────────────────────
 
-function PropertyCard({ property, tenants, detail, onSave }: {
-  property: typeof PROPERTIES[number];
+function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
+  property: PropertyItem;
   tenants: Tenant[];
   detail: PropDetail | undefined;
   onSave: (id: string, form: DetailForm) => Promise<void>;
+  onDelete?: (id: string) => void;
 }) {
   const trend: Trend = detail?.trend || "stable";
   const trendItem = TRENDS.find(t => t.value === trend)!;
   const TrendIcon = trendItem.icon;
+  const displayName = detail?.display_name || property.name;
   const propTenants = tenants.filter(t => {
-    const b = (t.building || "").toLowerCase();
-    const n = property.name.toLowerCase();
-    return buildingMatch(t.building || "", property.name);
+    return buildingMatch(t.building || "", displayName);
   });
 
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [editingName, setEditingName] = useState(false);
   const [form, setForm] = useState<DetailForm>({
     totalUnits: String(detail?.total_units || ""),
     taxesAnnual: String(detail?.taxes_annual || ""),
@@ -315,6 +330,7 @@ function PropertyCard({ property, tenants, detail, onSave }: {
     otherMonthly: String(detail?.other_monthly || ""),
     trend: detail?.trend || "stable",
     notes: detail?.notes || "",
+    displayName: detail?.display_name || "",
   });
 
   // Sync form if detail loads after initial render
@@ -328,6 +344,7 @@ function PropertyCard({ property, tenants, detail, onSave }: {
       otherMonthly: String(detail.other_monthly || ""),
       trend: detail.trend || "stable",
       notes: detail.notes || "",
+      displayName: detail.display_name || "",
     });
   }, [detail]);
 
@@ -352,6 +369,7 @@ function PropertyCard({ property, tenants, detail, onSave }: {
     await onSave(property.id, form);
     setSaving(false);
     setSaved(true);
+    setEditingName(false);
     setTimeout(() => setSaved(false), 2500);
   };
 
@@ -363,24 +381,50 @@ function PropertyCard({ property, tenants, detail, onSave }: {
         <Ring value={occupancy} color={occColor} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-black text-white leading-tight truncate">{property.name}</h3>
+            {editingName ? (
+              <input
+                autoFocus
+                value={form.displayName || displayName}
+                onChange={e => set("displayName")(e.target.value)}
+                onKeyDown={e => { if (e.key === "Escape") setEditingName(false); if (e.key === "Enter") handleSave(); }}
+                className="text-sm font-black text-white leading-tight bg-[rgba(255,255,255,0.06)] border border-[rgba(167,139,250,0.4)] rounded-lg px-2 py-1 outline-none w-full max-w-[260px]"
+                placeholder={property.name}
+              />
+            ) : (
+              <h3 className="text-sm font-black text-white leading-tight truncate">{displayName}</h3>
+            )}
+            <button onClick={() => setEditingName(e => !e)} title="Rename property"
+              className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-gray-600 hover:text-[#A78BFA] hover:bg-[rgba(167,139,250,0.1)] transition-all">
+              <Pencil size={10} />
+            </button>
             <span className="flex-shrink-0 flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
               style={{ background: `${trendItem.color}15`, color: trendItem.color, border: `1px solid ${trendItem.color}30` }}>
               <TrendIcon size={9} />{trendItem.label}
             </span>
           </div>
+          {form.displayName && form.displayName !== property.name && (
+            <p className="text-[9px] text-gray-700 mt-0.5 truncate italic">System: {property.name}</p>
+          )}
           <p className="text-[11px] text-gray-500 mt-0.5 truncate">{property.city} · {property.type}</p>
           <span className="mt-1.5 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
             style={{ background: `${occColor}18`, color: occColor, border: `1px solid ${occColor}30` }}>
             {rented}/{totalUnits} units · {occupancy}% occupied
           </span>
         </div>
-        {revenue > 0 && (
-          <div className="text-right flex-shrink-0">
-            <p className="text-[10px] text-gray-600 mb-0.5">Revenue</p>
-            <p className="text-base font-black text-[#4ADE80]">${revenue.toLocaleString()}/mo</p>
-          </div>
-        )}
+        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+          {revenue > 0 && (
+            <div className="text-right">
+              <p className="text-[10px] text-gray-600 mb-0.5">Revenue</p>
+              <p className="text-base font-black text-[#4ADE80]">${revenue.toLocaleString()}/mo</p>
+            </div>
+          )}
+          {property.isDynamic && onDelete && (
+            <button onClick={() => { if (confirm(`Delete "${displayName}"? This cannot be undone.`)) onDelete(property.id); }}
+              className="flex items-center gap-1 text-[9px] text-red-500/50 hover:text-red-400 transition-colors" title="Delete property">
+              <Trash2 size={9} /> Remove
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Quick stats */}
@@ -500,21 +544,87 @@ function PropertyCard({ property, tenants, detail, onSave }: {
   );
 }
 
+// ── AddPropertyForm ───────────────────────────────────────────────────────────
+
+const EMPTY_ADD = { name: "", type: "Office", city: "Bristol, TN", address: "", sqft: "" };
+
+function AddPropertyForm({ onAdd, onClose }: { onAdd: (p: typeof EMPTY_ADD) => Promise<void>; onClose: () => void }) {
+  const [form, setForm] = useState({ ...EMPTY_ADD });
+  const [saving, setSaving] = useState(false);
+  const s = (k: keyof typeof EMPTY_ADD) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm(f => ({ ...f, [k]: e.target.value }));
+  const valid = form.name.trim().length >= 2 && form.city.trim().length >= 2;
+  const handle = async () => { setSaving(true); await onAdd(form); setSaving(false); };
+  const F = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg text-xs text-white px-3 py-2.5 outline-none focus:border-[rgba(167,139,250,0.5)] transition-colors";
+  const L = "text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1";
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="glass rounded-2xl border border-[rgba(167,139,250,0.2)] w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-black text-white flex items-center gap-2">
+            <Plus size={14} className="text-[#A78BFA]" /> Add New Property
+          </h3>
+          <button onClick={onClose} className="w-7 h-7 rounded-full bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] flex items-center justify-center transition-colors">
+            <X size={12} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div>
+          <label className={L}>Property Name *</label>
+          <input value={form.name} onChange={s("name")} placeholder="e.g. Warehouse 14B" className={F} autoFocus />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={L}>Type</label>
+            <select value={form.type} onChange={s("type")} className={F}>
+              {["Office", "Retail", "Warehouse", "Industrial", "Mixed-Use", "Event Space", "CoWorking", "Residential", "Land", "Other"].map(t => (
+                <option key={t} value={t} className="bg-gray-900">{t}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={L}>City *</label>
+            <input value={form.city} onChange={s("city")} placeholder="Bristol, TN" className={F} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={L}>Address</label>
+            <input value={form.address} onChange={s("address")} placeholder="123 Main St" className={F} />
+          </div>
+          <div>
+            <label className={L}>Sq Ft</label>
+            <input value={form.sqft} onChange={s("sqft")} placeholder="5,000" className={F} />
+          </div>
+        </div>
+
+        <button onClick={handle} disabled={!valid || saving}
+          className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${valid ? "bg-[rgba(167,139,250,0.2)] text-[#A78BFA] hover:bg-[rgba(167,139,250,0.3)] border border-[rgba(167,139,250,0.3)]" : "bg-[rgba(255,255,255,0.03)] text-gray-700 border border-[rgba(255,255,255,0.05)] cursor-not-allowed"}`}>
+          {saving ? <><Loader2 size={12} className="animate-spin" /> Adding…</> : <><Plus size={12} /> Add Property</>}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function PropDetailsTab() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [details, setDetails] = useState<PropDetail[]>([]);
+  const [dynProps, setDynProps] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [migrationSql, setMigrationSql] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const [showPrint, setShowPrint] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [tRes, dRes] = await Promise.all([
+    const [tRes, dRes, pRes] = await Promise.all([
       fetch("/api/tenants").catch(() => null),
       fetch("/api/property-details").catch(() => null),
+      fetch("/api/properties-dynamic?admin=1").catch(() => null),
     ]);
     if (tRes?.ok) { const d = await tRes.json(); if (Array.isArray(d.tenants)) setTenants(d.tenants); }
     if (dRes?.ok) {
@@ -522,10 +632,34 @@ export default function PropDetailsTab() {
       if (d.needsMigration) setMigrationSql(d.sql || "Run migration SQL in Supabase.");
       if (Array.isArray(d.details)) setDetails(d.details);
     }
+    if (pRes?.ok) {
+      const d = await pRes.json();
+      if (Array.isArray(d.properties)) {
+        setDynProps(d.properties.map((p: Record<string, unknown>) => ({
+          id: String(p.id),
+          name: (p.name as string) || "Untitled",
+          type: (p.type as string) || "Other",
+          city: (p.city as string) || "",
+          address: (p.address as string) || "",
+          sqft: (p.sqft as string) || "TBD",
+          isDynamic: true,
+        })));
+      }
+    }
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load, tick]);
+
+  // Merge static + dynamic properties (deduplicate by id)
+  const allProperties: PropertyItem[] = useMemo(() => {
+    const staticProps: PropertyItem[] = PROPERTIES.map(p => ({
+      id: p.id, name: p.name, type: p.type, city: p.city, address: p.address, sqft: p.sqft,
+    }));
+    const staticIds = new Set(staticProps.map(p => p.id));
+    const uniqueDyn = dynProps.filter(p => !staticIds.has(p.id));
+    return [...staticProps, ...uniqueDyn];
+  }, [dynProps]);
 
   const handleSave = async (propertyId: string, form: DetailForm) => {
     const res = await fetch("/api/property-details", {
@@ -534,11 +668,28 @@ export default function PropDetailsTab() {
       body: JSON.stringify({ propertyId, ...form }),
     });
     if (res.ok) {
-      // Refresh details silently
       const d = await res.json();
       if (d.error === "migration_required") { setMigrationSql(d.sql); return; }
       setTick(t => t + 1);
     }
+  };
+
+  const handleAddProperty = async (form: typeof EMPTY_ADD) => {
+    const res = await fetch("/api/properties-dynamic", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form, published: false }),
+    });
+    if (res.ok) {
+      setShowAdd(false);
+      setTick(t => t + 1);
+    }
+  };
+
+  const handleDeleteProperty = async (id: string) => {
+    // Delete from properties-dynamic (Supabase)
+    await fetch(`/api/properties-dynamic?id=${id}`, { method: "DELETE" }).catch(() => null);
+    setTick(t => t + 1);
   };
 
   const detailMap = useMemo(() =>
@@ -549,13 +700,14 @@ export default function PropDetailsTab() {
     s + d.electric_monthly + d.water_monthly + d.other_monthly + d.taxes_annual / 12 + d.insurance_annual / 12, 0), [details]);
   const alerts = useMemo(() => tenants.filter(t => { const d = daysUntil(t.leaseEnd || t.renewalDate); return d !== null && d <= 90; }).length, [tenants]);
 
-  const printData = useMemo(() => PROPERTIES.map(p => ({
+  const printData = useMemo(() => allProperties.map(p => ({
     property: p,
     tenants: tenants.filter(t => {
-      return buildingMatch(t.building || "", p.name);
+      const displayName = detailMap[p.id]?.display_name || p.name;
+      return buildingMatch(t.building || "", displayName);
     }),
     detail: detailMap[p.id],
-  })), [tenants, detailMap]);
+  })), [allProperties, tenants, detailMap]);
 
   return (
     <div className="space-y-5">
@@ -569,14 +721,20 @@ export default function PropDetailsTab() {
           </h2>
           <p className="text-xs text-gray-500 mt-1">Occupancy, P&amp;L, and financials per property — live from Tenant data.</p>
         </div>
-        <button onClick={() => setTick(t => t + 1)}
-          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)] transition-all">
-          <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> Refresh
-        </button>
-        <button onClick={() => setShowPrint(true)}
-          className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] px-3 py-2 rounded-lg border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-all">
-          <Printer size={12} /> Print Report
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={() => setShowAdd(true)}
+            className="flex items-center gap-1.5 text-xs font-bold text-[#4ADE80] px-3 py-2 rounded-lg border border-[rgba(74,222,128,0.25)] hover:bg-[rgba(74,222,128,0.1)] transition-all">
+            <Plus size={12} /> Add Property
+          </button>
+          <button onClick={() => setTick(t => t + 1)}
+            className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)] transition-all">
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> Refresh
+          </button>
+          <button onClick={() => setShowPrint(true)}
+            className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] px-3 py-2 rounded-lg border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-all">
+            <Printer size={12} /> Print Report
+          </button>
+        </div>
       </div>
 
       {/* Migration banner */}
@@ -595,7 +753,7 @@ export default function PropDetailsTab() {
       {/* Portfolio KPI bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { icon: Building2,     label: "Properties",  value: PROPERTIES.length,                                    color: "#A78BFA" },
+          { icon: Building2,     label: "Properties",  value: allProperties.length,                                    color: "#A78BFA" },
           { icon: Users,         label: "Tenants",     value: tenants.length,                                       color: "#60A5FA" },
           { icon: DollarSign,    label: "Revenue",     value: `$${totalRevenue.toLocaleString()}/mo`,               color: "#4ADE80" },
           { icon: TrendingUp,    label: "Net P&L",     value: totalExpenses ? `$${Math.round(totalRevenue - totalExpenses).toLocaleString()}/mo` : "—", color: totalRevenue > totalExpenses ? "#4ADE80" : "#EF4444" },
@@ -625,8 +783,8 @@ export default function PropDetailsTab() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {PROPERTIES.map(p => (
-            <PropertyCard key={p.id} property={p} tenants={tenants} detail={detailMap[p.id]} onSave={handleSave} />
+          {allProperties.map(p => (
+            <PropertyCard key={p.id} property={p} tenants={tenants} detail={detailMap[p.id]} onSave={handleSave} onDelete={handleDeleteProperty} />
           ))}
         </div>
       )}
@@ -638,6 +796,7 @@ export default function PropDetailsTab() {
       )}
 
       {showPrint && <PrintReport data={printData} onClose={() => setShowPrint(false)} />}
+      {showAdd && <AddPropertyForm onAdd={handleAddProperty} onClose={() => setShowAdd(false)} />}
     </div>
   );
 }

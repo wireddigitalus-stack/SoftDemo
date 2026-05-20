@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { propertyId, ...fields } = body;
     if (!propertyId) return NextResponse.json({ error: "propertyId required" }, { status: 400 });
 
-    const row = {
+    const row: Record<string, unknown> = {
       property_id:      propertyId,
       total_units:      Number(fields.totalUnits)    || 0,
       taxes_annual:     Number(fields.taxesAnnual)   || 0,
@@ -51,6 +51,10 @@ export async function POST(req: NextRequest) {
       notes:            (fields.notes as string)?.trim() || "",
       updated_at:       new Date().toISOString(),
     };
+    // Optional display_name override (allows renaming without changing ID)
+    if (typeof fields.displayName === "string") {
+      row.display_name = fields.displayName.trim() || null;
+    }
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/property_details`, {
       method: "POST",
@@ -87,8 +91,10 @@ CREATE TABLE IF NOT EXISTS property_details (
   other_monthly     NUMERIC(10,2) DEFAULT 0,
   trend             TEXT DEFAULT 'stable',
   notes             TEXT DEFAULT '',
+  display_name      TEXT DEFAULT NULL,
   updated_at        TIMESTAMPTZ DEFAULT NOW()
 );
 -- If table already exists, add missing columns:
 ALTER TABLE property_details ADD COLUMN IF NOT EXISTS trend TEXT DEFAULT 'stable';
+ALTER TABLE property_details ADD COLUMN IF NOT EXISTS display_name TEXT DEFAULT NULL;
 `.trim();

@@ -163,6 +163,21 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "CEO Overview Card",
       body: "The top-level Portfolio Overview card gives you the executive summary: total portfolio value, weighted occupancy across all properties, average rent per unit, and overall health score. It's designed to answer 'how's the portfolio doing?' in one glance.",
     },
+    {
+      emoji: "➕",
+      title: "Adding a New Property",
+      body: "Click the green '+ Add Property' button in the header. Fill in the name, type, city, address, and square footage. The property appears immediately as a new card with its own occupancy ring, financials accordion, and tenant matching — no code changes needed.",
+    },
+    {
+      emoji: "✏️",
+      title: "Renaming a Property",
+      body: "Click the pencil icon (✏️) next to any property name to rename it. This sets an internal 'display name' that controls how it appears in the dashboard and printed reports. The original system name is preserved underneath so nothing else breaks. Hit Enter or click Save to commit.",
+    },
+    {
+      emoji: "🗑️",
+      title: "Removing a Custom Property",
+      body: "Properties you added through the dashboard show a small 'Remove' link in the card header. Click it and confirm to permanently delete. Note: the 9 original SEO-linked properties cannot be deleted — only renamed.",
+    },
   ],
   maintenance: [
     {
