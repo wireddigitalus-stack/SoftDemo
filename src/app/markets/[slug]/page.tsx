@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { GEO_PAGES, COMPANY, PROPERTIES } from "@/lib/data";
 import CustomSearchCTA from "@/components/CustomSearchCTA";
+import { getSiteContent } from "@/lib/site-content";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -77,17 +78,39 @@ export default async function GeoPage({ params }: Props) {
   const geo = GEO_PAGES.find((g) => g.slug === slug);
   if (!geo) notFound();
 
-  // FAQs for this city
-  const faqs = [
+  // Fetch content overrides from admin MarketEditor
+  const overrides = await getSiteContent(`market:${slug}`);
+  const c = (key: string, fallback: string) => overrides[key] || fallback;
+  const cArr = (key: string, fallback: string[]) => {
+    const val = overrides[key];
+    return val ? val.split("\n").filter(Boolean) : fallback;
+  };
+
+  // Build overridden geo data
+  const geoData = {
+    ...geo,
+    h1: c("h1", geo.h1),
+    heroSubline: c("heroSubline", geo.heroSubline),
+    marketBlurb: c("marketBlurb", geo.marketBlurb),
+    population: c("population", geo.population),
+    medianIncome: c("medianIncome", geo.medianIncome),
+    neighborhoods: cArr("neighborhoods", geo.neighborhoods),
+    keyEmployers: cArr("keyEmployers", geo.keyEmployers),
+    nearbyHighways: cArr("nearbyHighways", geo.nearbyHighways),
+    availableTypes: cArr("availableTypes", geo.availableTypes),
+  };
+
+  // FAQs for this city (with content editor overrides)
+  const defaultFaqs = [
     {
       q: `Does Vision LLC have commercial property available in ${geo.city}, ${geo.state}?`,
       a: geo.isPrimary
-        ? `Yes! Vision LLC is the largest private commercial property owner in Downtown Bristol with a full portfolio including ${geo.availableTypes.join(", ")}. Contact our team at ${COMPANY.phone} to discuss current availability.`
-        : `Vision LLC doesn't maintain offices in ${geo.city}, but we actively serve businesses from ${geo.city} — connecting them with our commercial portfolio in Downtown Bristol, TN, typically a short drive via regional highways. Our available types include ${geo.availableTypes.join(", ")}. Call ${COMPANY.phone} to discuss options.`,
+        ? `Yes! Vision LLC is the largest private commercial property owner in Downtown Bristol with a full portfolio including ${geoData.availableTypes.join(", ")}. Contact our team at ${COMPANY.phone} to discuss current availability.`
+        : `Vision LLC doesn't maintain offices in ${geo.city}, but we actively serve businesses from ${geo.city} — connecting them with our commercial portfolio in Downtown Bristol, TN, typically a short drive via regional highways. Our available types include ${geoData.availableTypes.join(", ")}. Call ${COMPANY.phone} to discuss options.`,
     },
     {
       q: `What types of commercial space does Vision LLC offer in the ${geo.region}?`,
-      a: `In the ${geo.region} market, Vision LLC offers ${geo.availableTypes.join(", ")}. We specialize in finding the right fit for your business — from flexible coworking memberships to long-term commercial leases.`,
+      a: `In the ${geo.region} market, Vision LLC offers ${geoData.availableTypes.join(", ")}. We specialize in finding the right fit for your business — from flexible coworking memberships to long-term commercial leases.`,
     },
     {
       q: `How long has Vision LLC been serving ${geo.city}?`,
@@ -98,6 +121,10 @@ export default async function GeoPage({ params }: Props) {
       a: `You can call us at ${COMPANY.phone}, email ${COMPANY.email}, or fill out our contact form. Our team typically responds within 24 hours to schedule a tour of any available space.`,
     },
   ];
+  const faqs = defaultFaqs.map((f, i) => ({
+    q: c(`faq_q${i + 1}`, f.q),
+    a: c(`faq_a${i + 1}`, f.a),
+  }));
 
   // JSON-LD for this specific geo page
   const localSchema = {
@@ -221,15 +248,15 @@ export default async function GeoPage({ params }: Props) {
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-5">
-              {geo.h1}
+              {geoData.h1}
             </h1>
 
             <p className="text-lg sm:text-xl text-[#4ADE80] font-semibold mb-4">
-              {geo.heroSubline}
+              {geoData.heroSubline}
             </p>
 
             <p className="text-gray-400 text-lg leading-relaxed mb-8 max-w-2xl">
-              {geo.marketBlurb}
+              {geoData.marketBlurb}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -255,17 +282,17 @@ export default async function GeoPage({ params }: Props) {
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest">Population</span>
-              <span className="text-2xl font-black text-white">{geo.population}</span>
+              <span className="text-2xl font-black text-white">{geoData.population}</span>
               <span className="text-xs text-gray-500">Metro area</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest">Median Income</span>
-              <span className="text-2xl font-black text-white">{geo.medianIncome}</span>
+              <span className="text-2xl font-black text-white">{geoData.medianIncome}</span>
               <span className="text-xs text-gray-500">Household / year</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest">Space Types</span>
-              <span className="text-lg font-black text-white leading-snug">{geo.availableTypes.length}+</span>
+              <span className="text-lg font-black text-white leading-snug">{geoData.availableTypes.length}+</span>
               <span className="text-xs text-gray-500">Commercial categories</span>
             </div>
           </div>
@@ -282,12 +309,12 @@ export default async function GeoPage({ params }: Props) {
                 Why Choose {geo.city} for Your{" "}
                 <span className="gradient-text-green">Commercial Space?</span>
               </h2>
-              <p className="text-gray-400 leading-relaxed mb-6">{geo.marketBlurb}</p>
+              <p className="text-gray-400 leading-relaxed mb-6">{geoData.marketBlurb}</p>
 
               <div className="space-y-3">
                 {[
-                  `Access to ${geo.population} metro area residents`,
-                  `Major employers: ${geo.keyEmployers.join(", ")}`,
+                  `Access to ${geoData.population} metro area residents`,
+                  `Major employers: ${geoData.keyEmployers.join(", ")}`,
                   `Vision LLC's 20+ year regional expertise`,
                   "Flexible leasing terms and tenant-friendly approach",
                   "Vertically integrated team (no third-party hand-offs)",
@@ -306,7 +333,7 @@ export default async function GeoPage({ params }: Props) {
                 {geo.isPrimary ? `Available Space Types in ${geo.city}` : "Space Types Available — Downtown Bristol, TN"}
               </h3>
               <div className="space-y-4">
-                {geo.availableTypes.map((type) => (
+                {geoData.availableTypes.map((type) => (
                   <div
                     key={type}
                     className="flex items-center justify-between py-3 border-b border-[rgba(74,222,128,0.08)] last:border-0"
@@ -457,7 +484,7 @@ export default async function GeoPage({ params }: Props) {
               <div className="mt-6">
                 <p className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest mb-2">Neighborhoods Served</p>
                 <div className="flex flex-wrap gap-2">
-                  {geo.neighborhoods.map((n: string) => (
+                  {geoData.neighborhoods.map((n: string) => (
                     <span key={n} className="text-xs px-3 py-1 rounded-lg bg-[rgba(74,222,128,0.07)] border border-[rgba(74,222,128,0.15)] text-gray-400">
                       {n}
                     </span>
@@ -471,7 +498,7 @@ export default async function GeoPage({ params }: Props) {
               <div>
                 <p className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest mb-2">Major Highways</p>
                 <div className="flex flex-wrap gap-2">
-                  {geo.nearbyHighways.map((hw: string) => (
+                  {geoData.nearbyHighways.map((hw: string) => (
                     <span key={hw} className="text-xs px-3 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-gray-400">
                       {hw}
                     </span>
@@ -481,7 +508,7 @@ export default async function GeoPage({ params }: Props) {
               <div>
                 <p className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest mb-2">Commercial Space Available</p>
                 <div className="flex flex-wrap gap-2">
-                  {geo.availableTypes.map((t: string) => (
+                  {geoData.availableTypes.map((t: string) => (
                     <span key={t} className="text-xs px-3 py-1 rounded-lg bg-[rgba(74,222,128,0.07)] border border-[rgba(74,222,128,0.15)] text-gray-400">
                       {t}
                     </span>
@@ -491,7 +518,7 @@ export default async function GeoPage({ params }: Props) {
               <div>
                 <p className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest mb-2">Top Employers in {geo.city}</p>
                 <div className="flex flex-wrap gap-2">
-                  {geo.keyEmployers.map((e: string) => (
+                  {geoData.keyEmployers.map((e: string) => (
                     <span key={e} className="text-xs px-3 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-gray-400">
                       {e}
                     </span>

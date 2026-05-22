@@ -1,21 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = process.env.SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY!;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-if (!SUPABASE_URL) throw new Error("SUPABASE_URL is not set");
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 // ── Server-side admin client (service role — never expose to browser) ──────────
 // Use this in API routes for full DB access (inserts, reads bypassing RLS).
-export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-  auth: { persistSession: false },
-});
+export const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+  : null as unknown as ReturnType<typeof createClient>;
 
 // ── Public client (anon key — safe for client components if needed) ───────────
-export const supabaseAnon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: false },
-});
+export const supabaseAnon = SUPABASE_URL && SUPABASE_ANON_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
+  : null as unknown as ReturnType<typeof createClient>;
 
 // ── Row → Lead mapper (snake_case DB → camelCase TypeScript) ─────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
