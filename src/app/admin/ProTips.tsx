@@ -559,7 +559,7 @@ const TIPS: Record<TabKey, Tip[]> = {
     {
       emoji: "🤝",
       title: "QR Meet Pages",
-      body: "Each team member has a personal QR code page at vision-llc.vercel.app/meet/[name]. When scanned in person, prospects fill out a quick form and the lead is auto-captured in your dashboard tagged 'qr / in-person' with the team member's name as the campaign source.",
+      body: "Each team member has a personal QR code page at teamvisionllc.com/meet/[name]. When scanned in person, prospects fill out a quick form and the lead is auto-captured in your dashboard tagged 'qr / in-person' with the team member's name as the campaign source.",
     },
     {
       emoji: "📊",

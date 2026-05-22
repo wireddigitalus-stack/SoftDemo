@@ -731,7 +731,7 @@ function NotificationsCard() {
 export function SocialLinksCard() {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState("");
-  const BASE = "https://vision-llc.vercel.app";
+  const BASE = "https://www.teamvisionllc.com";
 
   const LINKS = [
     { slug: "", label: "All Properties", emoji: "🏠", desc: "Default — shows all properties equally" },
