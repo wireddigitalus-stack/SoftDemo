@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
+import { getSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "C-Suite Executive Advisement & Strategic Consulting | Vision LLC, Bristol TN",
@@ -108,7 +109,25 @@ const ecosystem = [
   { label: "Private Equity", sub: "Board-level involvement, portfolio scaling" },
 ];
 
-export default function ExecutiveAdvisementPage() {
+export default async function ExecutiveAdvisementPage() {
+  const cx = await getSiteContent("page:executive-advisement");
+  const c = (key: string, fallback: string) => cx[key] || fallback;
+
+  // Build services from overrides
+  const liveServices = services.map((s, i) => ({
+    ...s,
+    title: c(`svc_${i + 1}_title`, s.title),
+    desc: c(`svc_${i + 1}_desc`, s.desc),
+  }));
+
+  // Build divisions from overrides
+  const liveDivisions = divisions.map((d, i) => ({
+    ...d,
+    title: c(`div_${i + 1}_title`, d.title),
+    sub: c(`div_${i + 1}_sub`, d.sub),
+    desc: c(`div_${i + 1}_desc`, d.desc),
+  }));
+
   return (
     <>
       <Navigation />
@@ -136,19 +155,18 @@ export default function ExecutiveAdvisementPage() {
           <div className="max-w-7xl mx-auto relative">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.2)] text-[#FACC15] text-xs font-bold mb-6 tracking-wider uppercase">
-                Division III — Executive Advisement
+                {c("hero_badge", "Division III — Executive Advisement")}
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
-                Big Moves.{" "}
-                <span className="gradient-text-gold">Smart Strategy.</span>
-                <br />Fresh Insight.
+                {c("hero_heading", "Big Moves. Smart Strategy. Fresh Insight.").includes("Smart Strategy.") ? (
+                  <>Big Moves.{" "}<span className="gradient-text-gold">Smart Strategy.</span><br />Fresh Insight.</>
+                ) : c("hero_heading", "Big Moves. Smart Strategy. Fresh Insight.")}
               </h1>
               <p className="text-xl text-gray-300 mb-4 leading-relaxed">
-                Vision LLC's Executive Advisement division delivers C-suite consulting and strategic
-                guidance grounded in 30+ years of real-world leadership — not theory.
+                {c("hero_description", "Vision LLC's Executive Advisement division delivers C-suite consulting and strategic guidance grounded in 30+ years of real-world leadership — not theory.")}
               </p>
               <p className="text-gray-500 mb-10">
-                We scale WITH you. Hands-on. Accountable. Integrated.
+                {c("hero_subtext", "We scale WITH you. Hands-on. Accountable. Integrated.")}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/contact" className="btn-primary-cta px-8 py-4">
@@ -178,14 +196,14 @@ export default function ExecutiveAdvisementPage() {
             <div className="text-center mb-14">
               <div className="section-line mx-auto mb-5" />
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">
-                Core Advisory <span className="gradient-text-gold">Services</span>
+                {c("services_heading", "Core Advisory Services").includes("Services") ? <>{c("services_heading", "Core Advisory Services").replace("Services", "")}<span className="gradient-text-gold">Services</span></> : c("services_heading", "Core Advisory Services")}
               </h2>
               <p className="text-gray-400 max-w-xl mx-auto">
-                Five integrated service pillars — each designed to move the needle at the executive level.
+                {c("services_subtext", "Five integrated service pillars — each designed to move the needle at the executive level.")}
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {services.map((s, i) => (
+              {liveServices.map((s, i) => (
                 <div
                   key={s.title}
                   className="glass rounded-2xl p-7 border border-[rgba(250,204,21,0.08)] hover:border-[rgba(250,204,21,0.25)] transition-all group"
@@ -236,7 +254,7 @@ export default function ExecutiveAdvisementPage() {
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-              {divisions.map((d) => (
+              {liveDivisions.map((d) => (
                 <div
                   key={d.title}
                   className="glass rounded-2xl p-8 border flex flex-col"
@@ -346,11 +364,11 @@ export default function ExecutiveAdvisementPage() {
             <div className="glass-strong rounded-3xl p-10 border border-[rgba(250,204,21,0.2)] text-center glow-gold">
               <div className="text-5xl mb-4">🎯</div>
               <h2 className="text-3xl font-black text-white mb-4">
-                "The sum of all parts is greater than the whole."
+                {c("final_quote", '"The sum of all parts is greater than the whole."')}
               </h2>
-              <p className="text-gray-400 mb-2 text-lg italic">— J. Allen Hurley II</p>
+              <p className="text-gray-400 mb-2 text-lg italic">{c("final_attribution", "— J. Allen Hurley II")}</p>
               <p className="text-gray-500 mb-10 max-w-lg mx-auto">
-                That's not just a philosophy. It's how we build. How we advise. How we grow — with you.
+                {c("final_subtext", "That's not just a philosophy. It's how we build. How we advise. How we grow — with you.")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/contact" className="btn-primary-cta py-4 px-8">

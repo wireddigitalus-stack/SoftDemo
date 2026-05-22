@@ -7,6 +7,7 @@ import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import CoWorkHeroCarousel from "@/components/CoWorkHeroCarousel";
 import { fetchImageOverrides, resolveAllImages } from "@/lib/property-image-overrides";
+import { getSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN",
@@ -88,12 +89,48 @@ const STATIC_IMAGES = [
 ];
 
 export default async function CoWorkPage() {
-  const overrides = await fetchImageOverrides();
-  const liveUrls = resolveAllImages("bristol-cowork", STATIC_IMAGES, STATIC_IMAGES[0], overrides);
+  const [overrides, imgOverrides] = await Promise.all([
+    getSiteContent("page:cowork"),
+    fetchImageOverrides(),
+  ]);
+  const c = (key: string, fallback: string) => overrides[key] || fallback;
+
+  const liveUrls = resolveAllImages("bristol-cowork", STATIC_IMAGES, STATIC_IMAGES[0], imgOverrides);
   const gallery = liveUrls.map((src, i) => ({
     src,
     alt: `Bristol CoWork interior view ${i + 1}`,
   }));
+
+  // Build plans from overrides (falls back to static defaults)
+  const livePlans = [
+    {
+      name: c("plan_1_name", "Hot Desk"),
+      price: c("plan_1_price", "Contact Us"),
+      period: "/ month",
+      description: c("plan_1_desc", "Flexible open workspace. Drop in when you need it."),
+      features: c("plan_1_features", "Shared Workspace Access\nHigh-Speed Wi-Fi\nCoffee & Beverages\nBusiness Address Use\nCommunity Lounge").split("\n").filter(Boolean),
+      cta: "Inquire",
+      highlight: false,
+    },
+    {
+      name: c("plan_2_name", "Dedicated Desk"),
+      price: c("plan_2_price", "Contact Us"),
+      period: "/ month",
+      description: c("plan_2_desc", "Your own reserved desk. Locked storage. Always ready."),
+      features: c("plan_2_features", "Reserved Dedicated Desk\nLocked File Cabinet\n24/7 Building Access\nHigh-Speed Wi-Fi\nBusiness Address\nMail Handling\nConference Room Hours").split("\n").filter(Boolean),
+      cta: "Get Started",
+      highlight: true,
+    },
+    {
+      name: c("plan_3_name", "Private Office"),
+      price: c("plan_3_price", "Contact Us"),
+      period: "/ month",
+      description: c("plan_3_desc", "Fully furnished, lockable private office. Move in tomorrow."),
+      features: c("plan_3_features", "Private Lockable Office\nFurnished & Ready\nAll Utilities Included\nDedicated Internet\nBusiness Address\nConference Rooms Included\n24/7 Access\nSignage Options").split("\n").filter(Boolean),
+      cta: "Schedule Tour",
+      highlight: false,
+    },
+  ];
   return (
     <>
       <script
@@ -183,7 +220,7 @@ export default async function CoWorkPage() {
             <div>
               {/* "Now Open" badge — above the logo+title row */}
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgba(250,204,21,0.1)] border border-[rgba(250,204,21,0.2)] text-[#FACC15] text-xs font-bold mb-5 tracking-wider uppercase">
-                Now Open · 620 State Street
+                {c("hero_badge", "Now Open · 620 State Street")}
               </div>
 
               {/* Squircle logo + h1 side by side */}
@@ -214,11 +251,10 @@ export default async function CoWorkPage() {
                 </h1>
               </div>
               <p className="text-xl text-gray-400 mb-4">
-                Downtown Bristol's premier professional workspace — built for entrepreneurs,
-                remote teams, and growing businesses that need more than a coffee shop.
+                {c("hero_description", "Downtown Bristol's premier professional workspace — built for entrepreneurs, remote teams, and growing businesses that need more than a coffee shop.")}
               </p>
               <p className="text-gray-500 mb-8">
-                620 State Street, Bristol, TN · All-inclusive memberships · Private offices available today
+                {c("hero_subtext", "620 State Street, Bristol, TN · All-inclusive memberships · Private offices available today")}
               </p>
               <div className="flex flex-wrap gap-4">
                 <a href={COMPANY.phoneHref} className="btn-primary" style={{ background: "#FACC15", color: "#000", borderColor: "#FACC15" }}>
@@ -252,14 +288,14 @@ export default async function CoWorkPage() {
             <div className="text-center mb-12">
               <div className="section-line mx-auto mb-4" />
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">
-                Membership <span className="text-[#FACC15]">Plans</span>
+                {c("plans_heading", "Membership Plans").includes("Plans") ? <>{c("plans_heading", "Membership Plans").replace("Plans", "")}<span className="text-[#FACC15]">Plans</span></> : c("plans_heading", "Membership Plans")}
               </h2>
               <p className="text-gray-400">
-                All plans include Wi-Fi, coffee, and access to communal areas. Contact us for current rates.
+                {c("plans_subtext", "All plans include Wi-Fi, coffee, and access to communal areas. Contact us for current rates.")}
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-              {plans.map((plan) => (
+              {livePlans.map((plan) => (
                 <div
                   key={plan.name}
                   className={`glass rounded-2xl p-6 border flex flex-col ${
@@ -305,12 +341,11 @@ export default async function CoWorkPage() {
         <section className="py-16 px-4 bg-[rgba(74,222,128,0.03)] border-t border-[rgba(74,222,128,0.08)]">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-black text-white mb-4">
-              Prime Downtown <span className="gradient-text-green">Location</span>
+              {c("location_heading", "Prime Downtown Location").includes("Location") ? <>{c("location_heading", "Prime Downtown Location").replace("Location", "")}<span className="gradient-text-green">Location</span></> : c("location_heading", "Prime Downtown Location")}
             </h2>
-            <p className="text-gray-400 mb-2 text-lg">620 State Street · Bristol, TN 37620</p>
+            <p className="text-gray-400 mb-2 text-lg">{c("location_address", "620 State Street · Bristol, TN 37620")}</p>
             <p className="text-gray-500 mb-8">
-              Located on Bristol's iconic State Street — right on the TN/VA state line, steps from restaurants,
-              hotels, and the region's most active commercial corridor.
+              {c("location_desc", "Located on Bristol's iconic State Street — right on the TN/VA state line, steps from restaurants, hotels, and the region's most active commercial corridor.")}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a href={COMPANY.phoneHref} className="btn-primary">

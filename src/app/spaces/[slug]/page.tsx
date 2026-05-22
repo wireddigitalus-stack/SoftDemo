@@ -8,6 +8,7 @@ import { SPACE_TYPE_PAGES, PROPERTIES, GEO_PAGES, COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import LeaseBotTrigger from "@/components/LeaseBotTrigger";
 import { fetchImageOverrides, resolveHeroImage } from "@/lib/property-image-overrides";
+import { getSiteContent } from "@/lib/site-content";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -51,8 +52,30 @@ export default async function SpaceTypePage({ params }: Props) {
     page.geoLinks.includes(g.slug)
   );
 
-  // Fetch live image overrides so admin hero selections show on cards
-  const imgOverrides = await fetchImageOverrides();
+  // Fetch content overrides from admin Content Editor
+  const [imgOverrides, contentOverrides] = await Promise.all([
+    fetchImageOverrides(),
+    getSiteContent(`space:${slug}`),
+  ]);
+  const c = (key: string, fallback: string) => contentOverrides[key] || fallback;
+
+  // Override page text with admin edits (falls back to data.ts defaults)
+  const pageData = {
+    ...page,
+    h1: c("h1", page.h1),
+    tagline: c("tagline", page.tagline),
+    intro: c("intro", page.intro),
+    benefits: page.benefits.map((b, i) => ({
+      ...b,
+      title: c(`benefit_${i + 1}_title`, b.title),
+      body: c(`benefit_${i + 1}_body`, b.body),
+    })),
+    faqs: page.faqs.map((f, i) => ({
+      q: c(`faq_q${i + 1}`, f.q),
+      a: c(`faq_a${i + 1}`, f.a),
+    })),
+  };
+
   const resolvedProperties = matchedProperties.map(p => ({
     ...p,
     image: resolveHeroImage(p.id, (p as any).image, imgOverrides),
@@ -171,11 +194,11 @@ export default async function SpaceTypePage({ params }: Props) {
 
                 {/* H1 */}
                 <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
-                  {page.h1}
+                  {pageData.h1}
                 </h1>
-                <p className={`text-lg font-semibold mb-4 ${accentClass}`}>{page.tagline}</p>
+                <p className={`text-lg font-semibold mb-4 ${accentClass}`}>{pageData.tagline}</p>
                 <p className="text-gray-400 leading-relaxed mb-8 text-base max-w-lg">
-                  {page.intro}
+                  {pageData.intro}
                 </p>
 
                 {/* CTAs */}
@@ -196,7 +219,7 @@ export default async function SpaceTypePage({ params }: Props) {
 
               {/* Stats cards */}
               <div className="grid grid-cols-2 gap-4">
-                {page.benefits.map((b, i) => (
+                {pageData.benefits.map((b, i) => (
                   <div
                     key={i}
                     className={`glass rounded-2xl p-5 border ${accentBorder} flex flex-col gap-3`}
@@ -323,7 +346,7 @@ export default async function SpaceTypePage({ params }: Props) {
               Frequently Asked Questions
             </h2>
             <div className="space-y-4">
-              {page.faqs.map((faq, i) => (
+              {pageData.faqs.map((faq, i) => (
                 <details
                   key={i}
                   className={`group glass rounded-2xl border ${accentBorder} overflow-hidden`}
