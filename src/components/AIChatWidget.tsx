@@ -479,7 +479,7 @@ export default function LeaseBotWidget() {
       >
         <div
           className="glass-strong rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-          style={{ height: "min(520px, 72vh)" }}
+          style={{ height: "min(640px, 82vh)" }}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-[#4ADE80]/20 to-[#22C55E]/10 px-4 py-3.5 flex items-center justify-between border-b border-[rgba(74,222,128,0.2)] flex-shrink-0">
@@ -519,7 +519,7 @@ export default function LeaseBotWidget() {
           </div>
 
           {/* Body */}
-          <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4 space-y-4" style={{ justifyContent: "flex-start" }}>
 
             {/* ── Greeting ─────────────────────────────────────────────── */}
             {stage === "greeting" && (
