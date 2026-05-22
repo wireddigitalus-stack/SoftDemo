@@ -849,7 +849,7 @@ export default function AdminPage() {
   // Always start at the very top — prevents browser scroll-restoration from
   // loading the dashboard mid-page and hiding the tab nav under the site nav
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }); }, []);
-  const [leads, setLeads] = useState<Lead[]>(DEMO_LEADS);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<"All" | "Hot Lead" | "Warm Lead" | "Nurture" | "Whale" | "New Today">("All");
   const [loading, setLoading] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
@@ -864,7 +864,7 @@ export default function AdminPage() {
   const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
   const [deletingAll, setDeletingAll] = useState(false);
   const [deleteAllConfirm, setDeleteAllConfirm] = useState("");
-  const seenIdsRef = useRef<Set<string>>(new Set(DEMO_LEADS.map(d => d.id)));
+  const seenIdsRef = useRef<Set<string>>(new Set());
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Delete a single lead ──
@@ -1011,7 +1011,7 @@ export default function AdminPage() {
       const res = await fetch("/api/lease-bot");
       const data = await res.json();
       if (data.leads && Array.isArray(data.leads)) {
-        const fetched: Lead[] = data.leads.length > 0 ? data.leads : DEMO_LEADS;
+        const fetched: Lead[] = data.leads;
         fetched.forEach(l => seenIdsRef.current.add(l.id));
         setLeads(fetched);
         // Bump briefKey once after the first real fetch so the brief regenerates with live data
