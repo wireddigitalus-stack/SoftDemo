@@ -232,13 +232,21 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
-      .from("leads")
-      .select("*")
-      .order("timestamp", { ascending: false })
-      .limit(50);
+    const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!;
+    const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-    if (error) throw error;
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/leads?select=*&order=timestamp.desc&limit=50`,
+      {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+        },
+      }
+    );
+
+    if (!res.ok) throw new Error(`Supabase GET failed: ${res.status}`);
+    const data = await res.json();
 
     const leads: Lead[] = (data || []).map(rowToLead);
     // Also sync into memory store so the same-process cache is warm
@@ -258,13 +266,25 @@ export async function DELETE(req: NextRequest) {
     const body = await req.json();
     const { id, all } = body as { id?: string; all?: boolean };
 
+    const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!;
+    const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const headers = {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+    };
+
     if (all) {
       // Bulk delete: remove ALL leads
-      const { error } = await supabaseAdmin
-        .from("leads")
-        .delete()
-        .neq("id", "00000000-0000-0000-0000-000000000000"); // match all rows
-      if (error) throw error;
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/leads?id=not.is.null`,
+        { method: "DELETE", headers }
+      );
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error("Supabase bulk delete failed:", res.status, errText);
+        return NextResponse.json({ error: "Bulk delete failed" }, { status: 500 });
+      }
       LEADS_STORE.length = 0;
       return NextResponse.json({ success: true, deleted: "all" });
     }
@@ -273,12 +293,16 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Missing lead id" }, { status: 400 });
     }
 
-    // Single delete
-    const { error } = await supabaseAdmin
-      .from("leads")
-      .delete()
-      .eq("id", id);
-    if (error) throw error;
+    // Single delete via REST API (supabase-js was silently failing)
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/leads?id=eq.${encodeURIComponent(id)}`,
+      { method: "DELETE", headers }
+    );
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Supabase delete failed:", res.status, errText);
+      return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+    }
 
     // Remove from memory store
     const idx = LEADS_STORE.findIndex(l => l.id === id);
