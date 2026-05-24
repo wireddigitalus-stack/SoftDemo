@@ -25,6 +25,9 @@ export interface Tenant {
   utilitiesFee: number;
   securityDeposit: number;
   nnnFee: number;
+  cleaningFee: number;
+  camFee: number;
+  nnFee: number;
   leaseStart: string | null;
   leaseEnd: string | null;
   renewalDate: string | null;
@@ -53,6 +56,9 @@ function rowToTenant(r: Record<string, unknown>): Tenant {
     utilitiesFee: Number(r.utilities_fee) || 0,
     securityDeposit: Number(r.security_deposit) || 0,
     nnnFee: Number(r.nnn_fee) || 0,
+    cleaningFee: Number(r.cleaning_fee) || 0,
+    camFee: Number(r.cam_fee) || 0,
+    nnFee: Number(r.nn_fee) || 0,
     leaseStart: (r.lease_start as string) || null,
     leaseEnd: (r.lease_end as string) || null,
     renewalDate: (r.renewal_date as string) || null,
@@ -96,6 +102,7 @@ const BLANK = (): Partial<Tenant> => ({
   name: "", contactName: "", email: "", phone: "",
   building: "", unit: "", rep: "",
   monthlyRent: 0, utilitiesFee: 0, securityDeposit: 0, nnnFee: 0,
+  cleaningFee: 0, camFee: 0, nnFee: 0,
   leaseStart: "", leaseEnd: "", renewalDate: "", leaseAlertDays: 60,
   escalationPct: 0, escalationDate: "",
   status: "active", notes: "",
@@ -179,8 +186,16 @@ function TenantForm({
         <div><label className={LABEL}>NNN Fee / Triple Net ($)</label>
           <input type="number" value={form.nnnFee || ""} onChange={e => set("nnnFee", Number(e.target.value))} placeholder="0" className={FIELD} /></div>
       </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div><label className={LABEL}>Cleaning Fee ($)</label>
+          <input type="number" value={form.cleaningFee || ""} onChange={e => set("cleaningFee", Number(e.target.value))} placeholder="0" className={FIELD} /></div>
+        <div><label className={LABEL}>CAM Fee ($)</label>
+          <input type="number" value={form.camFee || ""} onChange={e => set("camFee", Number(e.target.value))} placeholder="0" className={FIELD} /></div>
+        <div><label className={LABEL}>NN Fee ($)</label>
+          <input type="number" value={form.nnFee || ""} onChange={e => set("nnFee", Number(e.target.value))} placeholder="0" className={FIELD} /></div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div><label className={LABEL}>Annual Escalation (%)</label>
+        <div><label className={LABEL}>Renewal Escalation %</label>
           <input type="number" step="0.1" value={form.escalationPct || ""} onChange={e => set("escalationPct", Number(e.target.value))} placeholder="3" className={FIELD} /></div>
         <div><label className={LABEL}>Next Escalation Date</label>
           <input type="date" value={form.escalationDate || ""} onChange={e => set("escalationDate", e.target.value)} className={FIELD} /></div>
@@ -192,7 +207,7 @@ function TenantForm({
           <input type="date" value={form.leaseStart || ""} onChange={e => set("leaseStart", e.target.value)} className={FIELD} /></div>
         <div><label className={LABEL}>Lease End / Expiration</label>
           <input type="date" value={form.leaseEnd || ""} onChange={e => set("leaseEnd", e.target.value)} className={FIELD} /></div>
-        <div><label className={LABEL}>Renewal Offer Deadline</label>
+        <div><label className={LABEL}>Auto Renewal Date</label>
           <input type="date" value={form.renewalDate || ""} onChange={e => set("renewalDate", e.target.value)} className={FIELD} /></div>
       </div>
 
@@ -514,6 +529,24 @@ function TenantCard({
             <p className="text-sm font-black text-[#A855F7]">{fmtMoney(tenant.nnnFee)}</p>
           </div>
         )}
+        {tenant.cleaningFee > 0 && (
+          <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-2.5">
+            <p className="text-[10px] text-gray-600 mb-0.5">Cleaning Fee</p>
+            <p className="text-sm font-black text-[#F472B6]">{fmtMoney(tenant.cleaningFee)}</p>
+          </div>
+        )}
+        {tenant.camFee > 0 && (
+          <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-2.5">
+            <p className="text-[10px] text-gray-600 mb-0.5">CAM Fee</p>
+            <p className="text-sm font-black text-[#22D3EE]">{fmtMoney(tenant.camFee)}</p>
+          </div>
+        )}
+        {tenant.nnFee > 0 && (
+          <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-2.5">
+            <p className="text-[10px] text-gray-600 mb-0.5">NN Fee</p>
+            <p className="text-sm font-black text-[#FB923C]">{fmtMoney(tenant.nnFee)}</p>
+          </div>
+        )}
         {tenant.securityDeposit > 0 && (
           <div className="bg-[rgba(250,204,21,0.05)] rounded-xl p-2.5 border border-[rgba(250,204,21,0.12)]">
             <p className="text-[10px] text-gray-600 mb-0.5">Deposit (Returnable)</p>
@@ -540,7 +573,7 @@ function TenantCard({
         <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-[rgba(74,222,128,0.04)] border border-[rgba(74,222,128,0.1)]">
           <TrendingUp size={11} className="text-[#4ADE80] flex-shrink-0" />
           <span className="text-xs text-gray-400">
-            <span className="text-[#4ADE80] font-bold">+{tenant.escalationPct}% escalation</span>
+            <span className="text-[#4ADE80] font-bold">+{tenant.escalationPct}% renewal escalation</span>
             {tenant.escalationDate && (
               <> on {fmtDate(tenant.escalationDate)}
                 {escalationDays !== null && escalationDays > 0 && (
@@ -647,6 +680,9 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         utilitiesFee: Number(form.utilitiesFee) || 0,
         securityDeposit: Number(form.securityDeposit) || 0,
         nnnFee: Number(form.nnnFee) || 0,
+        cleaningFee: Number(form.cleaningFee) || 0,
+        camFee: Number(form.camFee) || 0,
+        nnFee: Number(form.nnFee) || 0,
         leaseStart: form.leaseStart || null, leaseEnd: form.leaseEnd || null,
         renewalDate: form.renewalDate || null,
         leaseAlertDays: form.leaseAlertDays ?? null,
@@ -669,7 +705,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
     const TRACKED: FieldKey[] = [
       "name", "contactName", "email", "phone",
       "building", "unit", "rep",
-      "monthlyRent", "utilitiesFee", "securityDeposit", "nnnFee",
+      "monthlyRent", "utilitiesFee", "securityDeposit", "nnnFee", "cleaningFee", "camFee", "nnFee",
       "leaseStart", "leaseEnd", "renewalDate", "leaseAlertDays",
       "escalationPct", "escalationDate", "status", "notes",
     ];
@@ -699,6 +735,9 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         utilitiesFee: Number(form.utilitiesFee) || 0,
         securityDeposit: Number(form.securityDeposit) || 0,
         nnnFee: Number(form.nnnFee) || 0,
+        cleaningFee: Number(form.cleaningFee) || 0,
+        camFee: Number(form.camFee) || 0,
+        nnFee: Number(form.nnFee) || 0,
         leaseStart: form.leaseStart || null, leaseEnd: form.leaseEnd || null,
         renewalDate: form.renewalDate || null,
         leaseAlertDays: form.leaseAlertDays ?? null,
@@ -737,6 +776,9 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
           utilitiesFee: 0,
           securityDeposit: 0,
           nnnFee: 0,
+          cleaningFee: 0,
+          camFee: 0,
+          nnFee: 0,
           leaseStart: form.leaseStart || null, leaseEnd: form.leaseEnd || null,
           renewalDate: null, leaseAlertDays: 60,
           escalationPct: 0, escalationDate: null,
@@ -812,7 +854,10 @@ CREATE POLICY "anon_all_tenants" ON tenants
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS utilities_fee NUMERIC DEFAULT 0;
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS lease_alert_days INTEGER DEFAULT 60;
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS security_deposit NUMERIC DEFAULT 0;
-ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nnn_fee NUMERIC DEFAULT 0;`}</pre>
+ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nnn_fee NUMERIC DEFAULT 0;
+ALTER TABLE tenants ADD COLUMN IF NOT EXISTS cleaning_fee NUMERIC DEFAULT 0;
+ALTER TABLE tenants ADD COLUMN IF NOT EXISTS cam_fee NUMERIC DEFAULT 0;
+ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nn_fee NUMERIC DEFAULT 0;`}</pre>
         </div>
       )}
 

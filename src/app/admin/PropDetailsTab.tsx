@@ -62,37 +62,25 @@ function pct(n: number, d: number) { return d ? Math.round((n / d) * 100) : 0; }
 function fmt(n: number) { return n ? `$${n.toLocaleString()}` : "—"; }
 function n(s: string) { return parseFloat(s) || 0; }
 
-// Strips spaces, punctuation & digits → pure alpha token for fuzzy matching
-// e.g. "Centre Point 357" → "centrepoint", "CentrePoint" → "centrepoint"
-function norm(s: string) {
-  return s.toLowerCase().replace(/[^a-z]/g, "");
-}
-function buildingMatch(building: string, propertyName: string): boolean {
-  const b = norm(building);
-  const p = norm(propertyName);
-  if (!b || !p) return false;
-  // Exact normalized match
-  if (b === p) return true;
-  // Substring containment — "theexecutive" in "theexecutivepremierofficesuites" or vice versa
-  if (b.length >= 4 && (p.includes(b) || b.includes(p))) return true;
-  // Token-based: extract significant words (≥3 chars) from both sides
-  const toWords = (s: string) => s.toLowerCase().replace(/[^a-z\s]/g, "").trim().split(/\s+/).filter(w => w.length >= 3);
-  const bWords = toWords(building);
-  const pWords = toWords(propertyName);
-  // Either all building words exist in property name, or all property words exist in building
-  if (bWords.length >= 2) {
-    const pText = propertyName.toLowerCase().replace(/[^a-z\s]/g, "");
-    if (bWords.every(w => pText.includes(w))) return true;
-  }
-  if (pWords.length >= 2) {
-    const bText = building.toLowerCase().replace(/[^a-z\s]/g, "");
-    if (pWords.every(w => bText.includes(w))) return true;
-  }
-  // Single significant word match — only if the word is long/unique enough (≥6 chars)
-  if (bWords.length === 1 && bWords[0].length >= 6) {
-    const pText = propertyName.toLowerCase().replace(/[^a-z\s]/g, "");
-    if (pText.includes(bWords[0])) return true;
-  }
+// Exact property name map — matches the dropdown values used in tenant forms
+const PROPERTY_DROPDOWN_NAMES: Record<string, string[]> = {
+  "city-centre": ["City Centre Professional Suites", "City Centre"],
+  "bristol-cowork": ["Bristol CoWork"],
+  "the-executive": ["The Executive"],
+  "centre-point": ["Centre Point"],
+  "foundation-event-facility": ["Foundation Event Facility"],
+  "commercial-warehouse": ["Commercial Warehouse"],
+};
+
+function exactBuildingMatch(tenantBuilding: string, propertyId: string, displayName: string): boolean {
+  if (!tenantBuilding) return false;
+  const b = tenantBuilding.trim().toLowerCase();
+  // Match against display name (custom rename)
+  if (displayName && b === displayName.trim().toLowerCase()) return true;
+  // Match against known dropdown values for this property
+  const names = PROPERTY_DROPDOWN_NAMES[propertyId];
+  if (names && names.some(n => b === n.toLowerCase())) return true;
+  // Also match dynamic properties by exact name
   return false;
 }
 
@@ -320,7 +308,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
   const TrendIcon = trendItem.icon;
   const displayName = detail?.display_name || property.name;
   const propTenants = tenants.filter(t => {
-    return buildingMatch(t.building || "", displayName);
+    return exactBuildingMatch(t.building || "", property.id, displayName);
   });
 
   const [open, setOpen] = useState(false);
@@ -710,7 +698,7 @@ export default function PropDetailsTab() {
     property: p,
     tenants: tenants.filter(t => {
       const displayName = detailMap[p.id]?.display_name || p.name;
-      return buildingMatch(t.building || "", displayName);
+      return exactBuildingMatch(t.building || "", p.id, displayName);
     }),
     detail: detailMap[p.id],
   })), [allProperties, tenants, detailMap]);
@@ -794,6 +782,45 @@ export default function PropDetailsTab() {
           ))}
         </div>
       )}
+
+      {/* Unassigned tenants */}
+      {!loading && (() => {
+        const assignedIds = new Set(
+          allProperties.flatMap(p => {
+            const dn = detailMap[p.id]?.display_name || p.name;
+            return tenants.filter(t => exactBuildingMatch(t.building || "", p.id, dn)).map(t => t.id);
+          })
+        );
+        const unassigned = tenants.filter(t => !assignedIds.has(t.id));
+        if (unassigned.length === 0) return null;
+        return (
+          <div className="glass rounded-2xl border border-[rgba(249,115,22,0.2)] p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle size={14} className="text-orange-400" />
+              <h3 className="text-sm font-black text-orange-400">Unassigned Tenants ({unassigned.length})</h3>
+            </div>
+            <p className="text-xs text-gray-500 mb-3">These tenants don&apos;t match any property. Edit them in the Tenants tab and select the correct property from the dropdown.</p>
+            <div className="space-y-1.5">
+              {unassigned.map(t => (
+                <div key={t.id} className="flex items-center gap-3 rounded-lg px-3 py-2 border border-[rgba(249,115,22,0.15)] bg-[rgba(249,115,22,0.04)]">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
+                    style={{ background: "rgba(249,115,22,0.15)", color: "#F97316" }}>
+                    {t.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-white truncate">{t.name}</p>
+                    <p className="text-[10px] text-gray-600 truncate">
+                      {t.building ? `Building: "${t.building}"` : "No building set"}
+                      {t.unit ? ` · Unit ${t.unit}` : ""}
+                    </p>
+                  </div>
+                  <span className="text-[10px] text-orange-400 font-bold">Unassigned</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {alerts > 0 && (
         <div className="flex items-center gap-3 px-5 py-4 rounded-xl border border-yellow-900/40 bg-yellow-950/20 text-yellow-400 text-xs">

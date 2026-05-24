@@ -20,7 +20,8 @@ interface MicButtonProps {
 }
 
 // Safely check for SpeechRecognition support
-function getSpeechRecognition(): typeof SpeechRecognition | null {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSpeechRecognition(): any {
   if (typeof window === "undefined") return null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -30,7 +31,8 @@ function getSpeechRecognition(): typeof SpeechRecognition | null {
 export default function MicButton({ onResult, size = 16, className = "" }: MicButtonProps) {
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(false);
-  const recRef = useRef<SpeechRecognition | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recRef = useRef<any>(null);
   const onResultRef = useRef(onResult);
   onResultRef.current = onResult;
 
@@ -54,7 +56,8 @@ export default function MicButton({ onResult, size = 16, className = "" }: MicBu
     rec.maxAlternatives = 1;
     rec.continuous = false;
 
-    rec.onresult = (e: SpeechRecognitionEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rec.onresult = (e: any) => {
       const text = e.results[0]?.[0]?.transcript?.trim();
       if (text) onResultRef.current(text);
     };
