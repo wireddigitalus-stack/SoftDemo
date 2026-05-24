@@ -92,6 +92,26 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "Click '+ Add Tenant' then choose 'Import from Excel / CSV'. Upload your spreadsheet and the system will auto-map the columns to tenant profiles — you can edit every field after.",
     },
     {
+      emoji: "🏢",
+      title: "Property Dropdown",
+      body: "The Building / Property field is a dropdown menu of all properties in the portfolio. Select the correct property to ensure the tenant shows up on the right Property Details card. No more typing property names by hand.",
+    },
+    {
+      emoji: "🎤",
+      title: "Voice Input (Speech-to-Text)",
+      body: "Look for the small microphone icon (🎤) next to text fields. Click it, speak, and the text fills in automatically. Works in Chrome, Edge, and Safari. Great for quickly entering contact names, notes, and unit numbers without typing.",
+    },
+    {
+      emoji: "💰",
+      title: "Fee Tracking",
+      body: "Each tenant tracks multiple fee types: Monthly Rent, Utilities Fee, NNN Fee (Triple Net), Cleaning Fee, CAM Fee, and NN Fee. All fees display as color-coded chips on the tenant card for quick reference.",
+    },
+    {
+      emoji: "🔄",
+      title: "Renewal Escalation %",
+      body: "Set the 'Renewal Escalation %' to track annual rent increases. The system calculates and displays the dollar increase automatically. The 'Auto Renewal Date' field tracks when the renewal kicks in.",
+    },
+    {
       emoji: "🖨️",
       title: "Printing the Tenant Roster",
       body: "Use the 'Print Roster' button to generate a clean PDF of all current tenants — great for weekly team reviews.",
@@ -136,7 +156,12 @@ const TIPS: Record<TabKey, Tip[]> = {
     {
       emoji: "🏢",
       title: "How Tenants Link to Properties",
-      body: "Tenants connect to properties by their 'Building' field in the Tenants tab. Make sure the building name matches the property name — e.g., type 'Centre Point' (not just 'Centre') so the system can match it correctly. Both partial and exact matches work as long as all key words are present.",
+      body: "Tenants connect to properties by the property selected in the dropdown on the Tenants tab. The match is exact — select 'The Executive' and the tenant appears on The Executive's card here. If a tenant doesn't match any property, it shows in an orange 'Unassigned Tenants' section at the bottom so nothing gets lost.",
+    },
+    {
+      emoji: "⚡",
+      title: "Unassigned Tenants",
+      body: "If any tenants have an old or mismatched building name, they'll appear in an orange 'Unassigned Tenants' section below the property cards. To fix: go to the Tenants tab, edit the tenant, and select the correct property from the dropdown.",
     },
     {
       emoji: "⚠️",
