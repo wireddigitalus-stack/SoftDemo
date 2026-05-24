@@ -476,10 +476,11 @@ export default function LeaseBotWidget() {
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-4 pointer-events-none"
         }`}
+        style={{ maxHeight: "calc(100dvh - 17.25rem)", height: "auto" }}
       >
         <div
           className="glass-strong rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-          style={{ height: "min(640px, 82vh)" }}
+          style={{ height: "min(640px, calc(100dvh - 17.25rem))" }}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-[#4ADE80]/20 to-[#22C55E]/10 px-4 py-3.5 flex items-center justify-between border-b border-[rgba(74,222,128,0.2)] flex-shrink-0">

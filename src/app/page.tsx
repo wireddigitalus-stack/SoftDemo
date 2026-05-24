@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     url: "https://www.teamvisionllc.com",
     images: [
       {
-        url: "https://www.teamvisionllc.com/api/og?title=Vision+LLC&subtitle=Commercial+Real+Estate+%C2%B7+Bristol%2C+TN+%E2%80%94+Tri-Cities+CRE+Leader&tag=Tri-Cities+CRE+Leader&type=default",
+        url: "https://www.teamvisionllc.com/vision-social.png",
         width: 1200,
         height: 630,
         alt: "Vision LLC — Commercial Real Estate Bristol TN",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     description:
       "50+ commercial properties. Downtown Bristol's largest private owner. Office, retail, coworking & executive consulting. Call 423-573-1022.",
     images: [
-      "https://www.teamvisionllc.com/api/og?title=Vision+LLC&subtitle=Commercial+Real+Estate+%C2%B7+Bristol%2C+TN+%E2%80%94+Tri-Cities+CRE+Leader&tag=Tri-Cities+CRE+Leader&type=default",
+      "https://www.teamvisionllc.com/vision-social.png",
     ],
   },
 };
