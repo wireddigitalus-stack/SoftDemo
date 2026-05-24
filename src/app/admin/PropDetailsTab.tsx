@@ -73,12 +73,13 @@ function buildingMatch(building: string, propertyName: string): boolean {
   if (!b || !p) return false;
   // Exact normalized match
   if (b === p) return true;
+  // Substring containment — "theexecutive" in "theexecutivepremierofficesuites" or vice versa
+  if (b.length >= 4 && (p.includes(b) || b.includes(p))) return true;
   // Token-based: extract significant words (≥3 chars) from both sides
   const toWords = (s: string) => s.toLowerCase().replace(/[^a-z\s]/g, "").trim().split(/\s+/).filter(w => w.length >= 3);
   const bWords = toWords(building);
   const pWords = toWords(propertyName);
   // Either all building words exist in property name, or all property words exist in building
-  // Both must have ≥2 words to avoid single-word false positives
   if (bWords.length >= 2) {
     const pText = propertyName.toLowerCase().replace(/[^a-z\s]/g, "");
     if (bWords.every(w => pText.includes(w))) return true;
@@ -86,6 +87,11 @@ function buildingMatch(building: string, propertyName: string): boolean {
   if (pWords.length >= 2) {
     const bText = building.toLowerCase().replace(/[^a-z\s]/g, "");
     if (pWords.every(w => bText.includes(w))) return true;
+  }
+  // Single significant word match — only if the word is long/unique enough (≥6 chars)
+  if (bWords.length === 1 && bWords[0].length >= 6) {
+    const pText = propertyName.toLowerCase().replace(/[^a-z\s]/g, "");
+    if (pText.includes(bWords[0])) return true;
   }
   return false;
 }

@@ -7,6 +7,7 @@ import {
 import CompletionSheet from "@/components/crew/CompletionSheet";
 import SpeechTextarea from "@/components/crew/SpeechTextarea";
 import PhotoCapture from "@/components/crew/PhotoCapture";
+import MicButton from "@/components/MicButton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -136,11 +137,14 @@ function ReportIssueModal({ workerName, onClose, onSubmit }: {
         </div>
 
         <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">📍 Location *</p>
-        <input value={location} onChange={e => setLocation(e.target.value)}
-          placeholder="e.g. Building A, Room 102"
-          className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-4 text-base text-white outline-none mb-5 placeholder:text-gray-600"
-          style={{ borderColor: location ? "rgba(239,68,68,0.4)" : undefined }}
-        />
+        <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 20 }}>
+          <input value={location} onChange={e => setLocation(e.target.value)}
+            placeholder="e.g. Building A, Room 102"
+            className="bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-4 text-base text-white outline-none placeholder:text-gray-600"
+            style={{ flex: 1, borderColor: location ? "rgba(239,68,68,0.4)" : undefined }}
+          />
+          <MicButton onResult={(t) => setLocation(prev => prev ? prev + " " + t : t)} size={18} />
+        </div>
 
         <div className="mb-5">
           <SpeechTextarea

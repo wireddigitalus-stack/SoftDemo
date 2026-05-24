@@ -6,6 +6,7 @@ import {
   User, Calendar, AlertTriangle, Circle,
 } from "lucide-react";
 import PrintButton from "./PrintButton";
+import MicButton from "@/components/MicButton";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -387,16 +388,19 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
           {/* Cleaner */}
           <div>
             <label style={{ color: "#94A3B8", fontSize: 13, fontWeight: 700, display: "block", marginBottom: 8 }}>Cleaner</label>
-            <input
-              value={workerName} onChange={e => setWorkerName(e.target.value)}
-              placeholder="Cleaner name"
-              list="cleaner-suggestions-q"
-              style={{
-                width: "100%", padding: "14px 16px", borderRadius: 12,
-                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                color: "#F1F5F9", fontSize: 16, outline: "none", boxSizing: "border-box",
-              }}
-            />
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <input
+                value={workerName} onChange={e => setWorkerName(e.target.value)}
+                placeholder="Cleaner name"
+                list="cleaner-suggestions-q"
+                style={{
+                  flex: 1, padding: "14px 16px", borderRadius: 12,
+                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#F1F5F9", fontSize: 16, outline: "none", boxSizing: "border-box",
+                }}
+              />
+              <MicButton onResult={(t) => setWorkerName(prev => prev ? prev + " " + t : t)} size={18} />
+            </div>
             <datalist id="cleaner-suggestions-q">
               {knownWorkers.map(n => <option key={n} value={n}/>)}
             </datalist>
@@ -404,15 +408,22 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
           {/* Property */}
           <div>
             <label style={{ color: "#94A3B8", fontSize: 13, fontWeight: 700, display: "block", marginBottom: 8 }}>Property / Building</label>
-            <input
+            <select
               value={property} onChange={e => setProperty(e.target.value)}
-              placeholder="The Executive"
               style={{
                 width: "100%", padding: "14px 16px", borderRadius: 12,
                 background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
                 color: "#F1F5F9", fontSize: 16, outline: "none", boxSizing: "border-box",
               }}
-            />
+            >
+              <option value="" style={{ background: "#0A0F1A" }}>Select property…</option>
+              <option value="City Centre Professional Suites" style={{ background: "#0A0F1A" }}>City Centre Professional Suites</option>
+              <option value="Bristol CoWork" style={{ background: "#0A0F1A" }}>Bristol CoWork</option>
+              <option value="The Executive" style={{ background: "#0A0F1A" }}>The Executive</option>
+              <option value="Centre Point" style={{ background: "#0A0F1A" }}>Centre Point</option>
+              <option value="Foundation Event Facility" style={{ background: "#0A0F1A" }}>Foundation Event Facility</option>
+              <option value="Commercial Warehouse" style={{ background: "#0A0F1A" }}>Commercial Warehouse</option>
+            </select>
           </div>
           {/* Date */}
           <div>
@@ -449,16 +460,26 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={LABEL}>Cleaner Name *</label>
-          <input value={workerName} onChange={e => setWorkerName(e.target.value)}
-            placeholder="Cleaner name" list="cleaner-suggestions" className={FIELD} />
+          <div className="flex gap-1.5 items-center">
+            <input value={workerName} onChange={e => setWorkerName(e.target.value)}
+              placeholder="Cleaner name" list="cleaner-suggestions" className={FIELD + " flex-1"} />
+            <MicButton onResult={(t) => setWorkerName(prev => prev ? prev + " " + t : t)} />
+          </div>
           <datalist id="cleaner-suggestions">
             {knownWorkers.map(n => <option key={n} value={n} />)}
           </datalist>
         </div>
         <div>
           <label className={LABEL}>Property / Building *</label>
-          <input value={property} onChange={e => setProperty(e.target.value)}
-            placeholder="The Executive" className={FIELD} />
+          <select value={property} onChange={e => setProperty(e.target.value)} className={FIELD}>
+            <option value="" className="bg-[#0A0F1A]">Select property…</option>
+            <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
+            <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
+            <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
+            <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
+            <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
+            <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
+          </select>
         </div>
       </div>
 
@@ -467,9 +488,10 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
         <label className={LABEL}>Areas / Units to Clean</label>
         <div className="space-y-2">
           {areas.map((a, i) => (
-            <div key={i} className="flex gap-2">
+            <div key={i} className="flex gap-2 items-center">
               <input value={a} onChange={e => setArea(i, e.target.value)}
                 placeholder={`Area ${i + 1} — e.g. Suite 101, Lobby, Common Areas`} className={FIELD + " flex-1"} />
+              <MicButton onResult={(t) => setArea(i, (a || "") + (a ? " " : "") + t)} />
               {areas.length > 1 && (
                 <button onClick={() => removeArea(i)} className="text-gray-600 hover:text-red-400 transition-colors"><X size={14} /></button>
               )}

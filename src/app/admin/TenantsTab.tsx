@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import TenantImporter from "./TenantImporter";
 import PrintButton from "./PrintButton";
+import MicButton from "@/components/MicButton";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -142,19 +143,27 @@ function TenantForm({
         <div><label className={LABEL}>Company / Tenant Name *</label>
           <input value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="Bristol Tech Co." className={FIELD} spellCheck /></div>
         <div><label className={LABEL}>Primary Contact</label>
-          <input value={form.contactName || ""} onChange={e => set("contactName", e.target.value)} placeholder="Jane Smith" className={FIELD} spellCheck /></div>
+          <div className="flex gap-1.5 items-center"><input value={form.contactName || ""} onChange={e => set("contactName", e.target.value)} placeholder="Jane Smith" className={FIELD + " flex-1"} spellCheck /><MicButton onResult={(t) => set("contactName", (form.contactName || "") + (form.contactName ? " " : "") + t)} /></div></div>
         <div><label className={LABEL}>Email</label>
           <input type="email" value={form.email || ""} onChange={e => set("email", e.target.value)} placeholder="jane@company.com" className={FIELD} /></div>
         <div><label className={LABEL}>Phone</label>
-          <input type="tel" value={form.phone || ""} onChange={e => set("phone", e.target.value)} placeholder="(423) 555-0000" className={FIELD} /></div>
+          <div className="flex gap-1.5 items-center"><input type="tel" value={form.phone || ""} onChange={e => set("phone", e.target.value)} placeholder="(423) 555-0000" className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("phone", (form.phone || "") + (form.phone ? " " : "") + t)} /></div></div>
       </div>
 
       {/* Property */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2"><label className={LABEL}>Building / Property</label>
-          <input value={form.building || ""} onChange={e => set("building", e.target.value)} placeholder="The Executive Office Suites" className={FIELD} /></div>
+          <select value={form.building || ""} onChange={e => set("building", e.target.value)} className={FIELD}>
+            <option value="" className="bg-[#0A0F1A]">Select property…</option>
+            <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
+            <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
+            <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
+            <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
+            <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
+            <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
+          </select></div>
         <div><label className={LABEL}>Unit / Suite</label>
-          <input value={form.unit || ""} onChange={e => set("unit", e.target.value)} placeholder="204" className={FIELD} /></div>
+          <div className="flex gap-1.5 items-center"><input value={form.unit || ""} onChange={e => set("unit", e.target.value)} placeholder="204" className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("unit", (form.unit || "") + (form.unit ? " " : "") + t)} /></div></div>
       </div>
 
       {/* Financials */}
@@ -212,8 +221,8 @@ function TenantForm({
       {/* Rep + Status */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div><label className={LABEL}>Assigned Rep</label>
-          <input value={form.rep || ""} onChange={e => set("rep", e.target.value)}
-            placeholder={currentUserName || "Allen Hurley"} className={FIELD} /></div>
+          <div className="flex gap-1.5 items-center"><input value={form.rep || ""} onChange={e => set("rep", e.target.value)}
+            placeholder={currentUserName || "Allen Hurley"} className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("rep", (form.rep || "") + (form.rep ? " " : "") + t)} /></div></div>
         <div><label className={LABEL}>Status</label>
           <select value={form.status || "active"} onChange={e => set("status", e.target.value as "active"|"pending"|"expired")} className={FIELD}>
             <option value="active" className="bg-[#0A0F1A]">Active</option>
@@ -225,8 +234,8 @@ function TenantForm({
 
       {/* Notes */}
       <div><label className={LABEL}>Notes</label>
-        <textarea spellCheck={true} value={form.notes || ""} onChange={e => set("notes", e.target.value)}
-          rows={2} className={FIELD_SM} placeholder="Additional lease terms, special conditions…" /></div>
+        <div className="flex gap-1.5 items-center"><textarea spellCheck={true} value={form.notes || ""} onChange={e => set("notes", e.target.value)}
+          rows={2} className={FIELD_SM + " flex-1"} placeholder="Additional lease terms, special conditions…" /><MicButton onResult={(t) => set("notes", (form.notes || "") + (form.notes ? " " : "") + t)} /></div></div>
 
       {error && <p className="text-xs text-red-400 flex items-center gap-1"><AlertTriangle size={11} />{error}</p>}
 

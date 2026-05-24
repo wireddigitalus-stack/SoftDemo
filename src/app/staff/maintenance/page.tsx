@@ -6,6 +6,7 @@ import {
   MessageSquare, Package,
 } from "lucide-react";
 import CompletionSheet from "@/components/crew/CompletionSheet";
+import MicButton from "@/components/MicButton";
 
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -119,9 +120,12 @@ function ReportModal({ workerName, onClose, onSubmit }: { workerName: string; on
 
         {/* Issue */}
         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">What&apos;s the issue? *</p>
-        <input value={title} onChange={e => setTitle(e.target.value)}
-          placeholder="e.g. HVAC not cooling in Suite 301"
-          className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3.5 text-base text-white outline-none focus:border-[rgba(250,204,21,0.5)] mb-4 placeholder:text-gray-600" />
+        <div className="flex gap-1.5 items-center mb-4">
+          <input value={title} onChange={e => setTitle(e.target.value)}
+            placeholder="e.g. HVAC not cooling in Suite 301"
+            className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3.5 text-base text-white outline-none focus:border-[rgba(250,204,21,0.5)] placeholder:text-gray-600" />
+          <MicButton onResult={(t) => setTitle(prev => prev ? prev + " " + t : t)} size={18} />
+        </div>
 
         {/* Category */}
         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Category</p>
@@ -138,20 +142,34 @@ function ReportModal({ workerName, onClose, onSubmit }: { workerName: string; on
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Building</p>
-            <input value={building} onChange={e => setBuilding(e.target.value)} placeholder="The Executive"
-              className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)] placeholder:text-gray-600" />
+            <select value={building} onChange={e => setBuilding(e.target.value)}
+              className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)]">
+              <option value="" style={{ background: "#0A0F1A" }}>Select property…</option>
+              <option value="City Centre Professional Suites" style={{ background: "#0A0F1A" }}>City Centre Professional Suites</option>
+              <option value="Bristol CoWork" style={{ background: "#0A0F1A" }}>Bristol CoWork</option>
+              <option value="The Executive" style={{ background: "#0A0F1A" }}>The Executive</option>
+              <option value="Centre Point" style={{ background: "#0A0F1A" }}>Centre Point</option>
+              <option value="Foundation Event Facility" style={{ background: "#0A0F1A" }}>Foundation Event Facility</option>
+              <option value="Commercial Warehouse" style={{ background: "#0A0F1A" }}>Commercial Warehouse</option>
+            </select>
           </div>
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Unit / Suite</p>
-            <input value={unit} onChange={e => setUnit(e.target.value)} placeholder="301"
-              className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)] placeholder:text-gray-600" />
+            <div className="flex gap-1.5 items-center">
+              <input value={unit} onChange={e => setUnit(e.target.value)} placeholder="301"
+                className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)] placeholder:text-gray-600" />
+              <MicButton onResult={(t) => setUnit(prev => prev ? prev + " " + t : t)} size={18} />
+            </div>
           </div>
         </div>
 
         {/* Details */}
         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Details (optional)</p>
-        <textarea spellCheck={true} value={desc} onChange={e => setDesc(e.target.value)} rows={3} placeholder="Any extra details…"
-          className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)] placeholder:text-gray-600 resize-none mb-6" />
+        <div className="flex gap-1.5 items-start mb-6">
+          <textarea spellCheck={true} value={desc} onChange={e => setDesc(e.target.value)} rows={3} placeholder="Any extra details…"
+            className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)] placeholder:text-gray-600 resize-none" />
+          <MicButton onResult={(t) => setDesc(prev => prev ? prev + " " + t : t)} size={18} />
+        </div>
 
         <button onClick={submit} disabled={saving || !title.trim()}
           className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FACC15] to-[#F97316] text-black text-base font-black flex items-center justify-center gap-2 disabled:opacity-40">

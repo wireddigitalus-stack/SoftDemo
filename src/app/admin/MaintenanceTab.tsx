@@ -7,6 +7,7 @@ import {
   DollarSign, Timer, MessageSquare, ArrowRight,
 } from "lucide-react";
 import PrintButton from "./PrintButton";
+import MicButton from "@/components/MicButton";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -230,7 +231,7 @@ function TicketForm({ initial, onSave, onCancel, currentUserName }:
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2">
           <label className={LABEL}>Issue Title *</label>
-          <input value={form.title || ""} onChange={e => set("title", e.target.value)} placeholder="HVAC not cooling Suite 301" className={FIELD} spellCheck />
+          <div className="flex gap-1.5 items-center"><input value={form.title || ""} onChange={e => set("title", e.target.value)} placeholder="HVAC not cooling Suite 301" className={FIELD + " flex-1"} spellCheck /><MicButton onResult={(t) => set("title", (form.title || "") + (form.title ? " " : "") + t)} /></div>
         </div>
         <div>
           <label className={LABEL}>Category</label>
@@ -243,18 +244,26 @@ function TicketForm({ initial, onSave, onCancel, currentUserName }:
       {/* Description */}
       <div>
         <label className={LABEL}>Description</label>
-        <textarea spellCheck={true} value={form.description || ""} onChange={e => set("description", e.target.value)} rows={2} className={FIELD + " text-xs py-1.5 resize-none"} placeholder="Describe the issue in detail…" />
+        <div className="flex gap-1.5 items-center"><textarea spellCheck={true} value={form.description || ""} onChange={e => set("description", e.target.value)} rows={2} className={FIELD + " text-xs py-1.5 resize-none flex-1"} placeholder="Describe the issue in detail…" /><MicButton onResult={(t) => set("description", (form.description || "") + (form.description ? " " : "") + t)} /></div>
       </div>
 
       {/* Building / Unit / Priority */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="sm:col-span-2">
           <label className={LABEL}>Building / Property</label>
-          <input value={form.building || ""} onChange={e => set("building", e.target.value)} placeholder="The Executive" className={FIELD} />
+          <select value={form.building || ""} onChange={e => set("building", e.target.value)} className={FIELD}>
+            <option value="" className="bg-[#0A0F1A]">Select property…</option>
+            <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
+            <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
+            <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
+            <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
+            <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
+            <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
+          </select>
         </div>
         <div>
           <label className={LABEL}>Unit / Suite</label>
-          <input value={form.unit || ""} onChange={e => set("unit", e.target.value)} placeholder="301" className={FIELD} />
+          <div className="flex gap-1.5 items-center"><input value={form.unit || ""} onChange={e => set("unit", e.target.value)} placeholder="301" className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("unit", (form.unit || "") + (form.unit ? " " : "") + t)} /></div>
         </div>
         <div>
           <label className={LABEL}>Priority</label>
@@ -270,15 +279,15 @@ function TicketForm({ initial, onSave, onCancel, currentUserName }:
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label className={LABEL}>Assigned To</label>
-          <input value={form.assignedTo || ""} onChange={e => set("assignedTo", e.target.value)}
-            placeholder="Technician name" list="maint-staff-list" className={FIELD} />
+          <div className="flex gap-1.5 items-center"><input value={form.assignedTo || ""} onChange={e => set("assignedTo", e.target.value)}
+            placeholder="Technician name" list="maint-staff-list" className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("assignedTo", (form.assignedTo || "") + (form.assignedTo ? " " : "") + t)} /></div>
           <datalist id="maint-staff-list">
             {knownStaff.map(n => <option key={n} value={n} />)}
           </datalist>
         </div>
         <div>
           <label className={LABEL}>Reported By</label>
-          <input value={form.reportedBy || ""} onChange={e => set("reportedBy", e.target.value)} placeholder={currentUserName || "Allen Hurley"} className={FIELD} />
+          <div className="flex gap-1.5 items-center"><input value={form.reportedBy || ""} onChange={e => set("reportedBy", e.target.value)} placeholder={currentUserName || "Allen Hurley"} className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("reportedBy", (form.reportedBy || "") + (form.reportedBy ? " " : "") + t)} /></div>
         </div>
         <div>
           <label className={LABEL}>Status</label>
@@ -311,7 +320,7 @@ function TicketForm({ initial, onSave, onCancel, currentUserName }:
       {/* Notes */}
       <div>
         <label className={LABEL}>Notes / Resolution</label>
-        <textarea spellCheck={true} value={form.notes || ""} onChange={e => set("notes", e.target.value)} rows={2} className={FIELD + " text-xs py-1.5 resize-none"} placeholder="Parts needed, access details, resolution notes…" />
+        <div className="flex gap-1.5 items-center"><textarea spellCheck={true} value={form.notes || ""} onChange={e => set("notes", e.target.value)} rows={2} className={FIELD + " text-xs py-1.5 resize-none flex-1"} placeholder="Parts needed, access details, resolution notes…" /><MicButton onResult={(t) => set("notes", (form.notes || "") + (form.notes ? " " : "") + t)} /></div>
       </div>
 
       {error && <p className="text-xs text-red-400 flex items-center gap-1"><AlertTriangle size={11} />{error}</p>}
