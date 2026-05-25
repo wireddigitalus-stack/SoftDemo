@@ -136,6 +136,12 @@ export default function Footer() {
                   All Markets →
                 </Link>
               </li>
+              <li className="pt-3 lg:hidden">
+                <Link href="/admin" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#4ADE80] transition-colors">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] inline-block" />
+                  Admin Login
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -192,7 +198,7 @@ export default function Footer() {
               <span className="text-[#4ADE80] font-semibold">Gemini AI</span>
             </span>
             <Link href="/admin" id="footer-admin-link"
-              className="flex items-center gap-1.5 hover:text-[#4ADE80] transition-colors">
+              className="hidden lg:flex items-center gap-1.5 hover:text-[#4ADE80] transition-colors">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] inline-block" />
               Admin
             </Link>
