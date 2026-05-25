@@ -11,24 +11,37 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     async function handleCallback() {
-      const code = new URLSearchParams(window.location.search).get("code");
+      // Supabase PKCE flow may put the code in the query string OR hash fragment
+      const params = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+      const code = params.get("code") || hashParams.get("code");
 
       if (code) {
         const { error } = await supabaseBrowser.auth.exchangeCodeForSession(code);
         if (error) {
+          console.error("Auth callback error:", error.message);
           setStatus("Sign-in failed — redirecting…");
           setTimeout(() => router.replace("/admin/login"), 1500);
           return;
         }
       }
 
-      // Check session exists
-      const { data } = await supabaseBrowser.auth.getSession();
-      if (data.session) {
-        router.replace("/admin");
-      } else {
-        router.replace("/admin/login");
+      // Wait for session to establish (Supabase may process hash fragment asynchronously)
+      let retries = 0;
+      const maxRetries = 10;
+      while (retries < maxRetries) {
+        const { data } = await supabaseBrowser.auth.getSession();
+        if (data.session) {
+          router.replace("/admin");
+          return;
+        }
+        retries++;
+        await new Promise(r => setTimeout(r, 300));
       }
+
+      // If still no session after retries, redirect to login
+      setStatus("Session not found — redirecting…");
+      setTimeout(() => router.replace("/admin/login"), 1000);
     }
 
     handleCallback();
@@ -45,3 +58,4 @@ export default function AuthCallbackPage() {
     </div>
   );
 }
+
