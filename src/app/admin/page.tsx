@@ -1169,7 +1169,7 @@ export default function AdminPage() {
 
         {/* Page Header */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <img src="/vision-icon.png" alt="Vision" className="w-10 h-10 rounded-xl shadow-[0_0_20px_rgba(74,222,128,0.25)] object-cover" />
             <div>
               <div className="flex items-center gap-2">
@@ -1182,7 +1182,7 @@ export default function AdminPage() {
               <p className="text-xs font-semibold text-gray-500 tracking-widest uppercase -mt-0.5">Property Intelligence Platform</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <span className="text-xs text-gray-600 hidden sm:block">Last refresh: {lastRefresh.toLocaleTimeString()}</span>
 
             {/* Online presence avatars */}
@@ -1239,12 +1239,12 @@ export default function AdminPage() {
             )}
             {/* User avatar + sign-out */}
             {currentUser && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {currentUser.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={currentUser.avatar} alt={currentUser.name} className="w-7 h-7 rounded-full border border-[rgba(74,222,128,0.3)]" />
+                  <img src={currentUser.avatar} alt={currentUser.name} className="w-7 h-7 rounded-full border border-[rgba(74,222,128,0.3)] flex-shrink-0" />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4ADE80]/30 to-[#22C55E]/20 border border-[rgba(74,222,128,0.3)] flex items-center justify-center text-xs font-black text-[#4ADE80]">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4ADE80]/30 to-[#22C55E]/20 border border-[rgba(74,222,128,0.3)] flex items-center justify-center text-xs font-black text-[#4ADE80] flex-shrink-0">
                     {currentUser.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
                   </div>
                 )}
