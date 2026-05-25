@@ -171,7 +171,7 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
   }, 0);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-start justify-center overflow-y-auto py-8 px-4">
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-start justify-center overflow-y-auto py-4 sm:py-8 px-2 sm:px-4">
       <div className="bg-white text-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl">
         {/* Print controls — hidden when printing */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 print:hidden">
@@ -192,21 +192,21 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
         </div>
 
         {/* Report body */}
-        <div className="p-8 space-y-6">
+        <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
           {/* Letterhead */}
-          <div className="flex items-start justify-between border-b border-gray-200 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between border-b border-gray-200 pb-5 gap-2">
             <div>
-              <h1 className="text-2xl font-black text-gray-900">Portfolio Report</h1>
-              <p className="text-sm text-gray-500 mt-1">Generated {now}</p>
+              <h1 className="text-xl sm:text-2xl font-black text-gray-900">Portfolio Report</h1>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">Generated {now}</p>
             </div>
-            <div className="text-right text-sm">
+            <div className="sm:text-right text-sm">
               <p className="font-bold text-gray-900">{data.length} Properties</p>
               <p className="text-gray-500">{data.reduce((s, d) => s + d.tenants.length, 0)} Active Tenants</p>
             </div>
           </div>
 
           {/* Portfolio summary */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {[
               { label: "Total Revenue",  value: `$${totalRevenue.toLocaleString()}/mo`,             color: "#16a34a" },
               { label: "Total Expenses", value: totalExp ? `$${Math.round(totalExp).toLocaleString()}/mo` : "Not set", color: "#dc2626" },
@@ -233,16 +233,16 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
 
             return (
               <div key={property.id} className="border border-gray-200 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-5 py-3 bg-gray-50 border-b border-gray-200 gap-1 sm:gap-0">
                   <div>
                     <h2 className="font-black text-gray-900 text-sm">{d?.display_name || property.name}</h2>
                     <p className="text-xs text-gray-500">{property.city} · {property.type}</p>
                   </div>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="font-bold" style={{ color: occ >= 100 ? "#16a34a" : occ > 0 ? "#ca8a04" : "#9ca3af" }}>
+                  <div className="flex items-center gap-3 sm:gap-4 text-sm mt-1 sm:mt-0">
+                    <span className="font-bold text-xs sm:text-sm" style={{ color: occ >= 100 ? "#16a34a" : occ > 0 ? "#ca8a04" : "#9ca3af" }}>
                       {ts.length}/{totalUnits} units ({occ}%)
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full border font-bold"
+                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full border font-bold"
                       style={{ color: trend === "up" ? "#16a34a" : trend === "down" ? "#dc2626" : "#ca8a04", borderColor: trend === "up" ? "#16a34a" : trend === "down" ? "#dc2626" : "#ca8a04" }}>
                       {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"} {trendLabel}
                     </span>
@@ -250,7 +250,7 @@ function PrintReport({ data, onClose }: { data: PrintData[]; onClose: () => void
                 </div>
 
                 {/* Financials row */}
-                <div className="grid grid-cols-4 divide-x divide-gray-100 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-gray-100 text-center">
                   {[{ l: "Revenue", v: rev ? `$${rev.toLocaleString()}/mo` : "—" },
                     { l: "Expenses", v: exp ? `$${Math.round(exp).toLocaleString()}/mo` : "—" },
                     { l: "Net P&L", v: exp ? `${profit >= 0 ? "+" : ""}$${Math.round(profit).toLocaleString()}/mo` : "—" },
@@ -371,7 +371,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
     <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
 
       {/* Card header */}
-      <div className="flex items-center gap-4 p-5 border-b border-[rgba(255,255,255,0.05)]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 border-b border-[rgba(255,255,255,0.05)]">
         <Ring value={occupancy} color={occColor} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -405,7 +405,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
             {rented}/{totalUnits} units · {occupancy}% occupied
           </span>
         </div>
-        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+        <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:gap-1.5 flex-shrink-0 w-full sm:w-auto">
           {revenue > 0 && (
             <div className="text-right">
               <p className="text-[10px] text-gray-600 mb-0.5">Revenue</p>
@@ -567,7 +567,7 @@ function AddPropertyForm({ onAdd, onClose }: { onAdd: (p: typeof EMPTY_ADD) => P
           <label className={L}>Property Name *</label>
           <input value={form.name} onChange={s("name")} placeholder="e.g. Warehouse 14B" className={F} autoFocus />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className={L}>Type</label>
             <select value={form.type} onChange={s("type")} className={F}>
@@ -581,7 +581,7 @@ function AddPropertyForm({ onAdd, onClose }: { onAdd: (p: typeof EMPTY_ADD) => P
             <input value={form.city} onChange={s("city")} placeholder="Bristol, TN" className={F} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className={L}>Address</label>
             <input value={form.address} onChange={s("address")} placeholder="123 Main St" className={F} />
@@ -707,7 +707,7 @@ export default function PropDetailsTab() {
     <div className="space-y-5">
 
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3 p-5 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 glass rounded-2xl border border-[rgba(255,255,255,0.06)]">
         <div>
           <h2 className="text-lg font-black text-white flex items-center gap-2">
             <Building2 size={20} className="text-[#A78BFA]" />
@@ -715,7 +715,7 @@ export default function PropDetailsTab() {
           </h2>
           <p className="text-xs text-gray-500 mt-1">Occupancy, P&amp;L, and financials per property — live from Tenant data.</p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           <button onClick={() => setShowAdd(true)}
             className="flex items-center gap-1.5 text-xs font-bold text-[#4ADE80] px-3 py-2 rounded-lg border border-[rgba(74,222,128,0.25)] hover:bg-[rgba(74,222,128,0.1)] transition-all">
             <Plus size={12} /> Add Property
@@ -776,7 +776,7 @@ export default function PropDetailsTab() {
           <span className="ml-3 text-sm text-gray-500">Loading…</span>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
           {allProperties.map(p => (
             <PropertyCard key={p.id} property={p} tenants={tenants} detail={detailMap[p.id]} onSave={handleSave} onDelete={handleDeleteProperty} />
           ))}

@@ -81,7 +81,7 @@ function StatCard({ label, value, sub, color = "#4ADE80", icon: Icon }:
           <Icon size={13} style={{ color }} />
         </div>
       </div>
-      <p className="text-2xl font-black text-white tabular-nums leading-none relative">{value}</p>
+      <p className="text-xl sm:text-2xl font-black text-white tabular-nums leading-none relative">{value}</p>
       {sub && <p className="text-[11px] text-gray-400 mt-1 relative">{sub}</p>}
     </div>
   );
@@ -182,7 +182,7 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
     <div className="rounded-2xl border overflow-hidden mb-6 bg-[rgba(255,255,255,0.018)]"
       style={{ borderColor: "rgba(251,191,36,0.18)", boxShadow: "0 0 28px rgba(251,191,36,0.07)" }}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-[rgba(255,255,255,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[rgba(255,255,255,0.06)]">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#FBBF24] to-[#F97316] flex items-center justify-center shadow-[0_0_14px_rgba(251,191,36,0.3)]">
             <BarChart3 size={14} className="text-black" />
@@ -193,7 +193,7 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
           </div>
         </div>
         {/* Period filter */}
-        <div className="flex gap-1 bg-[rgba(255,255,255,0.04)] rounded-xl p-1 self-start sm:self-auto">
+        <div className="flex flex-wrap gap-1 bg-[rgba(255,255,255,0.04)] rounded-xl p-1 self-start sm:self-auto">
           {(["7d","30d","90d","1yr","all"] as Period[]).map(p => (
             <button key={p} onClick={() => setPeriod(p)}
               className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all capitalize ${
@@ -207,7 +207,7 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
         </div>
       </div>
 
-      <div className="p-5 space-y-6">
+      <div className="p-4 sm:p-5 space-y-6">
 
         {/* ── Space Type Demand Bars ─────────────────────────────────── */}
         {filtered.length === 0 ? (
@@ -289,7 +289,7 @@ function LeadHealthDashboard({ leads }: { leads: AnalyticsLead[] }) {
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                 <TrendingUp size={10} /> 6-Month Demand Trend
               </p>
-              <div className="grid grid-cols-6 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                 {trendData.map(({ month, year, total, byType: bt }) => (
                   <div key={`${month}-${year}`} className="flex flex-col items-center gap-1.5 group relative">
                     {/* Hover tooltip card */}
@@ -407,9 +407,9 @@ function RevenueForecast({ tenants }: { tenants: Tenant[] }) {
   });
 
   return (
-    <div className="rounded-2xl p-5 mb-6 border bg-[rgba(255,255,255,0.02)]"
+    <div className="rounded-2xl p-4 sm:p-5 mb-6 border bg-[rgba(255,255,255,0.02)]"
       style={{ borderColor: "rgba(74,222,128,0.18)", boxShadow: "0 0 28px rgba(74,222,128,0.07)" }}>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-2">
           <BarChart3 size={14} className="text-[#4ADE80]" />
           <p className="text-xs font-black text-white uppercase tracking-widest">12-Month Revenue Forecast</p>
@@ -454,12 +454,12 @@ function RevenueForecast({ tenants }: { tenants: Tenant[] }) {
           <div className="flex gap-1">
             {months.map((m, i) => (
               <div key={i} className="flex-1 text-center">
-                <span className="text-[10px] text-gray-400 font-medium">{m.label}</span>
+                <span className={`text-[10px] text-gray-400 font-medium ${i % 2 !== 0 ? 'hidden sm:inline' : ''}`}>{m.label}</span>
               </div>
             ))}
           </div>
           {/* Summary */}
-          <div className="flex gap-4 mt-3 pt-3 border-t border-[rgba(255,255,255,0.05)]">
+          <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-[rgba(255,255,255,0.05)]">
             <div>
               <p className="text-[10px] text-gray-400">Today MRR</p>
               <p className="text-sm font-black text-white">{fmtMoney(baselineMRR)}</p>
@@ -660,7 +660,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
     <div className="mt-6 space-y-6">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center shadow-[0_0_12px_rgba(74,222,128,0.3)]">
             <BarChart3 size={14} className="text-black" />
@@ -685,7 +685,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
 
       {/* ── AI Market Brief ─────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)]">
-        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-[rgba(74,222,128,0.1)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[rgba(74,222,128,0.1)]">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center shadow-[0_0_14px_rgba(74,222,128,0.3)]">
               <Sparkles size={14} className="text-black" />
@@ -695,7 +695,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
               <p className="text-[11px] text-gray-500 mt-0.5">Gemini analyzes your live lead &amp; tenant data and writes a strategic brief</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-auto">
             {brief && (
               <button
                 onClick={() => { navigator.clipboard.writeText(brief).catch(() => {}); setBriefCopied(true); setTimeout(() => setBriefCopied(false), 2000); }}
@@ -717,7 +717,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
           </div>
         </div>
 
-        <div className="px-5 py-4">
+        <div className="px-4 sm:px-5 py-4">
           {briefError && (
             <p className="text-sm text-red-400 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-xl px-4 py-3 mb-3">{briefError}</p>
           )}

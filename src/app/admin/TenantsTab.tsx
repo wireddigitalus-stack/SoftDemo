@@ -137,7 +137,7 @@ function TenantForm({
   };
 
   return (
-    <div className="bg-[rgba(0,0,0,0.4)] border border-[rgba(74,222,128,0.2)] rounded-2xl p-5 mb-6 space-y-4">
+    <div className="bg-[rgba(0,0,0,0.4)] border border-[rgba(74,222,128,0.2)] rounded-2xl p-3 sm:p-5 mb-6 space-y-4">
       <div className="flex items-center justify-between mb-1">
         <p className="text-xs font-black text-[#4ADE80] uppercase tracking-widest">
           {initial.id ? "Edit Tenant" : "Add New Tenant"}
@@ -215,13 +215,13 @@ function TenantForm({
       <div>
         <label className={LABEL}>Lease Renewal Alert Window</label>
         <p className="text-[10px] text-gray-600 mb-2">Get an alert this many days before lease expiry</p>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {([30, 60, 180, null] as const).map(v => (
             <button
               key={String(v)}
               type="button"
               onClick={() => set("leaseAlertDays", v)}
-              className={`flex-1 py-2 rounded-xl text-xs font-black border transition-all ${
+              className={`py-2 rounded-xl text-xs font-black border transition-all ${
                 form.leaseAlertDays === v
                   ? "bg-[rgba(74,222,128,0.15)] border-[rgba(74,222,128,0.5)] text-[#4ADE80]"
                   : "border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-gray-300"
@@ -294,7 +294,7 @@ function RevenueBanner({ tenants, onTenantClick }: { tenants: Tenant[]; onTenant
     .sort((a, b) => (a.days ?? 999) - (b.days ?? 999));
 
   return (
-    <div className="rounded-2xl border border-[rgba(74,222,128,0.25)] bg-gradient-to-br from-[rgba(74,222,128,0.06)] via-[rgba(74,222,128,0.02)] to-transparent p-5 mb-6 relative overflow-hidden">
+    <div className="rounded-2xl border border-[rgba(74,222,128,0.25)] bg-gradient-to-br from-[rgba(74,222,128,0.06)] via-[rgba(74,222,128,0.02)] to-transparent p-3 sm:p-5 mb-6 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#4ADE80] opacity-[0.03] blur-3xl pointer-events-none" />
 
       {/* Header */}
@@ -309,7 +309,7 @@ function RevenueBanner({ tenants, onTenantClick }: { tenants: Tenant[]; onTenant
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         {[
           { label: "Monthly Revenue", value: fmtMoney(totalMonthly) },
           { label: "Annual ARR", value: fmtMoney(totalARR) },
@@ -317,7 +317,7 @@ function RevenueBanner({ tenants, onTenantClick }: { tenants: Tenant[]; onTenant
         ].map(s => (
           <div key={s.label} className="bg-[rgba(255,255,255,0.03)] rounded-xl p-3 border border-[rgba(255,255,255,0.06)]">
             <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">{s.label}</p>
-            <p className="text-lg font-black text-white tabular-nums">{s.value}</p>
+            <p className="text-base sm:text-lg font-black text-white tabular-nums truncate">{s.value}</p>
           </div>
         ))}
       </div>
@@ -366,9 +366,9 @@ function RevenueBanner({ tenants, onTenantClick }: { tenants: Tenant[]; onTenant
                   <TrendingUp size={10} className="text-[#4ADE80] flex-shrink-0" />
                   <span className="text-xs text-gray-300 truncate group-hover:text-white transition-colors">{tenant.name}</span>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <span className="text-[10px] text-[#4ADE80] font-bold">+{tenant.escalationPct}% · +{fmtMoney(increase)}/mo</span>
-                  <span className="text-[10px] text-gray-600 ml-1">in {days}d</span>
+                <div className="text-right flex-shrink-0 min-w-0">
+                  <span className="text-[10px] text-[#4ADE80] font-bold whitespace-nowrap">+{tenant.escalationPct}% · +{fmtMoney(increase)}/mo</span>
+                  <span className="text-[10px] text-gray-600 ml-1 whitespace-nowrap">in {days}d</span>
                 </div>
               </button>
             );
@@ -423,7 +423,7 @@ function TenantCard({
 
   return (
     <div id={`tenant-card-${tenant.id}`}
-      className={`glass rounded-2xl border transition-all p-5 ${
+      className={`glass rounded-2xl border transition-all p-3 sm:p-5 ${
         urgency?.color === "#EF4444" ? "border-[rgba(239,68,68,0.4)] shadow-[0_0_18px_rgba(239,68,68,0.06)]"
         : urgency?.color === "#F97316" ? "border-[rgba(249,115,22,0.35)]"
         : urgency?.color === "#FACC15" ? "border-[rgba(250,204,21,0.3)]"
@@ -570,9 +570,9 @@ function TenantCard({
 
       {/* Escalation row */}
       {tenant.escalationPct > 0 && (
-        <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-[rgba(74,222,128,0.04)] border border-[rgba(74,222,128,0.1)]">
+        <div className="flex flex-wrap items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-[rgba(74,222,128,0.04)] border border-[rgba(74,222,128,0.1)]">
           <TrendingUp size={11} className="text-[#4ADE80] flex-shrink-0" />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 break-words min-w-0">
             <span className="text-[#4ADE80] font-bold">+{tenant.escalationPct}% renewal escalation</span>
             {tenant.escalationDate && (
               <> on {fmtDate(tenant.escalationDate)}
@@ -823,7 +823,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         <div className="mb-6 p-4 rounded-xl border border-[rgba(250,204,21,0.3)] bg-[rgba(250,204,21,0.05)]">
           <p className="text-xs font-bold text-[#FACC15] mb-2 flex items-center gap-1.5"><AlertTriangle size={12} />Database table not found — one-time setup required</p>
           <p className="text-xs text-gray-400 mb-2">Run this SQL in your <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-[#4ADE80] underline">Supabase SQL Editor</a>, then click Refresh:</p>
-          <pre className="text-[10px] text-gray-300 bg-[rgba(0,0,0,0.4)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">{`-- ① Create table (new install)
+          <pre className="text-[9px] sm:text-[10px] text-gray-300 bg-[rgba(0,0,0,0.4)] rounded-lg p-2 sm:p-3 overflow-x-auto whitespace-pre-wrap break-words">{`-- ① Create table (new install)
 CREATE TABLE IF NOT EXISTS tenants (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
