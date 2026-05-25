@@ -376,7 +376,7 @@ Use real names and numbers. Be punchy.`,
   ];
 
   return (
-    <div className="rounded-2xl border border-[rgba(74,222,128,0.3)] bg-gradient-to-br from-[rgba(74,222,128,0.06)] via-[rgba(74,222,128,0.03)] to-transparent p-5 mb-6 relative overflow-hidden"
+    <div className="rounded-2xl border border-[rgba(74,222,128,0.3)] bg-gradient-to-br from-[rgba(74,222,128,0.06)] via-[rgba(74,222,128,0.03)] to-transparent p-3 sm:p-5 mb-6 relative overflow-hidden"
       style={{ boxShadow: "0 0 32px rgba(74,222,128,0.10)" }}>
       {/* Subtle glow */}
       <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-[#4ADE80] opacity-[0.04] blur-3xl pointer-events-none" />
@@ -404,27 +404,27 @@ Use real names and numbers. Be punchy.`,
       </div>
 
       {/* Stats chips — clickable, filter + scroll to leads */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
         {stats.map(s => (
           <button
             key={s.label}
             onClick={() => onBadgeClick(s.filter)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] hover:border-[rgba(74,222,128,0.35)] hover:bg-[rgba(74,222,128,0.06)] transition-all cursor-pointer group"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] hover:border-[rgba(74,222,128,0.35)] hover:bg-[rgba(74,222,128,0.06)] transition-all cursor-pointer group"
             title={`Filter: ${s.label}`}
           >
-            <span className="text-sm">{s.emoji}</span>
-            <span className="text-xs text-gray-400 group-hover:text-gray-200 transition-colors">{s.label}</span>
-            <span className="text-sm font-black tabular-nums" style={{ color: s.color }}>{s.value}</span>
+            <span className="text-xs sm:text-sm">{s.emoji}</span>
+            <span className="text-[10px] sm:text-xs text-gray-400 group-hover:text-gray-200 transition-colors">{s.label}</span>
+            <span className="text-xs sm:text-sm font-black tabular-nums" style={{ color: s.color }}>{s.value}</span>
           </button>
         ))}
         <button
           onClick={() => onBadgeClick("Hot Lead")}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] hover:bg-[rgba(74,222,128,0.14)] hover:border-[rgba(74,222,128,0.4)] transition-all cursor-pointer group"
+          className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] hover:bg-[rgba(74,222,128,0.14)] hover:border-[rgba(74,222,128,0.4)] transition-all cursor-pointer group"
           title="Filter: Hot Pipeline"
         >
           <DollarSign size={12} className="text-[#4ADE80]" />
-          <span className="text-xs text-gray-400 group-hover:text-gray-200 transition-colors">Hot Pipeline</span>
-          <span className="text-sm font-black text-[#4ADE80] tabular-nums">${pipeline.toLocaleString()}/mo</span>
+          <span className="text-[10px] sm:text-xs text-gray-400 group-hover:text-gray-200 transition-colors">Hot Pipeline</span>
+          <span className="text-xs sm:text-sm font-black text-[#4ADE80] tabular-nums">${pipeline.toLocaleString()}/mo</span>
         </button>
       </div>
 
@@ -1179,7 +1179,7 @@ export default function AdminPage() {
                   LIVE
                 </span>
               </div>
-              <p className="text-xs font-semibold text-gray-500 tracking-widest uppercase -mt-0.5">Property Intelligence Platform</p>
+              <p className="text-xs font-semibold text-gray-500 tracking-widest uppercase -mt-0.5 hidden sm:block">Property Intelligence Platform</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -1284,7 +1284,8 @@ export default function AdminPage() {
 
         {/* Mobile/Tablet: Horizontal compact pill nav */}
         <div className="sm:hidden bg-[#080C14] -mx-4 px-4 mb-6">
-          <div className="scrollbar-none flex items-center gap-1 overflow-x-auto py-2 pr-6" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+          <div className="scrollbar-none flex items-center gap-1 overflow-x-auto py-2 pr-6" style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}>
+            <style>{`.scrollbar-none::-webkit-scrollbar { display: none; }`}</style>
             {([
               { key: "leads",       label: `Leads (${activeLeads.length})`, icon: TrendingUp, color: "#4ADE80" },
               { key: "tenants",     label: "Tenants",     icon: Building2, color: "#60A5FA" },
@@ -1456,26 +1457,26 @@ export default function AdminPage() {
             />
 
             {/* Pipeline Banner */}
-            <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-gradient-to-r from-[rgba(74,222,128,0.07)] to-[rgba(74,222,128,0.02)] p-6 mb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+            <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-gradient-to-r from-[rgba(74,222,128,0.07)] to-[rgba(74,222,128,0.02)] p-4 sm:p-6 mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                 <div className="flex items-center gap-3 flex-shrink-0">
-                  <div className="w-10 h-10 rounded-xl bg-[rgba(74,222,128,0.12)] flex items-center justify-center"><DollarSign size={20} className="text-[#4ADE80]" /></div>
-                  <span className="text-sm font-bold text-[#4ADE80] uppercase tracking-widest">Active Pipeline</span>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[rgba(74,222,128,0.12)] flex items-center justify-center"><DollarSign size={18} className="text-[#4ADE80]" /></div>
+                  <span className="text-xs sm:text-sm font-bold text-[#4ADE80] uppercase tracking-widest">Active Pipeline</span>
                 </div>
-                <div className="flex flex-wrap gap-8">
+                <div className="flex flex-wrap gap-4 sm:gap-8">
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Hot Lead Monthly Value</p>
-                    <p className="text-3xl font-black text-white tabular-nums">${hotMonthlyPipeline.toLocaleString()}<span className="text-base text-gray-500 font-normal">/mo</span></p>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5">Hot Lead Monthly Value</p>
+                    <p className="text-xl sm:text-3xl font-black text-white tabular-nums">${hotMonthlyPipeline.toLocaleString()}<span className="text-sm sm:text-base text-gray-500 font-normal">/mo</span></p>
                   </div>
                   <div className="w-px bg-[rgba(255,255,255,0.06)] hidden sm:block" />
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Projected Annual Revenue</p>
-                    <p className="text-3xl font-black text-[#4ADE80] tabular-nums">${annualProjection.toLocaleString()}<span className="text-base text-[#4ADE80]/60 font-normal">/yr</span></p>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5">Projected Annual Revenue</p>
+                    <p className="text-xl sm:text-3xl font-black text-[#4ADE80] tabular-nums">${annualProjection.toLocaleString()}<span className="text-sm sm:text-base text-[#4ADE80]/60 font-normal">/yr</span></p>
                   </div>
                   <div className="w-px bg-[rgba(255,255,255,0.06)] hidden sm:block" />
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Total Pipeline (All Leads)</p>
-                    <p className="text-3xl font-black text-gray-300 tabular-nums">${totalMonthlyPipeline.toLocaleString()}<span className="text-base text-gray-600 font-normal">/mo</span></p>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5">Total Pipeline (All Leads)</p>
+                    <p className="text-xl sm:text-3xl font-black text-gray-300 tabular-nums">${totalMonthlyPipeline.toLocaleString()}<span className="text-sm sm:text-base text-gray-600 font-normal">/mo</span></p>
                   </div>
                 </div>
               </div>
@@ -1483,18 +1484,18 @@ export default function AdminPage() {
 
             {/* Urgent Strip */}
             {urgentLeads.length > 0 && (
-              <div className="rounded-2xl border border-[rgba(250,204,21,0.25)] bg-[rgba(250,204,21,0.04)] p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <AlertCircle size={18} className="text-[#FACC15] flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-[#FACC15] font-bold text-sm mb-2">⚡ {urgentLeads.length} lead{urgentLeads.length > 1 ? "s" : ""} need contact TODAY</p>
-                    <div className="flex flex-wrap gap-3">
+              <div className="rounded-2xl border border-[rgba(250,204,21,0.25)] bg-[rgba(250,204,21,0.04)] p-3 sm:p-4 mb-6">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <AlertCircle size={16} className="text-[#FACC15] flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#FACC15] font-bold text-xs sm:text-sm mb-2">⚡ {urgentLeads.length} lead{urgentLeads.length > 1 ? "s" : ""} need contact TODAY</p>
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                       {urgentLeads.map(lead => (
-                        <div key={lead.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.2)]">
-                          <span className="text-sm font-semibold text-white">{lead.name}</span>
-                          <span className="text-xs text-[#FACC15]">${lead.budget.toLocaleString()}/mo</span>
-                          <span className="text-xs text-gray-500">· {timeAgo(lead.timestamp)}</span>
-                          {lead.phone && <a href={`tel:${lead.phone}`} className="flex items-center gap-1 text-xs text-[#4ADE80] font-bold hover:underline"><Phone size={10} /> Call</a>}
+                        <div key={lead.id} className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.2)]">
+                          <span className="text-xs sm:text-sm font-semibold text-white">{lead.name}</span>
+                          <span className="text-[10px] sm:text-xs text-[#FACC15]">${lead.budget.toLocaleString()}/mo</span>
+                          <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">· {timeAgo(lead.timestamp)}</span>
+                          {lead.phone && <a href={`tel:${lead.phone}`} className="flex items-center gap-1 text-[10px] sm:text-xs text-[#4ADE80] font-bold hover:underline"><Phone size={10} /> Call</a>}
                         </div>
                       ))}
                     </div>
@@ -1504,16 +1505,16 @@ export default function AdminPage() {
             )}
 
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
               {[
                 { label: "Total Leads", value: leads.length, icon: Users, color: "#60A5FA" },
                 { label: "Hot Leads 🔥", value: hotLeads.length, icon: TrendingUp, color: "#4ADE80" },
                 { label: "Warm Leads", value: warmCount, icon: Zap, color: "#FACC15" },
                 { label: "Whale Alerts 🐳", value: whaleLeads.length, icon: Building2, color: "#FACC15" },
               ].map(({ label, value, icon: Icon, color }) => (
-                <div key={label} className="glass rounded-2xl p-4 border border-[rgba(255,255,255,0.06)]">
-                  <div className="flex items-center gap-2 mb-2"><Icon size={14} style={{ color }} /><span className="text-xs text-gray-500">{label}</span></div>
-                  <p className="text-2xl font-black text-white">{value}</p>
+                <div key={label} className="glass rounded-2xl p-3 sm:p-4 border border-[rgba(255,255,255,0.06)]">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2"><Icon size={13} style={{ color }} /><span className="text-[10px] sm:text-xs text-gray-500">{label}</span></div>
+                  <p className="text-xl sm:text-2xl font-black text-white">{value}</p>
                 </div>
               ))}
             </div>
@@ -1654,9 +1655,9 @@ export default function AdminPage() {
 
             {/* Filter + Print row */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-              <div id="leads-list" className="flex items-center gap-2 flex-wrap">
-                <Filter size={13} className="text-gray-500" />
-                <span className="text-xs text-gray-600 mr-1">Filter:</span>
+              <div id="leads-list" className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <Filter size={13} className="text-gray-500 flex-shrink-0" />
+                <span className="text-[10px] sm:text-xs text-gray-600 mr-0.5 sm:mr-1">Filter:</span>
                 {(["All", "Hot Lead", "Warm Lead", "Nurture", "Whale", "New Today"] as const).map(f => {
                   const tip =
                     f === "All"      ? "Show all active leads" :
@@ -1667,7 +1668,7 @@ export default function AdminPage() {
                                       "Leads that arrived in the last 24 hours.";
                   return (
                     <Tooltip key={f} text={tip}>
-                      <button onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter === f ? "bg-[rgba(74,222,128,0.1)] border-[rgba(74,222,128,0.3)] text-[#4ADE80]" : "border-[rgba(255,255,255,0.06)] text-gray-500 hover:text-gray-300"}`}>
+                      <button onClick={() => setFilter(f)} className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold border transition-all ${filter === f ? "bg-[rgba(74,222,128,0.1)] border-[rgba(74,222,128,0.3)] text-[#4ADE80]" : "border-[rgba(255,255,255,0.06)] text-gray-500 hover:text-gray-300"}`}>
                         {f === "Whale" ? "🐳 Whales" : f === "New Today" ? "🆕 New Today" : f}
                         {f === "Whale" && ` (${activeLeads.filter(l => l.isWhale).length})`}
                         {f === "New Today" && ` (${activeLeads.filter(l => (Date.now() - new Date(l.timestamp).getTime()) < 864e5).length})`}
@@ -1723,7 +1724,7 @@ export default function AdminPage() {
                 <div
                   key={lead.id}
                   id={`lead-card-${lead.id}`}
-                  className={`glass rounded-2xl border transition-all p-5 ${
+                  className={`glass rounded-2xl border transition-all p-3 sm:p-5 ${
                     lead.isWhale && lead.whaleTier === "gold"
                       ? "border-[rgba(250,204,21,0.45)] shadow-[0_0_28px_rgba(250,204,21,0.07)]"
                       : lead.isWhale
@@ -1745,9 +1746,9 @@ export default function AdminPage() {
                   <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                     <div className="flex-shrink-0 text-center">
                       <Tooltip text={`AI Lead Score: ${lead.score}/100 — calculated from budget, urgency, timeline, and space type signals.`} wide>
-                        <div className="w-16 h-16 rounded-2xl flex flex-col items-center justify-center border cursor-help" style={{ borderColor: `${scoreColor(lead.score)}40`, backgroundColor: `${scoreColor(lead.score)}0A` }}>
-                          <span className="text-2xl font-black tabular-nums leading-none" style={{ color: scoreColor(lead.score) }}>{lead.score}</span>
-                          <span className="text-[9px] text-gray-600 mt-0.5">/ 100</span>
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center border cursor-help" style={{ borderColor: `${scoreColor(lead.score)}40`, backgroundColor: `${scoreColor(lead.score)}0A` }}>
+                          <span className="text-lg sm:text-2xl font-black tabular-nums leading-none" style={{ color: scoreColor(lead.score) }}>{lead.score}</span>
+                          <span className="text-[8px] sm:text-[9px] text-gray-600 mt-0.5">/ 100</span>
                         </div>
                       </Tooltip>
                     </div>
@@ -1755,7 +1756,7 @@ export default function AdminPage() {
                       <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-white font-bold text-base">{lead.name}</h3>
+                            <h3 className="text-white font-bold text-sm sm:text-base">{lead.name}</h3>
                             <Tooltip text={lead.scoreLabel === "Hot Lead" ? "Hot Lead: Score 70+. Call today — high close probability." : lead.scoreLabel === "Warm Lead" ? "Warm Lead: Score 40–69. Nurture with follow-up emails or a call this week." : "Nurture: Score below 40. Keep warm — long-term prospect."}>
                               <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold cursor-help ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
                             </Tooltip>
@@ -1825,14 +1826,14 @@ export default function AdminPage() {
                           )}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-2 items-center">
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
                           {lead.phone && (
-                            <a href={`tel:${lead.phone}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] text-[#4ADE80] text-xs font-bold hover:bg-[rgba(74,222,128,0.14)] transition-colors">
+                            <a href={`tel:${lead.phone}`} className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] text-[#4ADE80] text-[11px] sm:text-xs font-bold hover:bg-[rgba(74,222,128,0.14)] transition-colors">
                               <Phone size={11} /> Call Now
                             </a>
                           )}
                           {lead.email && (
-                            <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgba(96,165,250,0.08)] border border-[rgba(96,165,250,0.2)] text-[#60A5FA] text-xs font-bold hover:bg-[rgba(96,165,250,0.14)] transition-colors">
+                            <a href={`mailto:${lead.email}`} className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[rgba(96,165,250,0.08)] border border-[rgba(96,165,250,0.2)] text-[#60A5FA] text-[11px] sm:text-xs font-bold hover:bg-[rgba(96,165,250,0.14)] transition-colors">
                               <Mail size={11} /> Email
                             </a>
                           )}
@@ -1864,9 +1865,9 @@ export default function AdminPage() {
                           )}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-2 mb-3">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
                         {[`🏢 ${lead.spaceType}`, `💰 $${lead.budget.toLocaleString()}/mo`, `📅 ${lead.timeline}`, `👥 ${lead.teamSize}`].map(chip => (
-                          <span key={chip} className="text-xs px-2.5 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] text-gray-400">{chip}</span>
+                          <span key={chip} className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] text-gray-400">{chip}</span>
                         ))}
                         {lead.isWhale && lead.whaleKeywords && lead.whaleKeywords.length > 0 && (
                           <span className="text-xs px-2.5 py-1 rounded-lg bg-[rgba(250,204,21,0.08)] border border-[rgba(250,204,21,0.25)] text-[#FACC15] font-semibold">
@@ -1911,7 +1912,7 @@ export default function AdminPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                      <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed mb-3">
                         <span className="text-[#4ADE80] font-semibold">AI Analysis: </span>{lead.reasoning}
                       </p>
                       {/* Comments / Activity */}
@@ -2120,9 +2121,10 @@ export default function AdminPage() {
 
         {activeTab === "settings" && <SettingsTab leads={activeLeads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />}
 
-        <p className="text-center text-xs text-gray-700 mt-10">
-          VISION Property Intelligence Platform · AI-Powered by Gemini · Auto-refreshes every 30s
-        </p>
+        <div className="text-center text-[10px] sm:text-xs text-gray-700 mt-10 mb-6 px-4 space-y-0.5">
+          <p className="font-semibold text-gray-600">VISION Property Intelligence Platform</p>
+          <p>AI-Powered by Gemini · Auto-refreshes every 30s</p>
+        </div>
       </div>
 
       {/* ─ PRO TIPS floating button (always visible, context-aware) ─────────── */}
