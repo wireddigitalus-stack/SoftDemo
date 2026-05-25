@@ -221,8 +221,8 @@ function AskVisionModal({ leads, onClose }: { leads: Lead[]; onClose: () => void
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-[#0A0F1A] border border-[rgba(74,222,128,0.25)] rounded-2xl w-full max-w-xl shadow-[0_24px_80px_rgba(0,0,0,0.7)] overflow-hidden">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-4 pt-16 sm:pt-4 overflow-y-auto">
+      <div className="bg-[#0A0F1A] border border-[rgba(74,222,128,0.25)] rounded-2xl w-full max-w-xl shadow-[0_24px_80px_rgba(0,0,0,0.7)] overflow-hidden max-h-[calc(100dvh-5rem)] sm:max-h-[calc(100dvh-2rem)] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(74,222,128,0.12)] bg-gradient-to-r from-[rgba(74,222,128,0.06)] to-transparent">
           <div className="flex items-center gap-3">
@@ -240,7 +240,7 @@ function AskVisionModal({ leads, onClose }: { leads: Lead[]; onClose: () => void
         </div>
 
         {/* Body */}
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 overflow-y-auto flex-1">
           {/* Quick queries */}
           {!asked && (
             <div>
