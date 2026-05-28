@@ -10,41 +10,31 @@ export default function AuthCallbackPage() {
   const [status, setStatus] = useState("Signing you in…");
 
   useEffect(() => {
-    async function handleCallback() {
-      // Supabase PKCE flow may put the code in the query string OR hash fragment
-      const params = new URLSearchParams(window.location.search);
-      const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
-      const code = params.get("code") || hashParams.get("code");
-
-      if (code) {
-        const { error } = await supabaseBrowser.auth.exchangeCodeForSession(code);
-        if (error) {
-          console.error("Auth callback error:", error.message);
-          setStatus("Sign-in failed — redirecting…");
-          setTimeout(() => router.replace("/admin/login"), 1500);
-          return;
-        }
-      }
-
-      // Wait for session to establish (Supabase may process hash fragment asynchronously)
-      let retries = 0;
-      const maxRetries = 10;
-      while (retries < maxRetries) {
-        const { data } = await supabaseBrowser.auth.getSession();
-        if (data.session) {
+    // Supabase's detectSessionInUrl handles the PKCE code exchange automatically.
+    // We just listen for the auth state change and redirect when session is ready.
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
           router.replace("/admin");
-          return;
         }
-        retries++;
-        await new Promise(r => setTimeout(r, 300));
       }
+    );
 
-      // If still no session after retries, redirect to login
-      setStatus("Session not found — redirecting…");
-      setTimeout(() => router.replace("/admin/login"), 1000);
-    }
+    // Safety net: if the listener doesn't fire within 5s, check manually
+    const timeout = setTimeout(async () => {
+      const { data } = await supabaseBrowser.auth.getSession();
+      if (data.session) {
+        router.replace("/admin");
+      } else {
+        setStatus("Sign-in timed out — redirecting…");
+        setTimeout(() => router.replace("/admin/login"), 1000);
+      }
+    }, 5000);
 
-    handleCallback();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, [router]);
 
   return (
@@ -58,4 +48,3 @@ export default function AuthCallbackPage() {
     </div>
   );
 }
-
