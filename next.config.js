@@ -39,6 +39,33 @@ const nextConfig = {
       },
     ];
   },
+  // ── Legacy Wix URL redirects (301 permanent) ───────────────────────────────
+  // Old site URLs still indexed by Google — redirect to new equivalents
+  async redirects() {
+    return [
+      // Old Wix property pages → new property pages
+      { source: "/citycentre",                    destination: "/properties/city-centre",              permanent: true },
+      { source: "/CityCenter",                    destination: "/properties/city-centre",              permanent: true },
+      { source: "/city-centre",                   destination: "/properties/city-centre",              permanent: true },
+      { source: "/CommercialLeasingbySquareFoot",  destination: "/commercial-real-estate",             permanent: true },
+      { source: "/commercialleasingbysquarefoot",  destination: "/commercial-real-estate",             permanent: true },
+      { source: "/theexecutive",                   destination: "/properties/the-executive",           permanent: true },
+      { source: "/TheExecutive",                   destination: "/properties/the-executive",           permanent: true },
+      { source: "/bristolcowork",                  destination: "/properties/bristol-cowork",          permanent: true },
+      { source: "/BristolCoWork",                  destination: "/properties/bristol-cowork",          permanent: true },
+      { source: "/cowork",                         destination: "/properties/bristol-cowork",          permanent: true },
+      { source: "/centrepoint",                    destination: "/properties/centre-point-suites",     permanent: true },
+      { source: "/CentrePoint",                    destination: "/properties/centre-point-suites",     permanent: true },
+      { source: "/foundation",                     destination: "/properties/foundation-event-facility", permanent: true },
+      { source: "/Foundation",                     destination: "/properties/foundation-event-facility", permanent: true },
+      { source: "/warehouse",                      destination: "/properties/warehouse",               permanent: true },
+      // Old Wix general pages
+      { source: "/about-us",                       destination: "/about",                              permanent: true },
+      { source: "/contact-us",                     destination: "/contact",                            permanent: true },
+      { source: "/home",                           destination: "/",                                   permanent: true },
+      { source: "/Home",                           destination: "/",                                   permanent: true },
+    ];
+  },
 };
 
 module.exports = nextConfig;
