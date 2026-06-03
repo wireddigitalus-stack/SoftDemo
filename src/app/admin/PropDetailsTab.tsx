@@ -769,9 +769,10 @@ export default function PropDetailsTab() {
       </div>
 
       {alerts > 0 && (
-        <div className="flex items-center gap-3 px-5 py-4 rounded-xl border border-yellow-900/40 bg-yellow-950/20 text-yellow-400 text-xs">
-          <AlertTriangle size={14} /> <span><strong>{alerts} lease{alerts > 1 ? "s" : ""}</strong> expiring within 90 days — check Tenants tab for details.</span>
-        </div>
+        <a href="/admin?tab=tenants"
+          className="flex items-center gap-3 px-5 py-4 rounded-xl border border-yellow-900/40 bg-yellow-950/20 text-yellow-400 text-xs hover:bg-yellow-950/40 hover:border-yellow-800/60 transition-all cursor-pointer group">
+          <AlertTriangle size={14} /> <span><strong>{alerts} lease{alerts > 1 ? "s" : ""}</strong> expiring within 90 days — <span className="underline underline-offset-2 group-hover:text-yellow-300">go to Tenants tab →</span></span>
+        </a>
       )}
 
       {/* P&L History Chart */}
