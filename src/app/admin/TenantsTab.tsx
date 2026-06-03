@@ -160,15 +160,35 @@ function TenantForm({
       {/* Property */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2"><label className={LABEL}>Building / Property</label>
-          <select value={form.building || ""} onChange={e => set("building", e.target.value)} className={FIELD}>
-            <option value="" className="bg-[#0A0F1A]">Select property…</option>
-            <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
-            <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
-            <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
-            <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
-            <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
-            <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
-          </select></div>
+          {(() => {
+            const knownValues = [
+              "City Centre Professional Suites", "City Centre",
+              "Bristol CoWork", "The Executive", "Centre Point",
+              "Foundation Event Facility", "Commercial Warehouse",
+              "West State Commons", "Jamestown at Shelby",
+              "250 Commonwealth Ave", "628 State Street",
+            ];
+            const currentVal = form.building || "";
+            const isUnknown = currentVal && !knownValues.includes(currentVal);
+            return (
+              <select value={currentVal} onChange={e => set("building", e.target.value)} className={`${FIELD} ${isUnknown ? "border-yellow-500/50" : ""}`}>
+                <option value="" className="bg-[#0A0F1A]">Select property…</option>
+                {isUnknown && (
+                  <option value={currentVal} className="bg-[#0A0F1A]">⚠ {currentVal} (not mapped — re-select below)</option>
+                )}
+                <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
+                <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
+                <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
+                <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
+                <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
+                <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
+                <option value="West State Commons" className="bg-[#0A0F1A]">West State Commons</option>
+                <option value="Jamestown at Shelby" className="bg-[#0A0F1A]">Jamestown at Shelby</option>
+                <option value="250 Commonwealth Ave" className="bg-[#0A0F1A]">250 Commonwealth Ave</option>
+                <option value="628 State Street" className="bg-[#0A0F1A]">628 State Street</option>
+              </select>
+            );
+          })()}</div>
         <div><label className={LABEL}>Unit / Suite</label>
           <div className="flex gap-1.5 items-center"><input value={form.unit || ""} onChange={e => set("unit", e.target.value)} placeholder="204" className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("unit", (form.unit || "") + (form.unit ? " " : "") + t)} /></div></div>
       </div>
