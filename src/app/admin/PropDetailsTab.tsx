@@ -7,7 +7,7 @@ import {
   MoreHorizontal, TrendingDown, Minus, Printer, X, Pencil, Plus, Trash2,
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
-import type { Tenant } from "./TenantsTab";
+import { type Tenant, rowToTenant } from "./TenantsTab";
 import PortfolioOverviewCard from "./PortfolioOverviewCard";
 import PortfolioHistoryChart from "./PortfolioHistoryChart";
 
@@ -624,7 +624,7 @@ export default function PropDetailsTab() {
       fetch("/api/property-details").catch(() => null),
       fetch("/api/properties-dynamic?admin=1").catch(() => null),
     ]);
-    if (tRes?.ok) { const d = await tRes.json(); if (Array.isArray(d.tenants)) setTenants(d.tenants); }
+    if (tRes?.ok) { const d = await tRes.json(); if (Array.isArray(d.tenants)) setTenants(d.tenants.map(rowToTenant)); }
     if (dRes?.ok) {
       const d = await dRes.json();
       if (d.needsMigration) setMigrationSql(d.sql || "Run migration SQL in Supabase.");

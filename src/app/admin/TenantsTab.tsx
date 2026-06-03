@@ -42,7 +42,7 @@ export interface Tenant {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function rowToTenant(r: Record<string, unknown>): Tenant {
+export function rowToTenant(r: Record<string, unknown>): Tenant {
   return {
     id: r.id as string,
     name: r.name as string,
