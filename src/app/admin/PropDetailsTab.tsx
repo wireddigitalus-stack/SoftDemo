@@ -768,6 +768,12 @@ export default function PropDetailsTab() {
         ))}
       </div>
 
+      {alerts > 0 && (
+        <div className="flex items-center gap-3 px-5 py-4 rounded-xl border border-yellow-900/40 bg-yellow-950/20 text-yellow-400 text-xs">
+          <AlertTriangle size={14} /> <span><strong>{alerts} lease{alerts > 1 ? "s" : ""}</strong> expiring within 90 days — check Tenants tab for details.</span>
+        </div>
+      )}
+
       {/* P&L History Chart */}
       {!loading && (
         <PortfolioHistoryChart />
@@ -826,11 +832,7 @@ export default function PropDetailsTab() {
         );
       })()}
 
-      {alerts > 0 && (
-        <div className="flex items-center gap-3 px-5 py-4 rounded-xl border border-yellow-900/40 bg-yellow-950/20 text-yellow-400 text-xs">
-          <AlertTriangle size={14} /> <span><strong>{alerts} lease{alerts > 1 ? "s" : ""}</strong> expiring within 90 days — check Tenants tab for details.</span>
-        </div>
-      )}
+
 
       {showPrint && <PrintReport data={printData} onClose={() => setShowPrint(false)} />}
       {showAdd && <AddPropertyForm onAdd={handleAddProperty} onClose={() => setShowAdd(false)} />}
