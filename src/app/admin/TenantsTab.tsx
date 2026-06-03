@@ -649,6 +649,10 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
   const [showImporter, setShowImporter] = useState(false);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "pending" | "expired">("all");
   const [sortBy, setSortBy] = useState<"name" | "rent" | "lease_end">("lease_end");
+  const [filterProperty, setFilterProperty] = useState<string>("all");
+
+  // Unique building names for property filter dropdown
+  const propertyNames = Array.from(new Set(tenants.map(t => t.building).filter(Boolean))).sort();
 
   const fetchTenants = useCallback(async () => {
     setLoading(true);
@@ -802,6 +806,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
   // Filter + sort
   const displayed = tenants
     .filter(t => filterStatus === "all" || t.status === filterStatus)
+    .filter(t => filterProperty === "all" || t.building === filterProperty)
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "rent") return b.monthlyRent - a.monthlyRent;
@@ -870,6 +875,13 @@ ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nn_fee NUMERIC DEFAULT 0;`}</pre>
               {s === "all" ? `All (${tenants.length})` : `${s.charAt(0).toUpperCase()+s.slice(1)} (${tenants.filter(t=>t.status===s).length})`}
             </button>
           ))}
+          <select value={filterProperty} onChange={e => setFilterProperty(e.target.value)}
+            className="px-3 py-1.5 rounded-xl text-xs border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.03)] text-gray-400 outline-none">
+            <option value="all">Property: All ({tenants.filter(t => filterStatus === "all" || t.status === filterStatus).length})</option>
+            {propertyNames.map(name => (
+              <option key={name} value={name}>{name} ({tenants.filter(t => t.building === name && (filterStatus === "all" || t.status === filterStatus)).length})</option>
+            ))}
+          </select>
           <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
             className="px-3 py-1.5 rounded-xl text-xs border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.03)] text-gray-400 outline-none">
             <option value="lease_end">Sort: Lease Expiry</option>
