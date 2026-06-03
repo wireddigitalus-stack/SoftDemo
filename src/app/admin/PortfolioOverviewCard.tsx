@@ -19,6 +19,7 @@ interface PropDetail {
   other_monthly: number;
   trend: "up" | "stable" | "down";
   notes: string;
+  display_name?: string | null;
 }
 
 interface Props {
@@ -28,13 +29,27 @@ interface Props {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function norm(s: string) { return s.toLowerCase().replace(/[^a-z]/g, ""); }
-function buildingMatch(b: string, propName: string) {
-  const nb = norm(b), np = norm(propName);
-  if (!nb || !np) return false;
-  const pre = Math.min(6, nb.length, np.length);
-  return nb === np || nb.includes(np.slice(0, pre)) || np.includes(nb.slice(0, pre));
+// ── Must match the same dropdown names used in PropDetailsTab ─────────────────
+const PROPERTY_DROPDOWN_NAMES: Record<string, string[]> = {
+  "city-centre": ["City Centre Professional Suites", "City Centre"],
+  "bristol-cowork": ["Bristol CoWork"],
+  "the-executive": ["The Executive"],
+  "centre-point": ["Centre Point"],
+  "foundation-event-facility": ["Foundation Event Facility"],
+  "commercial-warehouse": ["Commercial Warehouse"],
+};
+
+function exactBuildingMatch(tenantBuilding: string, propertyId: string, displayName: string): boolean {
+  if (!tenantBuilding) return false;
+  const b = tenantBuilding.trim().toLowerCase();
+  // Match against display name (custom rename)
+  if (displayName && b === displayName.trim().toLowerCase()) return true;
+  // Match against known dropdown values for this property
+  const names = PROPERTY_DROPDOWN_NAMES[propertyId];
+  if (names && names.some(n => b === n.toLowerCase())) return true;
+  return false;
 }
+
 function daysUntil(d: string | null | undefined) {
   if (!d) return null;
   return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000);
@@ -165,8 +180,9 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
 
   // Per-property derived data
   const propData = useMemo(() => PROPERTIES.map(p => {
-    const pts = tenants.filter(t => buildingMatch(t.building || "", p.name));
     const d = detailMap[p.id];
+    const displayName = d?.display_name || "";
+    const pts = tenants.filter(t => exactBuildingMatch(t.building || "", p.id, displayName));
     const revenue = pts.reduce((s, t) => s + (t.monthlyRent || 0), 0);
     const taxMo = (d?.taxes_annual || 0) / 12;
     const insMo = (d?.insurance_annual || 0) / 12;
