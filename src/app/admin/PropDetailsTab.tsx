@@ -793,6 +793,29 @@ export default function PropDetailsTab() {
         </a>
       )}
 
+      {/* Unassigned tenants warning */}
+      {!loading && (() => {
+        const assignedIds = new Set(
+          allProperties.flatMap(p => {
+            const dn = detailMap[p.id]?.display_name || p.name;
+            return tenants.filter(t => exactBuildingMatch(t.building || "", p.id, dn)).map(t => t.id);
+          })
+        );
+        const unassigned = tenants.filter(t => !assignedIds.has(t.id));
+        if (unassigned.length === 0) return null;
+        return (
+          <a href="/admin?tab=tenants"
+            className="flex items-center gap-3 px-5 py-4 rounded-xl border border-orange-900/40 bg-orange-950/20 text-orange-400 text-xs hover:bg-orange-950/40 hover:border-orange-800/60 transition-all cursor-pointer group">
+            <AlertTriangle size={14} />
+            <span>
+              <strong>{unassigned.length} tenant{unassigned.length > 1 ? "s" : ""}</strong> not assigned to a property
+              ({unassigned.slice(0, 3).map(t => t.name).join(", ")}{unassigned.length > 3 ? ` +${unassigned.length - 3} more` : ""})
+              — <span className="underline underline-offset-2 group-hover:text-orange-300">fix in Tenants tab →</span>
+            </span>
+          </a>
+        );
+      })()}
+
       {/* P&L History Chart */}
       {!loading && (
         <PortfolioHistoryChart />
@@ -812,44 +835,7 @@ export default function PropDetailsTab() {
         </div>
       )}
 
-      {/* Unassigned tenants */}
-      {!loading && (() => {
-        const assignedIds = new Set(
-          allProperties.flatMap(p => {
-            const dn = detailMap[p.id]?.display_name || p.name;
-            return tenants.filter(t => exactBuildingMatch(t.building || "", p.id, dn)).map(t => t.id);
-          })
-        );
-        const unassigned = tenants.filter(t => !assignedIds.has(t.id));
-        if (unassigned.length === 0) return null;
-        return (
-          <div className="glass rounded-2xl border border-[rgba(249,115,22,0.2)] p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle size={14} className="text-orange-400" />
-              <h3 className="text-sm font-black text-orange-400">Unassigned Tenants ({unassigned.length})</h3>
-            </div>
-            <p className="text-xs text-gray-500 mb-3">These tenants don&apos;t match any property. Edit them in the Tenants tab and select the correct property from the dropdown.</p>
-            <div className="space-y-1.5">
-              {unassigned.map(t => (
-                <div key={t.id} className="flex items-center gap-3 rounded-lg px-3 py-2 border border-[rgba(249,115,22,0.15)] bg-[rgba(249,115,22,0.04)]">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
-                    style={{ background: "rgba(249,115,22,0.15)", color: "#F97316" }}>
-                    {t.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-white truncate">{t.name}</p>
-                    <p className="text-[10px] text-gray-600 truncate">
-                      {t.building ? `Building: "${t.building}"` : "No building set"}
-                      {t.unit ? ` · Unit ${t.unit}` : ""}
-                    </p>
-                  </div>
-                  <span className="text-[10px] text-orange-400 font-bold">Unassigned</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
+
 
 
 
