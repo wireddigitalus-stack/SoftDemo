@@ -315,6 +315,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
     return exactBuildingMatch(t.building || "", property.id, displayName);
   });
 
+  const [collapsed, setCollapsed] = useState(true);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -374,8 +375,11 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
   return (
     <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
 
-      {/* Card header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 border-b border-[rgba(255,255,255,0.05)]">
+      {/* Card header — always visible, clickable to expand/collapse */}
+      <div
+        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 cursor-pointer select-none hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+        onClick={() => setCollapsed(c => !c)}
+      >
         <Ring value={occupancy} color={occColor} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -385,13 +389,14 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
                 value={form.displayName || displayName}
                 onChange={e => set("displayName")(e.target.value)}
                 onKeyDown={e => { if (e.key === "Escape") setEditingName(false); if (e.key === "Enter") handleSave(); }}
+                onClick={e => e.stopPropagation()}
                 className="text-sm font-black text-white leading-tight bg-[rgba(255,255,255,0.06)] border border-[rgba(167,139,250,0.4)] rounded-lg px-2 py-1 outline-none w-full max-w-[260px]"
                 placeholder={property.name}
               />
             ) : (
               <h3 className="text-sm font-black text-white leading-tight truncate">{displayName}</h3>
             )}
-            <button onClick={() => setEditingName(e => !e)} title="Rename property"
+            <button onClick={(e) => { e.stopPropagation(); setEditingName(ed => !ed); }} title="Rename property"
               className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-gray-600 hover:text-[#A78BFA] hover:bg-[rgba(167,139,250,0.1)] transition-all">
               <Pencil size={10} />
             </button>
@@ -416,128 +421,141 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
               <p className="text-base font-black text-[#4ADE80]">${revenue.toLocaleString()}/mo</p>
             </div>
           )}
-          {property.isDynamic && onDelete && (
-            <button onClick={() => { if (confirm(`Delete "${displayName}"? This cannot be undone.`)) onDelete(property.id); }}
-              className="flex items-center gap-1 text-[9px] text-red-500/50 hover:text-red-400 transition-colors" title="Delete property">
-              <Trash2 size={9} /> Remove
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Quick stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4">
-        <Pill icon={Users}       label="Tenants"    value={rented}                                            color="#60A5FA" />
-        <Pill icon={Home}        label="Sq Ft"      value={property.sqft}                                    color="#A78BFA" />
-        <Pill icon={DollarSign}  label="Avg Rent"   value={rented ? `$${Math.round(revenue / rented).toLocaleString()}/mo` : "—"} color="#4ADE80" />
-        {expenses > 0 && <Pill icon={Receipt}      label="Expenses"  value={`$${Math.round(expenses).toLocaleString()}/mo`}   color="#F97316" />}
-        {expenses > 0 && (
-          <Pill
-            icon={profit >= 0 ? TrendingUp : AlertTriangle}
-            label="Net P&L"
-            value={`${profit >= 0 ? "+" : ""}$${Math.round(profit).toLocaleString()}/mo`}
-            color={profit >= 0 ? "#4ADE80" : "#EF4444"}
-          />
-        )}
-        {expiring.length > 0 && <Pill icon={Clock}         label="Expiring"  value={`${expiring.length} soon`}                         color="#FACC15" />}
-        {expired.length  > 0 && <Pill icon={AlertTriangle} label="Expired"   value={`${expired.length} lease${expired.length > 1 ? "s":""}`} color="#EF4444" />}
-      </div>
-
-      {/* Tenant mini-list */}
-      {propTenants.length > 0 && (
-        <div className="border-t border-[rgba(255,255,255,0.04)] px-4 pb-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mt-3 mb-2">Tenants</p>
-          <div className="space-y-1.5">
-            {propTenants.map(t => {
-              const d = daysUntil(t.leaseEnd || t.renewalDate);
-              const isExp = d !== null && d < 0;
-              const isSoon = d !== null && d >= 0 && d <= 90;
-              return (
-                <div key={t.id} className="flex items-center gap-3 rounded-lg px-3 py-2 border"
-                  style={{ background: isExp ? "rgba(239,68,68,0.04)" : isSoon ? "rgba(250,204,21,0.04)" : "rgba(255,255,255,0.02)", borderColor: isExp ? "rgba(239,68,68,0.15)" : isSoon ? "rgba(250,204,21,0.15)" : "rgba(255,255,255,0.05)" }}>
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
-                    style={{ background: "rgba(96,165,250,0.12)", color: "#60A5FA" }}>
-                    {t.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-white truncate">{t.name}</p>
-                    <p className="text-[10px] text-gray-600 truncate">{t.unit ? `Unit ${t.unit} · ` : ""}{t.monthlyRent ? `$${t.monthlyRent.toLocaleString()}/mo` : ""}</p>
-                  </div>
-                  <div className="flex-shrink-0 text-right">
-                    {isExp  ? <span className="text-[10px] font-bold text-red-400">Expired</span>
-                    : isSoon ? <span className="text-[10px] font-bold text-yellow-400">{d}d left</span>
-                    : d !== null ? <span className="text-[10px] text-gray-600">{d}d</span>
-                    : <CheckCircle2 size={12} className="text-green-500" />}
-                  </div>
-                </div>
-              );
-            })}
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`}
+            style={{ background: "rgba(255,255,255,0.06)" }}>
+            <ChevronDown size={13} className="text-gray-500" />
           </div>
         </div>
-      )}
+      </div>
 
-      {propTenants.length === 0 && (
-        <div className="px-4 pb-3 flex items-center gap-2 text-gray-700 text-xs">
-          <Building2 size={12} /> No tenants linked yet
-        </div>
-      )}
-
-      {/* Financials accordion */}
-      <div className="border-t border-[rgba(255,255,255,0.05)]">
-        <button onClick={() => setOpen(o => !o)}
-          className="w-full flex items-center justify-between px-4 py-3 text-xs font-bold text-gray-400 hover:text-white transition-colors">
-          <span className="flex items-center gap-1.5"><MoreHorizontal size={12} /> Property Financials</span>
-          {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-        </button>
-
-        {open && (
-          <div className="px-4 pb-4 space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              <Field label="Total Units"        value={form.totalUnits}       onChange={set("totalUnits")}       prefix="#" />
-              <Field label="Annual Taxes ($)"   value={form.taxesAnnual}      onChange={set("taxesAnnual")} />
-              <Field label="Annual Insurance"   value={form.insuranceAnnual}  onChange={set("insuranceAnnual")} />
-              <Field label="Electric / mo"      value={form.electricMonthly}  onChange={set("electricMonthly")} />
-              <Field label="Water / mo"         value={form.waterMonthly}     onChange={set("waterMonthly")} />
-              <Field label="Other / mo"         value={form.otherMonthly}     onChange={set("otherMonthly")} />
+      {/* Collapsible body */}
+      {!collapsed && (
+        <>
+          {/* Delete button for dynamic props (outside click area) */}
+          {property.isDynamic && onDelete && (
+            <div className="px-4 pb-1 flex justify-end">
+              <button onClick={() => { if (confirm(`Delete "${displayName}"? This cannot be undone.`)) onDelete(property.id); }}
+                className="flex items-center gap-1 text-[9px] text-red-500/50 hover:text-red-400 transition-colors" title="Delete property">
+                <Trash2 size={9} /> Remove
+              </button>
             </div>
-            <div>
-              <label className="text-[10px] text-gray-600 block mb-1">Vacancy Trend</label>
-              <TrendSelector value={form.trend} onChange={v => setForm(f => ({ ...f, trend: v }))} />
-            </div>
-            <div>
-              <label className="text-[10px] text-gray-600 block mb-1">Notes</label>
-              <textarea rows={2} value={form.notes} onChange={e => set("notes")(e.target.value)}
-                className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-lg text-xs text-white px-3 py-2 outline-none resize-none"
-                placeholder="Any notes about this property…" />
-            </div>
+          )}
 
-            {/* Expense summary */}
+          {/* Quick stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4 border-t border-[rgba(255,255,255,0.05)]">
+            <Pill icon={Users}       label="Tenants"    value={rented}                                            color="#60A5FA" />
+            <Pill icon={Home}        label="Sq Ft"      value={property.sqft}                                    color="#A78BFA" />
+            <Pill icon={DollarSign}  label="Avg Rent"   value={rented ? `$${Math.round(revenue / rented).toLocaleString()}/mo` : "—"} color="#4ADE80" />
+            {expenses > 0 && <Pill icon={Receipt}      label="Expenses"  value={`$${Math.round(expenses).toLocaleString()}/mo`}   color="#F97316" />}
             {expenses > 0 && (
-              <div className="rounded-xl p-3 border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-xs space-y-1">
-                {taxMo > 0          && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Receipt size={10}/> Taxes</span><span>{fmt(taxMo)}/mo</span></div>}
-                {insMo > 0          && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><ShieldCheck size={10}/> Insurance</span><span>{fmt(insMo)}/mo</span></div>}
-                {n(form.electricMonthly) > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Zap size={10}/> Electric</span><span>{fmt(n(form.electricMonthly))}/mo</span></div>}
-                {n(form.waterMonthly)    > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Droplets size={10}/> Water</span><span>{fmt(n(form.waterMonthly))}/mo</span></div>}
-                {n(form.otherMonthly)    > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><MoreHorizontal size={10}/> Other</span><span>{fmt(n(form.otherMonthly))}/mo</span></div>}
-                <div className="border-t border-[rgba(255,255,255,0.06)] pt-1 mt-1 flex justify-between font-bold">
-                  <span className="text-gray-400">Total Expenses</span><span className="text-orange-400">{fmt(expenses)}/mo</span>
+              <Pill
+                icon={profit >= 0 ? TrendingUp : AlertTriangle}
+                label="Net P&L"
+                value={`${profit >= 0 ? "+" : ""}$${Math.round(profit).toLocaleString()}/mo`}
+                color={profit >= 0 ? "#4ADE80" : "#EF4444"}
+              />
+            )}
+            {expiring.length > 0 && <Pill icon={Clock}         label="Expiring"  value={`${expiring.length} soon`}                         color="#FACC15" />}
+            {expired.length  > 0 && <Pill icon={AlertTriangle} label="Expired"   value={`${expired.length} lease${expired.length > 1 ? "s":""}`} color="#EF4444" />}
+          </div>
+
+          {/* Tenant mini-list */}
+          {propTenants.length > 0 && (
+            <div className="border-t border-[rgba(255,255,255,0.04)] px-4 pb-3">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mt-3 mb-2">Tenants</p>
+              <div className="space-y-1.5">
+                {propTenants.map(t => {
+                  const d = daysUntil(t.leaseEnd || t.renewalDate);
+                  const isExp = d !== null && d < 0;
+                  const isSoon = d !== null && d >= 0 && d <= 90;
+                  return (
+                    <div key={t.id} className="flex items-center gap-3 rounded-lg px-3 py-2 border"
+                      style={{ background: isExp ? "rgba(239,68,68,0.04)" : isSoon ? "rgba(250,204,21,0.04)" : "rgba(255,255,255,0.02)", borderColor: isExp ? "rgba(239,68,68,0.15)" : isSoon ? "rgba(250,204,21,0.15)" : "rgba(255,255,255,0.05)" }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
+                        style={{ background: "rgba(96,165,250,0.12)", color: "#60A5FA" }}>
+                        {t.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-white truncate">{t.name}</p>
+                        <p className="text-[10px] text-gray-600 truncate">{t.unit ? `Unit ${t.unit} · ` : ""}{t.monthlyRent ? `$${t.monthlyRent.toLocaleString()}/mo` : ""}</p>
+                      </div>
+                      <div className="flex-shrink-0 text-right">
+                        {isExp  ? <span className="text-[10px] font-bold text-red-400">Expired</span>
+                        : isSoon ? <span className="text-[10px] font-bold text-yellow-400">{d}d left</span>
+                        : d !== null ? <span className="text-[10px] text-gray-600">{d}d</span>
+                        : <CheckCircle2 size={12} className="text-green-500" />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {propTenants.length === 0 && (
+            <div className="px-4 pb-3 flex items-center gap-2 text-gray-700 text-xs">
+              <Building2 size={12} /> No tenants linked yet
+            </div>
+          )}
+
+          {/* Financials accordion */}
+          <div className="border-t border-[rgba(255,255,255,0.05)]">
+            <button onClick={() => setOpen(o => !o)}
+              className="w-full flex items-center justify-between px-4 py-3 text-xs font-bold text-gray-400 hover:text-white transition-colors">
+              <span className="flex items-center gap-1.5"><MoreHorizontal size={12} /> Property Financials</span>
+              {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            </button>
+
+            {open && (
+              <div className="px-4 pb-4 space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Total Units"        value={form.totalUnits}       onChange={set("totalUnits")}       prefix="#" />
+                  <Field label="Annual Taxes ($)"   value={form.taxesAnnual}      onChange={set("taxesAnnual")} />
+                  <Field label="Annual Insurance"   value={form.insuranceAnnual}  onChange={set("insuranceAnnual")} />
+                  <Field label="Electric / mo"      value={form.electricMonthly}  onChange={set("electricMonthly")} />
+                  <Field label="Water / mo"         value={form.waterMonthly}     onChange={set("waterMonthly")} />
+                  <Field label="Other / mo"         value={form.otherMonthly}     onChange={set("otherMonthly")} />
                 </div>
-                <div className="flex justify-between font-black">
-                  <span className="text-gray-300">Net P&amp;L</span>
-                  <span style={{ color: profit >= 0 ? "#4ADE80" : "#EF4444" }}>{profit >= 0 ? "+" : ""}{fmt(profit)}/mo</span>
+                <div>
+                  <label className="text-[10px] text-gray-600 block mb-1">Vacancy Trend</label>
+                  <TrendSelector value={form.trend} onChange={v => setForm(f => ({ ...f, trend: v }))} />
                 </div>
+                <div>
+                  <label className="text-[10px] text-gray-600 block mb-1">Notes</label>
+                  <textarea rows={2} value={form.notes} onChange={e => set("notes")(e.target.value)}
+                    className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-lg text-xs text-white px-3 py-2 outline-none resize-none"
+                    placeholder="Any notes about this property…" />
+                </div>
+
+                {/* Expense summary */}
+                {expenses > 0 && (
+                  <div className="rounded-xl p-3 border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-xs space-y-1">
+                    {taxMo > 0          && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Receipt size={10}/> Taxes</span><span>{fmt(taxMo)}/mo</span></div>}
+                    {insMo > 0          && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><ShieldCheck size={10}/> Insurance</span><span>{fmt(insMo)}/mo</span></div>}
+                    {n(form.electricMonthly) > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Zap size={10}/> Electric</span><span>{fmt(n(form.electricMonthly))}/mo</span></div>}
+                    {n(form.waterMonthly)    > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Droplets size={10}/> Water</span><span>{fmt(n(form.waterMonthly))}/mo</span></div>}
+                    {n(form.otherMonthly)    > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><MoreHorizontal size={10}/> Other</span><span>{fmt(n(form.otherMonthly))}/mo</span></div>}
+                    <div className="border-t border-[rgba(255,255,255,0.06)] pt-1 mt-1 flex justify-between font-bold">
+                      <span className="text-gray-400">Total Expenses</span><span className="text-orange-400">{fmt(expenses)}/mo</span>
+                    </div>
+                    <div className="flex justify-between font-black">
+                      <span className="text-gray-300">Net P&amp;L</span>
+                      <span style={{ color: profit >= 0 ? "#4ADE80" : "#EF4444" }}>{profit >= 0 ? "+" : ""}{fmt(profit)}/mo</span>
+                    </div>
+                  </div>
+                )}
+
+                <button onClick={handleSave} disabled={saving}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${saved ? "bg-[#4ADE80] text-black" : "bg-[rgba(74,222,128,0.15)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.25)]"}`}>
+                  {saving ? <><Loader2 size={12} className="animate-spin" /> Saving…</>
+                   : saved ? <><CheckCircle2 size={12} /> Saved!</>
+                   : <><Save size={12} /> Save Financials</>}
+                </button>
               </div>
             )}
-
-            <button onClick={handleSave} disabled={saving}
-              className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${saved ? "bg-[#4ADE80] text-black" : "bg-[rgba(74,222,128,0.15)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.25)]"}`}>
-              {saving ? <><Loader2 size={12} className="animate-spin" /> Saving…</>
-               : saved ? <><CheckCircle2 size={12} /> Saved!</>
-               : <><Save size={12} /> Save Financials</>}
-            </button>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
