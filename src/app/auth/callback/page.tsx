@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Loader2 } from "lucide-react";
@@ -8,32 +8,41 @@ import { Loader2 } from "lucide-react";
 export default function AuthCallbackPage() {
   const router = useRouter();
   const [status, setStatus] = useState("Signing you in…");
+  const redirected = useRef(false);
 
   useEffect(() => {
-    // Supabase's detectSessionInUrl handles the PKCE code exchange automatically.
-    // We just listen for the auth state change and redirect when session is ready.
+    function goToAdmin() {
+      if (redirected.current) return;
+      redirected.current = true;
+      router.replace("/admin");
+    }
+
+    // Listen for ANY auth event that has a session — Supabase fires
+    // INITIAL_SESSION (not SIGNED_IN) after PKCE token extraction
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          router.replace("/admin");
-        }
+      (_event, session) => {
+        if (session) goToAdmin();
       }
     );
 
-    // Safety net: if the listener doesn't fire within 5s, check manually
-    const timeout = setTimeout(async () => {
+    // Backup: poll every 500ms for up to 8 seconds
+    let attempts = 0;
+    const interval = setInterval(async () => {
+      attempts++;
       const { data } = await supabaseBrowser.auth.getSession();
       if (data.session) {
-        router.replace("/admin");
-      } else {
+        clearInterval(interval);
+        goToAdmin();
+      } else if (attempts >= 16) {
+        clearInterval(interval);
         setStatus("Sign-in timed out — redirecting…");
         setTimeout(() => router.replace("/admin/login"), 1000);
       }
-    }, 5000);
+    }, 500);
 
     return () => {
       subscription.unsubscribe();
-      clearTimeout(timeout);
+      clearInterval(interval);
     };
   }, [router]);
 
