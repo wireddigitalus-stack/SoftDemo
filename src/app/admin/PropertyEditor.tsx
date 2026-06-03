@@ -34,6 +34,7 @@ function buildPropertyDefaults(): Record<string, Record<string, FieldMeta>> {
       description: { label: "Description", value: p.description, type: "textarea" },
       features:    { label: "Features (one per line)", value: p.features.join("\n"), type: "textarea" },
       imageAlt:    { label: "Image Alt Text (SEO)", value: (p as any).imageAlt || p.name, type: "text" },
+      videoTour:   { label: "Video Tour (YouTube URL)", value: (p as any).videoTour || "", type: "text" },
     };
   }
   return sections;
@@ -462,6 +463,9 @@ export default function PropertyEditor() {
                       )}
                       {fieldKey === "features" && (
                         <p className="text-[10px] text-gray-600 mt-1">Enter one feature per line. These appear as bullet points on the property page.</p>
+                      )}
+                      {fieldKey === "videoTour" && (
+                        <p className="text-[10px] text-gray-600 mt-1">Paste a YouTube link (e.g. https://www.youtube.com/watch?v=...) to add a video tour to the property page.</p>
                       )}
                     </div>
                   );
