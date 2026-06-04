@@ -1,12 +1,54 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import {
   TrendingUp, DollarSign, Users, Building2, Target,
   BarChart3, PieChart, Zap, RefreshCw, AlertTriangle,
   ChevronUp, ChevronDown, Flame, ArrowUpRight, Sparkles, Loader2, Copy, CheckCircle2,
+  Cpu,
 } from "lucide-react";
 import type { Tenant } from "./TenantsTab";
 import SiteTrafficPanel from "./SiteTrafficPanel";
+
+const SystemArchitectureMap = lazy(() => import("./SystemArchitectureMap"));
+
+function ArchitectureSection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-2xl border overflow-hidden bg-[rgba(255,255,255,0.018)]"
+      style={{ borderColor: "rgba(167,139,250,0.18)", boxShadow: "0 0 28px rgba(167,139,250,0.06)" }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 sm:px-5 py-4 hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] flex items-center justify-center shadow-[0_0_14px_rgba(167,139,250,0.3)]">
+            <Cpu size={14} className="text-white" />
+          </div>
+          <div className="text-left">
+            <p className="text-xs font-black text-white uppercase tracking-widest">System Architecture</p>
+            <p className="text-[11px] text-gray-500 mt-0.5">Interactive data flow map — how everything connects</p>
+          </div>
+        </div>
+        <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          style={{ background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)" }}>
+          <ChevronDown size={13} className="text-[#A78BFA]" />
+        </div>
+      </button>
+      {open && (
+        <div className="px-4 sm:px-5 pb-5 pt-1">
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-16 gap-2">
+              <Loader2 size={16} className="animate-spin text-[#A78BFA]" />
+              <span className="text-sm text-gray-500">Loading architecture map…</span>
+            </div>
+          }>
+            <SystemArchitectureMap />
+          </Suspense>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Minimal lead shape needed for analytics
 export interface AnalyticsLead {
@@ -680,8 +722,11 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
         <StatCard label="Portfolio ARR" value={fmtMoney(totalARR, true)} sub={`${fmtMoney(totalMRR, true)}/mo from ${activeTenants.length} tenants`} icon={Building2} color="#4ADE80" />
         <StatCard label="Hot Pipeline" value={fmtMoney(hotPipeline, true)} sub={`${hotLeads.length} hot leads`} icon={Flame} color="#EF4444" />
         <StatCard label="Conversion Rate" value={`${convRate}%`} sub={`${tenants.length} leads → tenants`} icon={Target} color="#60A5FA" />
-        <StatCard label="Avg Lead Score" value={`${avgScore}`} sub={`${whaleLeads.length} whale${whaleLeads.length !== 1 ? "s" : ""} detected`} icon={TrendingUp} color="#FACC15" />
+      <StatCard label="Avg Lead Score" value={`${avgScore}`} sub={`${whaleLeads.length} whale${whaleLeads.length !== 1 ? "s" : ""} detected`} icon={TrendingUp} color="#FACC15" />
       </div>
+
+      {/* ── System Architecture Map ────────────────────────────────── */}
+      <ArchitectureSection />
 
       {/* ── AI Market Brief ─────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)]">
