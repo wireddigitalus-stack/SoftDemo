@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Building2, Plus, Phone, Mail, Calendar, TrendingUp, DollarSign,
   AlertTriangle, ChevronDown, ChevronUp, Edit2, Trash2, Save, X,
@@ -115,16 +115,18 @@ const FIELD = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,25
 const FIELD_SM = FIELD + " text-xs py-1.5";
 
 function TenantForm({
-  initial, onSave, onCancel, currentUserName,
+  initial, onSave, onCancel, currentUserName, buildingOptions = [],
 }: {
   initial: Partial<Tenant>;
   onSave: (data: Partial<Tenant>) => Promise<void>;
   onCancel: () => void;
   currentUserName?: string;
+  buildingOptions?: string[];
 }) {
   const [form, setForm] = useState<Partial<Tenant>>({ ...initial });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [customBuilding, setCustomBuilding] = useState(false);
 
   const set = (k: keyof Tenant, v: unknown) => setForm(f => ({ ...f, [k]: v }));
 
@@ -135,6 +137,10 @@ function TenantForm({
     try { await onSave(form); } catch (e: unknown) { setError(e instanceof Error ? e.message : "Failed to save. Try again."); }
     finally { setSaving(false); }
   };
+
+  // Check if the current value is in the options list
+  const currentVal = form.building || "";
+  const isInList = !currentVal || buildingOptions.includes(currentVal);
 
   return (
     <div className="bg-[rgba(0,0,0,0.4)] border border-[rgba(74,222,128,0.2)] rounded-2xl p-3 sm:p-5 mb-6 space-y-4">
@@ -160,35 +166,44 @@ function TenantForm({
       {/* Property */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2"><label className={LABEL}>Building / Property</label>
-          {(() => {
-            const knownValues = [
-              "City Centre Professional Suites", "City Centre",
-              "Bristol CoWork", "The Executive", "Centre Point",
-              "Foundation Event Facility", "Commercial Warehouse",
-              "West State Commons", "Jamestown at Shelby",
-              "250 Commonwealth Ave", "628 State Street",
-            ];
-            const currentVal = form.building || "";
-            const isUnknown = currentVal && !knownValues.includes(currentVal);
-            return (
-              <select value={currentVal} onChange={e => set("building", e.target.value)} className={`${FIELD} ${isUnknown ? "border-yellow-500/50" : ""}`}>
-                <option value="" className="bg-[#0A0F1A]">Select property…</option>
-                {isUnknown && (
-                  <option value={currentVal} className="bg-[#0A0F1A]">⚠ {currentVal} (not mapped — re-select below)</option>
-                )}
-                <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
-                <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
-                <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
-                <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
-                <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
-                <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
-                <option value="West State Commons" className="bg-[#0A0F1A]">West State Commons</option>
-                <option value="Jamestown at Shelby" className="bg-[#0A0F1A]">Jamestown at Shelby</option>
-                <option value="250 Commonwealth Ave" className="bg-[#0A0F1A]">250 Commonwealth Ave</option>
-                <option value="628 State Street" className="bg-[#0A0F1A]">628 State Street</option>
-              </select>
-            );
-          })()}</div>
+          {customBuilding ? (
+            <div className="flex gap-1.5 items-center">
+              <input
+                value={currentVal}
+                onChange={e => set("building", e.target.value)}
+                placeholder="e.g. 642 State St"
+                className={FIELD + " flex-1"}
+              />
+              <button
+                onClick={() => setCustomBuilding(false)}
+                className="text-[10px] text-gray-500 hover:text-white px-2 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)] transition-colors whitespace-nowrap"
+              >
+                ← List
+              </button>
+            </div>
+          ) : (
+            <select
+              value={isInList ? currentVal : "__custom__"}
+              onChange={e => {
+                if (e.target.value === "__custom__") {
+                  setCustomBuilding(true);
+                  set("building", "");
+                } else {
+                  set("building", e.target.value);
+                }
+              }}
+              className={`${FIELD} ${!isInList ? "border-yellow-500/50" : ""}`}
+            >
+              <option value="" className="bg-[#0A0F1A]">Select property…</option>
+              {!isInList && (
+                <option value={currentVal} className="bg-[#0A0F1A]">⚠ {currentVal} (not in list — re-select or keep)</option>
+              )}
+              {buildingOptions.map(name => (
+                <option key={name} value={name} className="bg-[#0A0F1A]">{name}</option>
+              ))}
+              <option value="__custom__" className="bg-[#0A0F1A]">✏️ Type custom address…</option>
+            </select>
+          )}</div>
         <div><label className={LABEL}>Unit / Suite</label>
           <div className="flex gap-1.5 items-center"><input value={form.unit || ""} onChange={e => set("unit", e.target.value)} placeholder="204" className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("unit", (form.unit || "") + (form.unit ? " " : "") + t)} /></div></div>
       </div>
@@ -670,20 +685,47 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "pending" | "expired">("all");
   const [sortBy, setSortBy] = useState<"name" | "rent" | "lease_end">("lease_end");
   const [filterProperty, setFilterProperty] = useState<string>("all");
+  const [dynPropertyNames, setDynPropertyNames] = useState<string[]>([]);
 
   // Unique building names for property filter dropdown
   const propertyNames = Array.from(new Set(tenants.map(t => t.building).filter(Boolean))).sort();
 
+  // Static known properties (matches the hardcoded list from PropDetailsTab)
+  const STATIC_PROPERTIES = [
+    "City Centre Professional Suites", "Bristol CoWork", "The Executive",
+    "Centre Point", "Foundation Event Facility", "Commercial Warehouse",
+    "West State Commons", "Jamestown at Shelby", "250 Commonwealth Ave",
+    "628 State Street",
+  ];
+
+  // Build comprehensive sorted list: static + dynamic DB properties + existing tenant buildings
+  const buildingOptions = useMemo(() => {
+    const all = new Set<string>(STATIC_PROPERTIES);
+    dynPropertyNames.forEach(n => all.add(n));
+    tenants.forEach(t => { if (t.building) all.add(t.building); });
+    return Array.from(all).sort((a, b) => a.localeCompare(b));
+  }, [tenants, dynPropertyNames]);
+
   const fetchTenants = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/tenants");
-      const data = await res.json();
+      const [tenantRes, propRes] = await Promise.all([
+        fetch("/api/tenants"),
+        fetch("/api/properties-dynamic?admin=1").catch(() => null),
+      ]);
+      const data = await tenantRes.json();
       if (Array.isArray(data.tenants)) {
         setTenants(data.tenants.map(rowToTenant));
         setSetupError(false);
       } else {
         setSetupError(true);
+      }
+      // Load dynamic property names for the dropdown
+      if (propRes?.ok) {
+        const pd = await propRes.json();
+        if (Array.isArray(pd.properties)) {
+          setDynPropertyNames(pd.properties.map((p: { name?: string }) => p.name).filter(Boolean));
+        }
       }
     } catch {
       setSetupError(true);
@@ -935,12 +977,12 @@ ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nn_fee NUMERIC DEFAULT 0;`}</pre>
 
       {/* Add form */}
       {showForm && !editingTenant && (
-        <TenantForm initial={BLANK()} onSave={handleSaveNew} onCancel={() => setShowForm(false)} currentUserName={currentUserName} />
+        <TenantForm initial={BLANK()} onSave={handleSaveNew} onCancel={() => setShowForm(false)} currentUserName={currentUserName} buildingOptions={buildingOptions} />
       )}
 
       {/* Edit form */}
       {editingTenant && (
-        <TenantForm initial={editingTenant} onSave={handleSaveEdit} onCancel={() => setEditingTenant(null)} currentUserName={currentUserName} />
+        <TenantForm initial={editingTenant} onSave={handleSaveEdit} onCancel={() => setEditingTenant(null)} currentUserName={currentUserName} buildingOptions={buildingOptions} />
       )}
 
       {/* Loading */}
