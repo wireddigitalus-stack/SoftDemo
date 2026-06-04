@@ -138,9 +138,11 @@ const CONNECTIONS: Connection[] = [
   { from: "db-blog",      to: "tab-content",    domain: "content" },
   { from: "db-blog",      to: "tab-marketing",  domain: "content" },
 
-  // Activity log cross-cutting
-  { from: "api-leasebot", to: "db-activity",    domain: "leads" },
-  { from: "api-tenants",  to: "db-activity",    domain: "tenants" },
+  // Activity log cross-cutting (writes flow through /api/activity-log)
+  { from: "api-leasebot", to: "api-activity",  domain: "leads" },
+  { from: "api-tenants",  to: "api-activity",  domain: "tenants" },
+  { from: "api-activity", to: "db-activity",   domain: "leads" },
+  { from: "db-activity",  to: "tab-leads",     domain: "leads" },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
