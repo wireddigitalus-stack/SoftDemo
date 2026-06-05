@@ -3,14 +3,16 @@ import { NextResponse } from "next/server";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // ── Google News RSS search queries — hyper-focused on TN/VA CRE market ────
+// Every query explicitly excludes UK/Europe to prevent Bristol England contamination
+const UK_EXCLUDE = `-UK -England -Europe -London -"United Kingdom"`;
 const SEARCH_QUERIES = [
-  `"headquarters" OR "relocating" OR "expanding" Tennessee OR Virginia "office space" OR "commercial real estate"`,
-  `"company closing" OR "business closing" OR "layoffs" Tennessee OR Virginia`,
-  `"new headquarters" OR "moving headquarters" Tennessee OR "East Tennessee" OR "Southwest Virginia"`,
-  `"commercial real estate" OR "office market" OR "vacancy rate" Tennessee OR Virginia`,
-  `"business law" OR "new legislation" OR "tax incentive" OR "economic development" Tennessee OR Virginia`,
-  `"Bristol" "Tennessee" OR "Virginia" business OR commercial OR development OR lease`,
-  `"Tri-Cities" Tennessee business OR office OR commercial OR development`,
+  `("relocating headquarters" OR "opening new office" OR "expanding operations") (Tennessee OR Virginia) ${UK_EXCLUDE}`,
+  `("company closing" OR "business closing" OR "layoffs") (Tennessee OR Virginia) ${UK_EXCLUDE}`,
+  `("new headquarters" OR "moving headquarters") (Tennessee OR "East Tennessee" OR "Southwest Virginia") ${UK_EXCLUDE}`,
+  `("commercial real estate" OR "office market" OR "vacancy rate") (Tennessee OR Virginia) ${UK_EXCLUDE}`,
+  `("business law" OR "tax incentive" OR "economic development") (Tennessee OR Virginia) ${UK_EXCLUDE}`,
+  `("Bristol Tennessee" OR "Bristol Virginia" OR "Bristol TN" OR "Bristol VA") (business OR commercial OR development)`,
+  `("Tri-Cities" OR "Kingsport" OR "Johnson City") Tennessee (business OR office OR commercial) ${UK_EXCLUDE}`,
 ];
 
 // ── Regional business RSS feeds ───────────────────────────────────────────
