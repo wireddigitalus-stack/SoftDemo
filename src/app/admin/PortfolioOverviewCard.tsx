@@ -187,17 +187,19 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
     const d = detailMap[p.id];
     const displayName = d?.display_name || "";
     const pts = tenants.filter(t => exactBuildingMatch(t.building || "", p.id, displayName));
-    const revenue = pts.reduce((s, t) => s + (t.monthlyRent || 0), 0);
+    const activePts = pts.filter(t => t.status === "active");
+    const revenue = activePts.reduce((s, t) =>
+      s + (t.monthlyRent || 0) + (t.nnnFee || 0) + (t.nnFee || 0) + (t.camFee || 0) + (t.utilitiesFee || 0) + (t.cleaningFee || 0), 0);
     const taxMo = (d?.taxes_annual || 0) / 12;
     const insMo = (d?.insurance_annual || 0) / 12;
     const expenses = taxMo + insMo + (d?.electric_monthly || 0) + (d?.water_monthly || 0) + (d?.other_monthly || 0);
-    const totalUnits = d?.total_units || pts.length || 1;
-    const occupancy = Math.min(100, Math.round((pts.length / totalUnits) * 100));
+    const totalUnits = d?.total_units || activePts.length || 1;
+    const occupancy = Math.min(100, Math.round((activePts.length / totalUnits) * 100));
     const alerts = pts.filter(t => {
       const days = daysUntil(t.leaseEnd || t.renewalDate);
       return days !== null && days <= 90;
     }).length;
-    return { property: p, pts, revenue, expenses, profit: revenue - expenses, occupancy, alerts, trend: (d?.trend || "stable") as "up" | "stable" | "down" };
+    return { property: p, pts: activePts, revenue, expenses, profit: revenue - expenses, occupancy, alerts, trend: (d?.trend || "stable") as "up" | "stable" | "down" };
   }), [tenants, detailMap]);
 
   // Portfolio KPIs

@@ -5,6 +5,7 @@ import {
   Clock, CheckCircle2, Home, Loader2, RefreshCw, Save,
   ChevronDown, ChevronUp, Zap, Droplets, ShieldCheck, Receipt,
   MoreHorizontal, TrendingDown, Minus, Printer, X, Pencil, Plus, Trash2,
+  Landmark, Wrench, Thermometer,
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
 import { type Tenant, rowToTenant } from "./TenantsTab";
@@ -349,10 +350,18 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
 
   const set = (k: keyof DetailForm) => (v: string) => setForm(f => ({ ...f, [k]: v }));
 
-  // Financial calcs
-  const rented = propTenants.length;
+  // Financial calcs — active tenants only for revenue consistency with Tenants tab
+  const activePropTenants = propTenants.filter(t => t.status === "active");
+  const rented = activePropTenants.length;
   const totalUnits = n(form.totalUnits) || rented;
-  const revenue = propTenants.reduce((s, t) => s + (t.monthlyRent || 0), 0);
+  const baseRent = activePropTenants.reduce((s, t) => s + (t.monthlyRent || 0), 0);
+  const totalNNN = activePropTenants.reduce((s, t) => s + (t.nnnFee || 0), 0);
+  const totalNN  = activePropTenants.reduce((s, t) => s + (t.nnFee || 0), 0);
+  const totalCAM = activePropTenants.reduce((s, t) => s + (t.camFee || 0), 0);
+  const totalUtil = activePropTenants.reduce((s, t) => s + (t.utilitiesFee || 0), 0);
+  const totalCleaning = activePropTenants.reduce((s, t) => s + (t.cleaningFee || 0), 0);
+  const feeIncome = totalNNN + totalNN + totalCAM + totalUtil + totalCleaning;
+  const revenue = baseRent + feeIncome; // total income = rent + all fees
   const taxMo = n(form.taxesAnnual) / 12;
   const insMo = n(form.insuranceAnnual) / 12;
   const expenses = taxMo + insMo + n(form.electricMonthly) + n(form.waterMonthly) + n(form.otherMonthly);
@@ -445,8 +454,13 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4 border-t border-[rgba(255,255,255,0.05)]">
             <Pill icon={Users}       label="Tenants"    value={rented}                                            color="#60A5FA" />
             <Pill icon={Home}        label="Sq Ft"      value={property.sqft}                                    color="#A78BFA" />
-            <Pill icon={DollarSign}  label="Avg Rent"   value={rented ? `$${Math.round(revenue / rented).toLocaleString()}/mo` : "—"} color="#4ADE80" />
-            {expenses > 0 && <Pill icon={Receipt}      label="Expenses"  value={`$${Math.round(expenses).toLocaleString()}/mo`}   color="#F97316" />}
+            <Pill icon={DollarSign}  label="Base Rent"  value={rented ? `$${Math.round(baseRent).toLocaleString()}/mo` : "—"} color="#4ADE80" />
+            {totalNNN > 0 && <Pill icon={Landmark}      label="NNN Fees"   value={`$${Math.round(totalNNN).toLocaleString()}/mo`}   color="#F97316" />}
+            {totalNN > 0  && <Pill icon={ShieldCheck}   label="NN Fees"    value={`$${Math.round(totalNN).toLocaleString()}/mo`}    color="#FACC15" />}
+            {totalCAM > 0 && <Pill icon={Wrench}         label="CAM Fees"   value={`$${Math.round(totalCAM).toLocaleString()}/mo`}   color="#22D3EE" />}
+            {totalUtil > 0 && <Pill icon={Thermometer}   label="Utility"    value={`$${Math.round(totalUtil).toLocaleString()}/mo`}  color="#F472B6" />}
+            {totalCleaning > 0 && <Pill icon={Droplets}  label="Cleaning"   value={`$${Math.round(totalCleaning).toLocaleString()}/mo`} color="#A78BFA" />}
+            {expenses > 0 && <Pill icon={Receipt}        label="Expenses"   value={`$${Math.round(expenses).toLocaleString()}/mo`}   color="#F97316" />}
             {expenses > 0 && (
               <Pill
                 icon={profit >= 0 ? TrendingUp : AlertTriangle}
@@ -711,7 +725,9 @@ export default function PropDetailsTab() {
   const detailMap = useMemo(() =>
     Object.fromEntries(details.map(d => [d.property_id, d])), [details]);
 
-  const totalRevenue = useMemo(() => tenants.reduce((s, t) => s + (t.monthlyRent || 0), 0), [tenants]);
+  const activeTenants = useMemo(() => tenants.filter(t => t.status === "active"), [tenants]);
+  const totalRevenue = useMemo(() => activeTenants.reduce((s, t) =>
+    s + (t.monthlyRent || 0) + (t.nnnFee || 0) + (t.nnFee || 0) + (t.camFee || 0) + (t.utilitiesFee || 0) + (t.cleaningFee || 0), 0), [activeTenants]);
   const totalExpenses = useMemo(() => details.reduce((s, d) =>
     s + d.electric_monthly + d.water_monthly + d.other_monthly + d.taxes_annual / 12 + d.insurance_annual / 12, 0), [details]);
   const alerts = useMemo(() => tenants.filter(t => { const d = daysUntil(t.leaseEnd || t.renewalDate); return d !== null && d <= 90; }).length, [tenants]);
@@ -770,7 +786,7 @@ export default function PropDetailsTab() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { icon: Building2,     label: "Properties",  value: allProperties.length,                                    color: "#A78BFA" },
-          { icon: Users,         label: "Tenants",     value: tenants.length,                                       color: "#60A5FA" },
+          { icon: Users,         label: "Tenants",     value: `${activeTenants.length} active`,                      color: "#60A5FA" },
           { icon: DollarSign,    label: "Revenue",     value: `$${totalRevenue.toLocaleString()}/mo`,               color: "#4ADE80" },
           { icon: TrendingUp,    label: "Net P&L",     value: totalExpenses ? `$${Math.round(totalRevenue - totalExpenses).toLocaleString()}/mo` : "—", color: totalRevenue > totalExpenses ? "#4ADE80" : "#EF4444" },
         ].map(({ icon: Icon, label, value, color }) => (

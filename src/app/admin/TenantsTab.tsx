@@ -307,7 +307,7 @@ function TenantForm({
 
 function RevenueBanner({ tenants, onTenantClick }: { tenants: Tenant[]; onTenantClick: (id: string) => void }) {
   const active = tenants.filter(t => t.status === "active");
-  const totalMonthly = active.reduce((s, t) => s + t.monthlyRent, 0);
+  const totalMonthly = active.reduce((s, t) => s + t.monthlyRent + (t.nnnFee || 0) + (t.nnFee || 0) + (t.camFee || 0) + (t.utilitiesFee || 0) + (t.cleaningFee || 0), 0);
   const totalARR = totalMonthly * 12;
 
   // Renewal alerts — per-tenant threshold (leaseAlertDays) or default 90
