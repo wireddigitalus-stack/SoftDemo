@@ -225,7 +225,7 @@ export async function GET() {
   try {
     // 1. Fetch Google News RSS for each query
     const googlePromises = SEARCH_QUERIES.map(q => {
-      const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`;
+      const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q + " when:3m")}&hl=en-US&gl=US&ceid=US:en`;
       return fetchFeed(url, "Google News");
     });
 
@@ -244,8 +244,16 @@ export async function GET() {
       return true;
     });
 
+    // Filter out articles older than 90 days
+    const ninetyDaysAgo = Date.now() - 90 * 86400000;
+    const recent = unique.filter(item => {
+      if (!item.pubDate) return true; // keep items with no date (let AI decide)
+      const d = new Date(item.pubDate).getTime();
+      return !isNaN(d) ? d >= ninetyDaysAgo : true;
+    });
+
     // Limit to 25 most recent
-    const capped = unique.slice(0, 25);
+    const capped = recent.slice(0, 25);
 
     // 3. Score with AI
     const scored = await scoreWithAI(capped);
