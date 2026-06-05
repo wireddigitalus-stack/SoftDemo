@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// ── Google News RSS search queries (commercial relocation signals) ─────────
-// NOTE: "Bristol" alone matches Bristol, UK — always pair with TN/VA/Tennessee/Virginia
+// ── Google News RSS search queries — hyper-focused on TN/VA CRE market ────
 const SEARCH_QUERIES = [
-  `"relocating headquarters" OR "opening new office" Tennessee OR Virginia -UK`,
-  `"office relocation" OR "expanding operations" "Tri-Cities" OR "East Tennessee" OR "Southwest Virginia"`,
-  `"commercial lease" OR "office space" "Bristol TN" OR "Bristol VA" OR "Bristol Tennessee" OR "Bristol Virginia"`,
-  `"company moving" OR "new headquarters" "Southern Virginia" OR "East Tennessee" OR Kingsport OR "Johnson City"`,
-  `"expanding operations" OR "new facility" Appalachia OR "Tri-Cities Tennessee" OR "Washington County Virginia"`,
+  `"headquarters" OR "relocating" OR "expanding" Tennessee OR Virginia "office space" OR "commercial real estate"`,
+  `"company closing" OR "business closing" OR "layoffs" Tennessee OR Virginia`,
+  `"new headquarters" OR "moving headquarters" Tennessee OR "East Tennessee" OR "Southwest Virginia"`,
+  `"commercial real estate" OR "office market" OR "vacancy rate" Tennessee OR Virginia`,
+  `"business law" OR "new legislation" OR "tax incentive" OR "economic development" Tennessee OR Virginia`,
+  `"Bristol" "Tennessee" OR "Virginia" business OR commercial OR development OR lease`,
+  `"Tri-Cities" Tennessee business OR office OR commercial OR development`,
 ];
 
 // ── Regional business RSS feeds ───────────────────────────────────────────
@@ -99,21 +100,33 @@ async function scoreWithAI(items: FeedItem[]): Promise<{ title: string; link: st
     }));
   }
 
-  const prompt = `You are a commercial real estate lead-intelligence analyst for Vision LLC, a CRE firm in Downtown Bristol, Virginia/Tennessee (USA), in the Tri-Cities region of East Tennessee and Southwest Virginia.
+  const prompt = `You are a commercial real estate market analyst for Vision LLC, a CRE firm in Downtown Bristol, Virginia/Tennessee (USA), in the Tri-Cities region.
 
-IMPORTANT GEOGRAPHIC CONTEXT:
-- Vision LLC operates in Bristol TN/VA, Kingsport TN, Johnson City TN, and the surrounding Tri-Cities / Appalachian Highlands region of the USA.
-- "Bristol" WITHOUT a US state qualifier (TN, VA, Tennessee, Virginia) almost certainly refers to Bristol, ENGLAND (UK). Mark those as "skip".
-- Any article about the UK, Europe, Asia, or other international locations = "skip".
-- Only score items relevant to the UNITED STATES, with preference for our region (Virginia, Tennessee, Southeast, Appalachia).
+STRICT GEOGRAPHIC FILTER:
+- ONLY score articles about TENNESSEE (TN) or VIRGINIA (VA) in the United States.
+- Any article about other US states, the UK, Europe, Asia, or international locations = "skip".
+- "Bristol" without "Tennessee" or "Virginia" context = likely Bristol UK = "skip".
 
-Analyze these news items and score each one for its relevance as a POTENTIAL TENANT LEAD for Vision LLC's commercial office space.
+WHAT IS RELEVANT to Vision LLC:
+- Companies relocating TO or expanding IN Tennessee or Virginia
+- Company closures or layoffs in TN/VA (creates vacant commercial space = opportunity)
+- New TN or VA business laws, tax incentives, or economic development programs
+- Commercial real estate market data for TN/VA (vacancy rates, lease rates, market trends)
+- New business openings or headquarters announcements in TN/VA
+- Infrastructure or development projects in TN/VA that affect CRE
+
+WHAT IS NOT RELEVANT (mark as "skip"):
+- Residential real estate, housing market
+- Sports, entertainment, politics unrelated to business/CRE
+- Articles about states other than TN or VA
+- International news of any kind
+- General national business news with no TN/VA connection
 
 Score each item:
-- "hot" = Company actively seeking office space, relocating, or expanding in/near East TN or Southwest VA
-- "warm" = Company expanding or relocating in the US Southeast that COULD target our area
-- "cold" = US commercial real estate news but not near our region
-- "skip" = International (UK, Europe, etc.), sports, politics, residential, or completely irrelevant
+- "hot" = Directly about TN/VA commercial real estate, company relocation to TN/VA, or major business opening/closing in our region (Tri-Cities, East TN, Southwest VA)
+- "warm" = About TN or VA business/economic news that could indirectly affect CRE demand
+- "cold" = Tangentially related to TN/VA but low direct CRE impact
+- "skip" = Not about TN or VA, or completely irrelevant to commercial real estate
 
 Return ONLY a valid JSON array. Each object: {"index": number, "score": "hot"|"warm"|"cold"|"skip", "reason": "one sentence why"}
 
