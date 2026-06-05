@@ -184,6 +184,17 @@ function pathD(from: FlowNode, to: FlowNode): string {
   const { cx: x1, cy: y1 } = nodeCenter(from);
   const { cx: x2, cy: y2 } = nodeCenter(to);
   const dx = Math.abs(x2 - x1);
+
+  // Same-column connections: route out to the left to bypass intermediate cards
+  if (dx < 50) {
+    const exitX = from.x - 10;          // exit left side of source
+    const entryX = to.x - 10;           // enter left side of target
+    const arcX = from.x - 80;           // how far left to arc out
+    const midY = (y1 + y2) / 2;
+    return `M${exitX},${y1} C${arcX},${y1} ${arcX},${midY} ${arcX},${midY} S${arcX},${y2} ${entryX},${y2}`;
+  }
+
+  // Cross-column: normal right→left bezier
   const cp = Math.max(dx * 0.45, 60);
   return `M${x1 + NODE_W / 2},${y1} C${x1 + NODE_W / 2 + cp},${y1} ${x2 - NODE_W / 2 - cp},${y2} ${x2 - NODE_W / 2},${y2}`;
 }
