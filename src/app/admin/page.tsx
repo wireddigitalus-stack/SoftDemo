@@ -1075,12 +1075,13 @@ export default function AdminPage() {
   const coldSet        = new Set(coldLeads.map(l => l.id));
   const activeLeads    = allNonArchived.filter(l => !coldSet.has(l.id));
   const archivedLeads  = leads.filter(l => isArchived(l.timestamp));
-  // Temperature priority: Hot (0) > Warm (1) > Nurture (2)
+  // Temperature priority: Hot (0) > Warm (1) > Nurture (2), then highest score first, then newest
   const tempRank = (l: Lead) => l.scoreLabel === "Hot Lead" ? 0 : l.scoreLabel === "Warm Lead" ? 1 : 2;
   const sortedActive = [...activeLeads].sort((a, b) => {
     const r = tempRank(a) - tempRank(b);
     if (r !== 0) return r;
-    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(); // newest first
+    if (b.score !== a.score) return b.score - a.score; // highest score first
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
   });
   const filtered =
     filter === "All"      ? sortedActive :
