@@ -98,14 +98,14 @@ function Tooltip({ text, children, wide }: { text: string; children: React.React
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function scoreColor(score: number) {
-  if (score >= 70) return "#4ADE80";
-  if (score >= 40) return "#FACC15";
-  return "#94A3B8";
+  if (score >= 70) return "#EF4444";   // red — hot
+  if (score >= 40) return "#F97316";   // orange — warm
+  return "#38BDF8";                     // ice blue — nurture/cold
 }
 function scoreBadge(label: string) {
-  if (label === "Hot Lead") return "bg-[rgba(74,222,128,0.1)] text-[#4ADE80] border-[rgba(74,222,128,0.3)]";
-  if (label === "Warm Lead") return "bg-[rgba(250,204,21,0.1)] text-[#FACC15] border-[rgba(250,204,21,0.3)]";
-  return "bg-[rgba(148,163,184,0.1)] text-[#94A3B8] border-[rgba(148,163,184,0.2)]";
+  if (label === "Hot Lead") return "bg-[rgba(239,68,68,0.12)] text-[#EF4444] border-[rgba(239,68,68,0.35)]";
+  if (label === "Warm Lead") return "bg-[rgba(249,115,22,0.12)] text-[#F97316] border-[rgba(249,115,22,0.35)]";
+  return "bg-[rgba(56,189,248,0.1)] text-[#38BDF8] border-[rgba(56,189,248,0.25)]";
 }
 function timeAgo(ts: string) {
   const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
@@ -368,9 +368,9 @@ Use real names and numbers. Be punchy.`,
   useEffect(() => { if (leads.length) generateBrief(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const stats = [
-    { label: "Hot",      value: hot,      emoji: "🔥", color: "#4ADE80", filter: "Hot Lead"  },
-    { label: "Warm",     value: warm,     emoji: "⚡", color: "#FACC15", filter: "Warm Lead" },
-    { label: "Nurture",  value: nurture,  emoji: "●",  color: "#94A3B8", filter: "Nurture"   },
+    { label: "Hot",      value: hot,      emoji: "🔥", color: "#EF4444", filter: "Hot Lead"  },
+    { label: "Warm",     value: warm,     emoji: "⚡", color: "#F97316", filter: "Warm Lead" },
+    { label: "Nurture",  value: nurture,  emoji: "●",  color: "#38BDF8", filter: "Nurture"   },
     { label: "New Today",value: newToday, emoji: "⚠️", color: "#FACC15", filter: "New Today" },
     { label: "Whales",   value: whales,   emoji: "🐳", color: "#FACC15", filter: "Whale"     },
   ];
@@ -1075,11 +1075,18 @@ export default function AdminPage() {
   const coldSet        = new Set(coldLeads.map(l => l.id));
   const activeLeads    = allNonArchived.filter(l => !coldSet.has(l.id));
   const archivedLeads  = leads.filter(l => isArchived(l.timestamp));
+  // Temperature priority: Hot (0) > Warm (1) > Nurture (2)
+  const tempRank = (l: Lead) => l.scoreLabel === "Hot Lead" ? 0 : l.scoreLabel === "Warm Lead" ? 1 : 2;
+  const sortedActive = [...activeLeads].sort((a, b) => {
+    const r = tempRank(a) - tempRank(b);
+    if (r !== 0) return r;
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(); // newest first
+  });
   const filtered =
-    filter === "All"      ? activeLeads :
-    filter === "Whale"    ? activeLeads.filter(l => l.isWhale) :
-    filter === "New Today" ? activeLeads.filter(l => (Date.now() - new Date(l.timestamp).getTime()) < 864e5) :
-    activeLeads.filter(l => l.scoreLabel === filter);
+    filter === "All"      ? sortedActive :
+    filter === "Whale"    ? sortedActive.filter(l => l.isWhale) :
+    filter === "New Today" ? sortedActive.filter(l => (Date.now() - new Date(l.timestamp).getTime()) < 864e5) :
+    sortedActive.filter(l => l.scoreLabel === filter);
   const hotLeads = activeLeads.filter(l => l.scoreLabel === "Hot Lead");
   const warmCount = activeLeads.filter(l => l.scoreLabel === "Warm Lead").length;
   const urgentLeads = activeLeads.filter(isUrgent);
