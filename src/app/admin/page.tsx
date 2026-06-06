@@ -977,6 +977,23 @@ export default function AdminPage() {
       });
       try { localStorage.setItem("vision_commenter", resolvedName); } catch { /**/ }
 
+      // ── Log this login to activity_log ──────────────────────────────────
+      try {
+        const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+        fetch("/api/activity-log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "admin_login",
+            resource_type: "auth",
+            resource_name: resolvedName,
+            actor_name: resolvedName,
+            actor_email: email,
+            metadata: { device: isMobile ? "mobile" : "desktop" },
+          }),
+        }).catch(() => {});
+      } catch { /**/ }
+
       setAuthChecking(false);
     });
   }, [router]);

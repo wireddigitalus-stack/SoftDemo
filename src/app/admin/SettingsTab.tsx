@@ -7,7 +7,7 @@ import {
   Mail, Shield, X, Smartphone, Lock, BellRing, Moon,
   Sparkles, MessageSquare, BarChart3, Wrench,
   FileSpreadsheet, Download, Upload, AlertCircle,
-  ChevronRight, Zap, Share2,
+  ChevronRight, Zap, Share2, Clock, Monitor,
 } from "lucide-react";
 
 // ─── Types (shared with page.tsx) ─────────────────────────────────────────────
@@ -809,6 +809,151 @@ export function SocialLinksCard() {
 
 // ─── Settings Panel ────────────────────────────────────────────────────────────
 
+// ─── Login History ────────────────────────────────────────────────────────────
+
+interface LoginEntry {
+  id: string;
+  actor_name: string;
+  actor_email: string;
+  metadata: { device?: string };
+  created_at: string;
+}
+
+function LoginHistory() {
+  const [logins, setLogins] = useState<LoginEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+
+  const fetchLogins = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/activity-log?resource_type=auth&limit=50");
+      const data = await res.json();
+      setLogins(
+        (data.logs || []).filter(
+          (l: LoginEntry & { action?: string }) => l.action === "admin_login"
+        )
+      );
+    } catch { /**/ }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchLogins(); }, [fetchLogins]);
+
+  function timeAgo(iso: string) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "Just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2 mb-1 group">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#60A5FA] to-[#3B82F6] flex items-center justify-center flex-shrink-0">
+          <Clock size={13} className="text-white" />
+        </div>
+        <h2 className="text-sm font-black text-white uppercase tracking-widest">Login History</h2>
+        <div className="ml-auto flex items-center gap-2">
+          {logins.length > 0 && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(96,165,250,0.1)] border border-[rgba(96,165,250,0.25)] text-[#60A5FA] font-bold">
+              {logins.length} logins
+            </span>
+          )}
+          <div className="w-6 h-6 rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center">
+            <ChevronRight size={16} className={`text-[#60A5FA] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+          </div>
+        </div>
+      </button>
+      <p className="text-xs text-gray-500 mb-3">
+        Track who logs into the admin dashboard, when, and from what device.
+      </p>
+
+      {expanded && (
+        <div className="rounded-2xl border border-[rgba(96,165,250,0.18)] bg-[rgba(96,165,250,0.03)] overflow-hidden" style={{ boxShadow: "0 0 22px rgba(96,165,250,0.06)" }}>
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.06)]">
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Recent Sessions</p>
+            <button onClick={fetchLogins} className="p-1.5 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-gray-500 hover:text-white transition-colors">
+              <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            </button>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-10 gap-2">
+              <Loader2 size={14} className="animate-spin text-[#60A5FA]" />
+              <span className="text-xs text-gray-500">Loading login history…</span>
+            </div>
+          ) : logins.length === 0 ? (
+            <div className="text-center py-10">
+              <Clock size={24} className="text-gray-700 mx-auto mb-2" />
+              <p className="text-xs text-gray-600">No login events yet — they&apos;ll appear after the next sign-in.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-[rgba(255,255,255,0.04)] max-h-[360px] overflow-y-auto">
+              {logins.map((login, i) => {
+                const isCurrent = i === 0;
+                const device = login.metadata?.device || "desktop";
+                return (
+                  <div key={login.id} className={`flex items-center gap-3 px-4 py-3 hover:bg-[rgba(255,255,255,0.02)] transition-colors ${isCurrent ? "bg-[rgba(74,222,128,0.03)]" : ""}`}>
+                    {/* Status dot */}
+                    <div className="relative flex-shrink-0">
+                      {isCurrent ? (
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80]" style={{ boxShadow: "0 0 8px rgba(74,222,128,0.5)" }}>
+                          <div className="absolute inset-0 rounded-full bg-[#4ADE80] animate-ping opacity-40" />
+                        </div>
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-gray-700" />
+                      )}
+                    </div>
+
+                    {/* Name + email */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-bold text-white truncate">{login.actor_name || "Unknown"}</p>
+                        {isCurrent && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.25)] text-[#4ADE80] font-black">
+                            CURRENT
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">{login.actor_email}</p>
+                    </div>
+
+                    {/* Device */}
+                    <div className="flex-shrink-0">
+                      {device === "mobile" ? (
+                        <Smartphone size={13} className="text-gray-600" />
+                      ) : (
+                        <Monitor size={13} className="text-gray-600" />
+                      )}
+                    </div>
+
+                    {/* Time */}
+                    <div className="flex-shrink-0 text-right min-w-[70px]">
+                      <p className="text-xs font-bold text-gray-400 tabular-nums">{timeAgo(login.created_at)}</p>
+                      <p className="text-[10px] text-gray-600 tabular-nums">
+                        {new Date(login.created_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Settings Panel ──────────────────────────────────────────────────────
+
 function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
   leads: Lead[];
   deletingAll: boolean;
@@ -1002,6 +1147,12 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
 
         </div>
       </div>
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
+      {/* ── Login History ── */}
+      <LoginHistory />
 
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
