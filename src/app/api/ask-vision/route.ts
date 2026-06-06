@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       weekday: "long", month: "long", day: "numeric", year: "numeric",
     });
 
-    const prompt = `You are Ask VISION — AI lead advisor for Vision LLC's CRM in Bristol, TN.
+    const prompt = `You are Ask VISION — AI lead advisor for Vision LLC's CRM in Bristol, TN/VA.
 Today: ${today}
 Total leads in pipeline: ${(leads || []).length}
 

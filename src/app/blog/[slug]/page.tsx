@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.metaTitle,
     description: post.metaDescription,
-    keywords: [post.targetKeyword, ...post.tags, "Vision LLC", "Bristol TN", "Tri-Cities commercial real estate"],
+    keywords: [post.targetKeyword, ...post.tags, "Vision LLC", "Bristol TN", "Bristol VA", "Tri-Cities commercial real estate"],
     authors: [{ name: post.author }],
     alternates: {
       canonical: `https://www.teamvisionllc.com/blog/${post.slug}`,

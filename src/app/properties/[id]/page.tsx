@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ogTag = encodeURIComponent("Available Now");
   const ogUrl = `https://www.teamvisionllc.com/api/og?title=${ogTitle}&subtitle=${ogSubtitle}&tag=${ogTag}&type=property`;
   return {
-    title: `${property.name} | Commercial Real Estate Bristol TN | Vision LLC`,
+    title: `${property.name} | Commercial Real Estate Bristol TN/VA | Vision LLC`,
     description: desc,
     alternates: {
       canonical: `https://www.teamvisionllc.com/properties/${id}`,

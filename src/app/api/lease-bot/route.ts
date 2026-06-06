@@ -11,16 +11,16 @@ if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY environment variable is not
 
 const PROPERTIES_CONTEXT = `
 Available Vision LLC Properties (use EXACT id values shown):
-1. id="city-centre"       — City Centre Professional Suites — 1,200–18,000+ sqft, downtown office, State Street Bristol TN, premium finishes
-2. id="the-executive"     — The Executive — 500–12,000 sqft, private executive office suites, historic building, downtown Bristol TN
+1. id="city-centre"       — City Centre Professional Suites — 1,200–18,000+ sqft, downtown office, State Street Bristol TN/VA, premium finishes
+2. id="the-executive"     — The Executive — 500–12,000 sqft, private executive office suites, historic building, downtown Bristol TN/VA
 3. id="bristol-cowork"    — Bristol CoWork — 620 State Street, private offices, dedicated desks, conference rooms, monthly memberships
-4. id="centre-point"      — Centre Point Suites — 800–5,000 sqft, high-traffic retail/office, multiple units available, Bristol TN
+4. id="centre-point"      — Centre Point Suites — 800–5,000 sqft, high-traffic retail/office, multiple units available, Bristol VA
 5. id="foundation-event"  — Foundation Event Facility — 3,000–8,000 sqft, historic adaptive reuse, event & commercial space
-6. id="commercial-warehouse" — Commercial Warehouse — 2,000–25,000 sqft, loading docks, highway access, Bristol metro area
+6. id="commercial-warehouse" — Commercial Warehouse — 2,000–25,000 sqft, loading docks, highway access, Bristol TN/VA metro area
 `;
 
 const SCORING_PROMPT = (lead: Partial<Lead>) => `
-You are a commercial real estate lead scoring AI for Vision LLC in Bristol, TN.
+You are a commercial real estate lead scoring AI for Vision LLC in Bristol, TN/VA.
 
 Score this lead from 0-100 based on these criteria:
 - Budget > $2,000/mo = strong signal (+25 pts)
@@ -58,7 +58,7 @@ Respond with ONLY valid JSON in this exact format (no markdown, no explanation):
       "name": "<property name>",
       "type": "<Office|CoWork|Retail|Warehouse|Event>",
       "sqft": "<size range>",
-      "location": "Downtown Bristol, TN",
+      "location": "Downtown Bristol, TN/VA",
       "matchReason": "<one sentence why this property fits>"
     }
   ]

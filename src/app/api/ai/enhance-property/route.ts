@@ -17,15 +17,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "name, type, and city are required" }, { status: 400 });
   }
 
-  const prompt = `You are an expert commercial real estate copywriter for Vision LLC — the largest private CRE owner in Downtown Bristol, TN.
+  const prompt = `You are an expert commercial real estate copywriter for Vision LLC — the largest private CRE owner in Downtown Bristol, TN/VA.
 
 Generate compelling property listing content for the following property:
 
 - Name: ${name}
 - Type: ${type}
-- City: ${city}, TN
+- City: ${city}
 - Size: ${sqft ? sqft + " sq ft" : "size TBD"}
-- Address: ${address || "Downtown Bristol area"}
+- Address: ${address || "Downtown Bristol, TN/VA area"}
 - Keywords/Features: ${keywords || "professional, quality, well-maintained"}
 
 Return ONLY valid JSON with this exact structure (no markdown, no code fences):

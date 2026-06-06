@@ -133,7 +133,7 @@ export default function CommercialRealEstatePage() {
             <div className="section-line mb-4" />
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
               Commercial Real Estate<br />
-              <span className="gradient-text-green">Bristol, TN — Tri-Cities</span>
+              <span className="gradient-text-green">Bristol, TN/VA — Tri-Cities</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl mb-8">
               Vision LLC manages the most diverse commercial portfolio in Downtown Bristol.

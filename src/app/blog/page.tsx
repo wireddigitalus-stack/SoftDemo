@@ -7,13 +7,16 @@ import { BLOG_POSTS, type BlogPost } from "@/lib/blog-data";
 export const metadata: Metadata = {
   title: "Commercial Real Estate Blog | Tri-Cities Market Insights | Vision LLC",
   description:
-    "Expert insights on commercial real estate in Bristol TN, the Tri-Cities market, coworking, historic adaptive reuse, and executive business consulting from Vision LLC.",
+    "Expert insights on commercial real estate in Bristol TN/VA, the Tri-Cities market, coworking, historic adaptive reuse, and executive business consulting from Vision LLC.",
   keywords: [
     "Bristol TN commercial real estate blog",
+    "Bristol VA commercial real estate blog",
     "Tri-Cities market insights",
     "CRE news Bristol Tennessee",
+    "CRE news Bristol Virginia",
     "commercial property blog Kingsport Johnson City",
     "coworking trends Bristol TN",
+    "coworking trends Bristol VA",
     "downtown Bristol development news",
   ],
   alternates: { canonical: "https://www.teamvisionllc.com/blog" },

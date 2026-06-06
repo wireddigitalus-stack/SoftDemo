@@ -1,20 +1,24 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Commercial Real Estate Bristol TN | Office, Retail & Industrial | Vision LLC",
+  title: "Commercial Real Estate Bristol TN/VA | Office, Retail & Industrial | Vision LLC",
   description:
-    "Browse Vision LLC's commercial property portfolio in Bristol, TN. Executive office suites, retail storefronts, coworking, mixed-use & industrial. Largest private CRE owner Downtown Bristol. Call 423-573-1022.",
+    "Browse Vision LLC's commercial property portfolio in Bristol, TN/VA. Executive office suites, retail storefronts, coworking, mixed-use & industrial. Largest private CRE owner Downtown Bristol. Call 423-573-1022.",
   keywords: [
     "commercial real estate Bristol TN",
+    "commercial real estate Bristol VA",
     "office space Bristol Tennessee",
+    "office space Bristol Virginia",
     "retail space downtown Bristol",
     "commercial property for lease Bristol",
     "coworking Bristol TN",
+    "coworking Bristol VA",
     "mixed-use commercial Bristol",
     "executive office suites Bristol",
     "Vision LLC properties",
     "Tri-Cities commercial property",
     "Bristol TN warehouse space",
+    "Bristol VA warehouse space",
     "industrial space Sullivan County TN",
     "Downtown Bristol office lease",
   ],
@@ -22,9 +26,9 @@ export const metadata: Metadata = {
     canonical: "https://www.teamvisionllc.com/commercial-real-estate",
   },
   openGraph: {
-    title: "Commercial Real Estate Portfolio | Vision LLC — Bristol, TN",
+    title: "Commercial Real Estate Portfolio | Vision LLC — Bristol, TN/VA",
     description:
-      "Executive offices, retail storefronts, coworking, mixed-use & industrial space in Downtown Bristol, TN. Tri-Cities #1 private commercial property owner. 423-573-1022.",
+      "Executive offices, retail storefronts, coworking, mixed-use & industrial space in Downtown Bristol, TN/VA. Tri-Cities #1 private commercial property owner. 423-573-1022.",
     url: "https://www.teamvisionllc.com/commercial-real-estate",
     type: "website",
     siteName: "Vision LLC",
@@ -33,13 +37,13 @@ export const metadata: Metadata = {
         url: "https://www.teamvisionllc.com/api/og?title=Commercial+Properties&subtitle=Bristol%2C+TN+%E2%80%94+Office+%C2%B7+Retail+%C2%B7+Industrial+%C2%B7+CoWork&tag=Browse+Listings&type=property",
         width: 1200,
         height: 630,
-        alt: "Vision LLC Commercial Properties — Bristol, TN",
+        alt: "Vision LLC Commercial Properties — Bristol, TN/VA",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Commercial Real Estate | Vision LLC — Bristol, TN",
+    title: "Commercial Real Estate | Vision LLC — Bristol, TN/VA",
     description:
       "Browse 50+ commercial properties in Downtown Bristol & the Tri-Cities. Office, retail, coworking & industrial. Call 423-573-1022.",
     images: [
@@ -61,7 +65,7 @@ export default function CommercialRealEstateLayout({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "ItemList",
-            name: "Vision LLC Commercial Real Estate Listings — Bristol, TN",
+            name: "Vision LLC Commercial Real Estate Listings — Bristol, TN/VA",
             description: "Browse available commercial properties in Downtown Bristol and the Tri-Cities TN/VA region.",
             url: "https://www.teamvisionllc.com/commercial-real-estate",
             numberOfItems: 9,

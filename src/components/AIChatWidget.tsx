@@ -283,7 +283,7 @@ export default function LeaseBotWidget() {
         name: "Centre Point Suites",
         type: "Retail",
         sqft: "800–5,000 sqft",
-        location: "Downtown Bristol, TN",
+        location: "Downtown Bristol, TN/VA",
         matchReason: "High-traffic retail frontage in a prime downtown corridor.",
       }];
     } else if (st.includes("cowork")) {
@@ -293,7 +293,7 @@ export default function LeaseBotWidget() {
         name: "Bristol CoWork",
         type: "CoWork",
         sqft: "Private offices & dedicated desks",
-        location: "620 State Street, Bristol TN",
+        location: "620 State Street, Bristol TN/VA",
         matchReason: "All-inclusive monthly membership — no long-term lease required.",
       }];
     } else if (st.includes("executive")) {
@@ -303,7 +303,7 @@ export default function LeaseBotWidget() {
         name: "The Executive",
         type: "Office",
         sqft: "500–12,000 sqft",
-        location: "Downtown Bristol, TN",
+        location: "Downtown Bristol, TN/VA",
         matchReason: "Private executive suites in a prestigious historic building.",
       }];
     } else {
@@ -313,7 +313,7 @@ export default function LeaseBotWidget() {
         name: "City Centre Professional Suites",
         type: "Office",
         sqft: "1,200–18,000+ sqft",
-        location: "Downtown Bristol, TN",
+        location: "Downtown Bristol, TN/VA",
         matchReason: "Premium downtown office space with flexible suite sizes.",
       }];
     }

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     // Compact prompt — fewer tokens needed from the model
     const prompt = `Write a short professional press release. Be concise — 3 paragraphs max.
 
-Company: Vision LLC (commercial real estate, Bristol, Tennessee, Tri-Cities region)
+Company: Vision LLC (commercial real estate, Bristol, Tennessee/Virginia, Tri-Cities region)
 Type: ${typeLabel}
 Topic: ${topic}
 ${details ? `Details: ${details}` : ""}
@@ -38,7 +38,7 @@ Today's date: ${today}
 Format:
 Line 1: HEADLINE: [headline text]
 Line 2: (blank)
-Line 3: BRISTOL, Tenn. — ${today} — [body paragraph 1]
+Line 3: BRISTOL, Tenn./Va. — ${today} — [body paragraph 1]
 Line 4: (blank)
 [body paragraph 2]
 Line 5: (blank)

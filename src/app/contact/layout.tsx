@@ -1,17 +1,21 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Vision LLC | Lease Inquiries & Property Tours | Bristol, TN",
+  title: "Contact Vision LLC | Lease Inquiries & Property Tours | Bristol, TN/VA",
   description:
-    "Contact Vision LLC for commercial real estate in Bristol TN, Kingsport, Johnson City & the Tri-Cities. Call (423) 573-1022 or fill out our form to schedule a tour of office suites, retail space, or coworking memberships.",
+    "Contact Vision LLC for commercial real estate in Bristol TN/VA, Kingsport, Johnson City & the Tri-Cities. Call (423) 573-1022 or fill out our form to schedule a tour of office suites, retail space, or coworking memberships.",
   keywords: [
     "contact Vision LLC Bristol TN",
+    "contact Vision LLC Bristol VA",
     "commercial real estate inquiry Bristol Tennessee",
+    "commercial real estate inquiry Bristol Virginia",
     "office space tour Bristol TN",
+    "office space tour Bristol VA",
     "leasing inquiry Tri-Cities CRE",
     "schedule property tour Bristol",
     "Vision LLC leasing contact",
     "Bristol TN coworking inquiry",
+    "Bristol VA coworking inquiry",
     "executive advisement contact",
     "commercial property Bristol Virginia",
     "423-573-1022 Vision LLC",
@@ -20,7 +24,7 @@ export const metadata: Metadata = {
     canonical: "https://www.teamvisionllc.com/contact",
   },
   openGraph: {
-    title: "Contact Vision LLC | Commercial Real Estate Experts — Bristol, TN",
+    title: "Contact Vision LLC | Commercial Real Estate Experts — Bristol, TN/VA",
     description:
       "Reach out to schedule a tour of office suites, retail space, or coworking memberships in Downtown Bristol. Vision LLC — the Tri-Cities' leading commercial property firm.",
     url: "https://www.teamvisionllc.com/contact",
@@ -31,13 +35,13 @@ export const metadata: Metadata = {
         url: "https://www.teamvisionllc.com/api/og?title=Contact+Vision+LLC&subtitle=Schedule+a+Tour+%C2%B7+Bristol%2C+TN+37620&tag=Get+In+Touch&type=default",
         width: 1200,
         height: 630,
-        alt: "Contact Vision LLC — Commercial Real Estate Bristol TN",
+        alt: "Contact Vision LLC — Commercial Real Estate Bristol TN/VA",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Vision LLC | Commercial Real Estate | Bristol, TN",
+    title: "Contact Vision LLC | Commercial Real Estate | Bristol, TN/VA",
     description:
       "Schedule a tour or ask about available commercial space in the Tri-Cities TN/VA. (423) 573-1022 | leasing@teamvisionllc.com",
     images: [

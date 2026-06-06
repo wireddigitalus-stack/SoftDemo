@@ -120,6 +120,7 @@ export default async function SpaceTypePage({ params }: Props) {
     geo: { "@type": "GeoCoordinates", latitude: 36.5951, longitude: -82.1887 },
     areaServed: [
       { "@type": "City", name: "Bristol", containedInPlace: { "@type": "State", name: "Tennessee" } },
+      { "@type": "City", name: "Bristol", containedInPlace: { "@type": "State", name: "Virginia" } },
       { "@type": "City", name: "Kingsport", containedInPlace: { "@type": "State", name: "Tennessee" } },
       { "@type": "City", name: "Johnson City", containedInPlace: { "@type": "State", name: "Tennessee" } },
     ],

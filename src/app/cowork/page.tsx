@@ -10,16 +10,16 @@ import { fetchImageOverrides, resolveAllImages } from "@/lib/property-image-over
 import { getSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
-  title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN",
+  title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN/VA",
   description:
-    "Bristol CoWork at 620 State Street offers private offices, dedicated desks & conference rooms in the heart of Bristol, TN. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
+    "Bristol CoWork at 620 State Street offers private offices, dedicated desks & conference rooms in the heart of Bristol, TN/VA. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
   alternates: {
     canonical: "https://www.teamvisionllc.com/cowork",
   },
   openGraph: {
     title: "Bristol CoWork | Downtown Bristol's Coworking & Private Offices",
     description:
-      "Private offices, dedicated desks & conference rooms at 620 State Street, Bristol, TN. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
+      "Private offices, dedicated desks & conference rooms at 620 State Street, Bristol, TN/VA. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
     url: "https://www.teamvisionllc.com/cowork",
     images: [
       {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bristol CoWork | Private Offices & Coworking in Downtown Bristol, TN",
+    title: "Bristol CoWork | Private Offices & Coworking in Downtown Bristol, TN/VA",
     description:
       "Private offices, dedicated desks & conference rooms. 620 State Street, Bristol TN. All-inclusive memberships from Vision LLC.",
     images: [

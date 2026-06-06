@@ -4,8 +4,8 @@ import Link from "next/link";
 import AIChatWidget from "@/components/AIChatWidget";
 
 export const metadata: Metadata = {
-  title: "Find Commercial Space in Bristol, TN | Vision LLC",
-  description: "Looking for office, retail, or coworking space in the Tri-Cities area? Vision LLC has premium commercial spaces in Downtown Bristol, TN.",
+  title: "Find Commercial Space in Bristol, TN/VA | Vision LLC",
+  description: "Looking for office, retail, or coworking space in the Tri-Cities area? Vision LLC has premium commercial spaces in Downtown Bristol, TN/VA.",
   robots: { index: false, follow: false },
 };
 
@@ -99,8 +99,8 @@ export default async function FacebookLandingPage({
 
         <p className="text-gray-400 text-lg max-w-md mb-8 leading-relaxed">
           {featured
-            ? `Check out this featured property — or browse all available spaces in Downtown Bristol, TN.`
-            : `Office suites, coworking, and retail in Downtown Bristol, TN. Browse available spaces or chat with our AI advisor — no phone calls required.`
+            ? `Check out this featured property — or browse all available spaces in Downtown Bristol, TN/VA.`
+            : `Office suites, coworking, and retail in Downtown Bristol, TN/VA. Browse available spaces or chat with our AI advisor — no phone calls required.`
           }
         </p>
 
@@ -208,7 +208,7 @@ export default async function FacebookLandingPage({
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-6 text-[11px] text-gray-700">
-        Vision LLC · Downtown Bristol, TN · All rights reserved
+        Vision LLC · Downtown Bristol, TN/VA · All rights reserved
       </footer>
 
       {/* Chat widget */}

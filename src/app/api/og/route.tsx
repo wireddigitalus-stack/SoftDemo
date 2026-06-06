@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const title = searchParams.get("title") || "Vision LLC";
   const subtitle =
     searchParams.get("subtitle") ||
-    "Commercial Real Estate · Bristol, TN";
+    "Commercial Real Estate · Bristol, TN/VA";
   const tag = searchParams.get("tag") || "Tri-Cities CRE Leader";
   const type = searchParams.get("type") || "default"; // property | geo | blog | default
 
@@ -171,7 +171,7 @@ export async function GET(request: NextRequest) {
                 marginLeft: 50,
               }}
             >
-              Commercial Real Estate · Bristol, TN
+              Commercial Real Estate · Bristol, TN/VA
             </span>
           </div>
 

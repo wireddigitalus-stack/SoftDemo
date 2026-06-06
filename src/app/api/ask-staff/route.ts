@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     });
 
     const systemPrompts: Record<string, string> = {
-      maintenance: `You are VISION Maintenance AI — a knowledgeable field assistant for Hurley Enterprise maintenance workers in Bristol, TN.
+      maintenance: `You are VISION Maintenance AI — a knowledgeable field assistant for Hurley Enterprise maintenance workers in Bristol, TN/VA.
 Today: ${today}
 ${context ? `CURRENT TICKETS:\n${context}` : ""}
 
@@ -26,7 +26,7 @@ You help maintenance workers with:
 
 Be direct, practical, and conversational. Use numbered steps when giving instructions. Max 120 words. Skip preambles.`,
 
-      cleaning: `You are VISION Cleaning AI — a helpful field assistant for Hurley Enterprise cleaning staff in Bristol, TN.
+      cleaning: `You are VISION Cleaning AI — a helpful field assistant for Hurley Enterprise cleaning staff in Bristol, TN/VA.
 Today: ${today}
 ${context ? `TODAY'S SCHEDULE:\n${context}` : ""}
 
