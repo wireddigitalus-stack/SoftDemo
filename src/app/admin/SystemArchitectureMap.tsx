@@ -38,7 +38,7 @@ interface FlowNode {
   sub?: string;          // subtitle
 }
 
-// viewBox = 1400 x 900
+// viewBox = 1400 x 1140
 const NODES: FlowNode[] = [
   // ─── Sources (Column 1 ~x=60) ──────────────────────────────────────────
   { id: "src-web",    label: "Website Visitor",   type: "source", domain: "leads",      x: 60,   y: 100,  sub: "Contact forms, lease-bot" },
@@ -55,8 +55,10 @@ const NODES: FlowNode[] = [
   { id: "api-maint",      label: "/api/maintenance",      type: "api", domain: "operations", x: 370, y: 520,  sub: "Ticket management" },
   { id: "api-cleaning",   label: "/api/cleaning",         type: "api", domain: "operations", x: 370, y: 610,  sub: "Assignment management" },
   { id: "api-analytics",  label: "/api/analytics",        type: "api", domain: "analytics",  x: 370, y: 700,  sub: "Page views, sessions" },
-  { id: "api-content",    label: "/api/blog-posts",       type: "api", domain: "content",    x: 370, y: 790,  sub: "Content CMS" },
+  { id: "api-content",    label: "/api/content-gen",      type: "api", domain: "content",    x: 370, y: 790,  sub: "Blog, social, press releases" },
   { id: "api-activity",   label: "/api/activity-log",     type: "api", domain: "leads",      x: 370, y: 880,  sub: "Audit trail" },
+  { id: "api-intel",      label: "/api/market-intel",     type: "api", domain: "content",    x: 370, y: 970,  sub: "AI news radar — TN/VA" },
+  { id: "api-askvision",  label: "/api/ask-vision",       type: "api", domain: "leads",      x: 370, y: 1060, sub: "AI chatbot for visitors" },
 
   // ─── Database Tables (Column 3 ~x=710) ─────────────────────────────────
   { id: "db-leads",        label: "leads",                type: "db", domain: "leads",       x: 710, y: 80,   sub: "Lead records" },
@@ -94,6 +96,7 @@ const CONNECTIONS: Connection[] = [
   // Leads pipeline
   { from: "src-web",      to: "api-leasebot",   domain: "leads" },
   { from: "src-web",      to: "api-contact",    domain: "leads" },
+  { from: "src-web",      to: "api-askvision",  domain: "leads" },
   { from: "api-leasebot", to: "db-leads",       domain: "leads" },
   { from: "api-contact",  to: "db-leads",       domain: "leads" },
   { from: "db-leads",     to: "tab-leads",      domain: "leads" },
@@ -132,11 +135,15 @@ const CONNECTIONS: Connection[] = [
   { from: "api-analytics", to: "db-siteanalytics",  domain: "analytics" },
   { from: "db-siteanalytics",to: "tab-analytics",   domain: "analytics" },
 
-  // Content
+  // Content + AI
   { from: "src-ai",       to: "api-content",    domain: "content" },
+  { from: "src-ai",       to: "api-leasebot",   domain: "leads" },
+  { from: "src-ai",       to: "api-intel",      domain: "content" },
+  { from: "src-ai",       to: "api-askvision",  domain: "leads" },
   { from: "api-content",  to: "db-blog",        domain: "content" },
   { from: "db-blog",      to: "tab-content",    domain: "content" },
   { from: "db-blog",      to: "tab-marketing",  domain: "content" },
+  { from: "api-intel",    to: "tab-marketing",  domain: "content" },
 
   // Activity log cross-cutting (writes flow through /api/activity-log)
   { from: "api-leasebot", to: "api-activity",  domain: "leads" },
@@ -432,7 +439,7 @@ export default function SystemArchitectureMap() {
         style={{ backdropFilter: "blur(12px)" }}
       >
         <svg
-          viewBox="0 0 1320 960"
+          viewBox="0 0 1320 1140"
           className="w-full"
           style={{ minWidth: 900, minHeight: 500 }}
           xmlns="http://www.w3.org/2000/svg"
