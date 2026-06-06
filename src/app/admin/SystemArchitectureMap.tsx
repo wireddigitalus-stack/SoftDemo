@@ -206,28 +206,19 @@ function pathD(from: FlowNode, to: FlowNode): string {
   return `M${x1 + NODE_W / 2},${y1} C${x1 + NODE_W / 2 + cp},${y1} ${x2 - NODE_W / 2 - cp},${y2} ${x2 - NODE_W / 2},${y2}`;
 }
 
-// ── FlowingDot ────────────────────────────────────────────────────────────────
-
-function FlowingDot({ d, color, delay }: { d: string; color: string; delay: number }) {
-  return (
-    <circle r="3.5" fill={color} opacity="0.9" style={{ filter: `drop-shadow(0 0 4px ${color})` }}>
-      <animateMotion dur="3.5s" repeatCount="indefinite" begin={`${delay}s`}>
-        <mpath href="" />
-      </animateMotion>
-      {/* Use path element for motion */}
-    </circle>
-  );
-}
-
 // ── FlowPath ──────────────────────────────────────────────────────────────────
 
 function FlowPath({ from, to, color, active, pathId }: {
   from: FlowNode; to: FlowNode; color: string; active: boolean; pathId: string;
 }) {
   const d = pathD(from, to);
+  // Evenly space 3 dots across the loop duration for seamless cycling
+  const dur = 4;
+  const dotDelays = [0, dur / 3, (dur * 2) / 3];
+  const dotSizes = [2.8, 3.2, 2.5];
+
   return (
     <g style={{ opacity: active ? 1 : 0.06, transition: "opacity 0.5s ease" }}>
-      {/* Path background glow */}
       <path
         d={d}
         fill="none"
@@ -236,7 +227,6 @@ function FlowPath({ from, to, color, active, pathId }: {
         strokeOpacity={active ? 0.3 : 0.12}
         style={active ? { filter: `drop-shadow(0 0 6px ${color}60)` } : undefined}
       />
-      {/* Main path */}
       <path
         id={pathId}
         d={d}
@@ -246,10 +236,16 @@ function FlowPath({ from, to, color, active, pathId }: {
         strokeOpacity={active ? 0.6 : 0.25}
         strokeDasharray={active ? "none" : "4 4"}
       />
-      {/* Flowing dots */}
-      {active && [0, 1.2, 2.4].map((delay, i) => (
-        <circle key={i} r="3" fill={color} opacity="0.85" style={{ filter: `drop-shadow(0 0 5px ${color})` }}>
-          <animateMotion dur="3.2s" repeatCount="indefinite" begin={`${delay}s`}>
+      {active && dotDelays.map((delay, i) => (
+        <circle key={i} r={dotSizes[i]} fill={color} opacity="0.85" style={{ filter: `drop-shadow(0 0 5px ${color})` }}>
+          <animateMotion
+            dur={`${dur}s`}
+            repeatCount="indefinite"
+            begin={`${delay}s`}
+            calcMode="spline"
+            keyTimes="0;1"
+            keySplines="0.42 0 0.58 1"
+          >
             <mpath xlinkHref={`#${pathId}`} />
           </animateMotion>
         </circle>
