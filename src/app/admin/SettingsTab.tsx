@@ -1097,6 +1097,12 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
 
+      {/* ── Login History ── */}
+      <LoginHistory />
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
       {/* ── Data Import / Export ── */}
       <div>
         <div className="flex items-center gap-2 mb-1">
@@ -1147,12 +1153,6 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
 
         </div>
       </div>
-
-      {/* ─ Divider */}
-      <div className="border-t border-[rgba(255,255,255,0.05)]" />
-
-      {/* ── Login History ── */}
-      <LoginHistory />
 
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
