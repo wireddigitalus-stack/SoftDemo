@@ -954,6 +954,121 @@ function LoginHistory() {
 
 // ─── Main Settings Panel ──────────────────────────────────────────────────────
 
+// ─── Data Import/Export (Collapsible) ─────────────────────────────────────────
+
+function DataExportSection({ leads }: { leads: Lead[] }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2 mb-1 group">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#60A5FA] to-[#3B82F6] flex items-center justify-center flex-shrink-0">
+          <FileSpreadsheet size={13} className="text-white" />
+        </div>
+        <h2 className="text-sm font-black text-white uppercase tracking-widest">Data Import / Export</h2>
+        <div className="ml-auto w-6 h-6 rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center">
+          <ChevronRight size={16} className={`text-[#60A5FA] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+        </div>
+      </button>
+      <p className="text-xs text-gray-500 mb-3">
+        Bring in historical leads from Excel, or export your full dashboard data for backup, sharing, or analysis.
+      </p>
+      {expanded && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] p-5 flex flex-col gap-3"
+            style={{ boxShadow: "0 0 22px rgba(74,222,128,0.08)" }}>
+            <div className="flex items-center gap-2">
+              <Download size={15} className="text-[#4ADE80]" />
+              <p className="text-xs font-black text-white uppercase tracking-widest">Export Leads</p>
+            </div>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Download all active leads as a formatted Excel spreadsheet — names, phones, scores, budgets, timelines and more.
+            </p>
+            <div className="rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] p-3">
+              <p className="text-xs text-gray-600 font-bold uppercase tracking-wider mb-2">Columns included</p>
+              <div className="flex flex-wrap gap-1.5">
+                {["Name","Phone","Email","Space Type","Budget/mo","Timeline","Team Size","AI Score","Label","Source","Submitted"].map(c => (
+                  <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.12)] text-gray-500">{c}</span>
+                ))}
+              </div>
+            </div>
+            <ExportButton leads={leads} />
+          </div>
+          <div className="rounded-2xl border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.03)] p-5 flex flex-col gap-3"
+            style={{ boxShadow: "0 0 22px rgba(96,165,250,0.08)" }}>
+            <div className="flex items-center gap-2">
+              <Upload size={15} className="text-[#60A5FA]" />
+              <p className="text-xs font-black text-white uppercase tracking-widest">Import Leads</p>
+            </div>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Upload an Excel (.xlsx) or CSV file. We&apos;ll map the columns automatically.
+            </p>
+            <ImportPanel />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Danger Zone (Collapsible) ────────────────────────────────────────────────
+
+function DangerZoneSection({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
+  leads: Lead[]; deletingAll: boolean; deleteAllConfirm: string;
+  setDeleteAllConfirm: (v: string) => void; deleteAllLeads: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-2 mb-1 group">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#EF4444] to-[#DC2626] flex items-center justify-center flex-shrink-0">
+          <AlertCircle size={13} className="text-white" />
+        </div>
+        <h2 className="text-sm font-black text-white uppercase tracking-widest">Danger Zone</h2>
+        <div className="ml-auto w-6 h-6 rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center">
+          <ChevronRight size={16} className={`text-[#EF4444] transition-transform duration-300 ${expanded ? "rotate-90" : ""}`} />
+        </div>
+      </button>
+      <p className="text-xs text-gray-500 mb-3">
+        Permanently delete all leads from the database. This action cannot be undone.
+      </p>
+      {expanded && (
+        <div className="rounded-2xl border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.03)] p-5"
+          style={{ boxShadow: "0 0 22px rgba(239,68,68,0.06)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Trash2 size={15} className="text-red-400" />
+            <p className="text-xs font-black text-white uppercase tracking-widest">Clear All Leads</p>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] text-red-400 font-bold ml-auto">
+              {leads.length} lead{leads.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 leading-relaxed mb-4">
+            This will permanently remove <strong className="text-red-400">{leads.length}</strong> lead{leads.length !== 1 ? "s" : ""} from Supabase.
+            Type <code className="text-red-400 bg-[rgba(239,68,68,0.1)] px-1.5 py-0.5 rounded text-xs font-bold">DELETE</code> below to confirm.
+          </p>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={deleteAllConfirm}
+              onChange={e => setDeleteAllConfirm(e.target.value)}
+              placeholder='Type "DELETE" to confirm'
+              className="flex-1 px-3 py-2 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(239,68,68,0.15)] text-white text-xs placeholder:text-gray-600 outline-none focus:border-[rgba(239,68,68,0.4)] transition-colors font-mono"
+            />
+            <button
+              onClick={deleteAllLeads}
+              disabled={deleteAllConfirm !== "DELETE" || deletingAll || leads.length === 0}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.35)] text-red-400 text-xs font-bold hover:bg-[rgba(239,68,68,0.25)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              {deletingAll ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+              {deletingAll ? "Deleting…" : "Delete All"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function SettingsPanel({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
   leads: Lead[];
   deletingAll: boolean;
@@ -1104,103 +1219,13 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
 
       {/* ── Data Import / Export ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#60A5FA] to-[#3B82F6] flex items-center justify-center flex-shrink-0">
-            <FileSpreadsheet size={13} className="text-white" />
-          </div>
-          <h2 className="text-sm font-black text-white uppercase tracking-widest">Data Import / Export</h2>
-        </div>
-        <p className="text-xs text-gray-500 mb-5">
-          Bring in historical leads from Excel, or export your full dashboard data for backup, sharing, or analysis.
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-          {/* ── EXPORT ── */}
-          <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] p-5 flex flex-col gap-3"
-            style={{ boxShadow: "0 0 22px rgba(74,222,128,0.08)" }}>
-            <div className="flex items-center gap-2">
-              <Download size={15} className="text-[#4ADE80]" />
-              <p className="text-xs font-black text-white uppercase tracking-widest">Export Leads</p>
-            </div>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Download all active leads as a formatted Excel spreadsheet — names, phones, scores, budgets, timelines and more.
-            </p>
-            <div className="rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] p-3">
-              <p className="text-xs text-gray-600 font-bold uppercase tracking-wider mb-2">Columns included</p>
-              <div className="flex flex-wrap gap-1.5">
-                {["Name","Phone","Email","Space Type","Budget/mo","Timeline","Team Size","AI Score","Label","Source","Submitted"].map(c => (
-                  <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.12)] text-gray-500">{c}</span>
-                ))}
-              </div>
-            </div>
-            <ExportButton leads={leads} />
-          </div>
-
-          {/* ── IMPORT ── */}
-          <div className="rounded-2xl border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.03)] p-5 flex flex-col gap-3"
-            style={{ boxShadow: "0 0 22px rgba(96,165,250,0.08)" }}>
-            <div className="flex items-center gap-2">
-              <Upload size={15} className="text-[#60A5FA]" />
-              <p className="text-xs font-black text-white uppercase tracking-widest">Import Leads</p>
-            </div>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Upload an Excel (.xlsx) or CSV file from Monday.com, your old CRM, or any spreadsheet. We'll map the columns automatically.
-            </p>
-            <ImportPanel />
-          </div>
-
-        </div>
-      </div>
+      <DataExportSection leads={leads} />
 
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />
 
       {/* ── Danger Zone: Clear All Leads ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#EF4444] to-[#DC2626] flex items-center justify-center flex-shrink-0">
-            <AlertCircle size={13} className="text-white" />
-          </div>
-          <h2 className="text-sm font-black text-white uppercase tracking-widest">Danger Zone</h2>
-        </div>
-        <p className="text-xs text-gray-500 mb-5">
-          Permanently delete all leads from the database. This is useful for clearing test data before launch. This action cannot be undone.
-        </p>
-
-        <div className="rounded-2xl border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.03)] p-5"
-          style={{ boxShadow: "0 0 22px rgba(239,68,68,0.06)" }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Trash2 size={15} className="text-red-400" />
-            <p className="text-xs font-black text-white uppercase tracking-widest">Clear All Leads</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.3)] text-red-400 font-bold ml-auto">
-              {leads.length} lead{leads.length !== 1 ? "s" : ""}
-            </span>
-          </div>
-          <p className="text-xs text-gray-500 leading-relaxed mb-4">
-            This will permanently remove <strong className="text-red-400">{leads.length}</strong> lead{leads.length !== 1 ? "s" : ""} from Supabase.
-            Type <code className="text-red-400 bg-[rgba(239,68,68,0.1)] px-1.5 py-0.5 rounded text-xs font-bold">DELETE</code> below to confirm.
-          </p>
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              value={deleteAllConfirm}
-              onChange={e => setDeleteAllConfirm(e.target.value)}
-              placeholder='Type "DELETE" to confirm'
-              className="flex-1 px-3 py-2 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(239,68,68,0.15)] text-white text-xs placeholder:text-gray-600 outline-none focus:border-[rgba(239,68,68,0.4)] transition-colors font-mono"
-            />
-            <button
-              onClick={deleteAllLeads}
-              disabled={deleteAllConfirm !== "DELETE" || deletingAll || leads.length === 0}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.35)] text-red-400 text-xs font-bold hover:bg-[rgba(239,68,68,0.25)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              {deletingAll ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-              {deletingAll ? "Deleting…" : "Delete All"}
-            </button>
-          </div>
-        </div>
-      </div>
+      <DangerZoneSection leads={leads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />
 
 
       {/* ─ QR Capture Hub ───────────────────────────────────────── */}
