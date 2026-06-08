@@ -50,28 +50,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const property = PROPERTIES.find((p) => p.id === id) || await getDynamicProperty(id);
   if (!property) return { title: "Property Not Found | Vision LLC" };
-  const desc = property.description.substring(0, 160);
+
+  // Build a proper meta description — not a raw text slice that cuts mid-sentence
+  const city = property.city || "Bristol, TN";
+  const rawDesc = property.description || "";
+  const shortDesc = rawDesc.length > 100
+    ? rawDesc.substring(0, rawDesc.lastIndexOf(" ", 100)) + "."
+    : rawDesc;
+  const metaDesc = `${property.name} — ${property.type} in ${city}. ${shortDesc} Vision LLC. Call 423-573-1022.`.substring(0, 155);
+
+  // Use the actual city in the title — not a hardcoded "Bristol TN/VA"
+  const cityShort = city.replace(", Tennessee", ", TN").replace(", Virginia", ", VA");
   const ogTitle = encodeURIComponent(property.name);
-  const ogSubtitle = encodeURIComponent(`${property.type} · ${property.city} · ${property.sqft} sqft`);
-  const ogTag = encodeURIComponent("Available Now");
+  const ogSubtitle = encodeURIComponent(`${property.type} · ${city} · ${property.sqft} sqft`);
+  const ogTag = encodeURIComponent(property.status === "Available" ? "Available Now" : property.status);
   const ogUrl = `https://www.teamvisionllc.com/api/og?title=${ogTitle}&subtitle=${ogSubtitle}&tag=${ogTag}&type=property`;
   return {
-    title: `${property.name} | Commercial Real Estate Bristol TN/VA | Vision LLC`,
-    description: desc,
+    title: `${property.name} | ${property.type} in ${cityShort} | Vision LLC`,
+    description: metaDesc,
     alternates: {
       canonical: `https://www.teamvisionllc.com/properties/${id}`,
     },
     openGraph: {
       title: `${property.name} | Vision LLC`,
-      description: desc,
+      description: metaDesc,
       url: `https://www.teamvisionllc.com/properties/${id}`,
       type: "website",
-      images: [{ url: ogUrl, width: 1200, height: 630, alt: property.name }],
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: `${property.name} — ${property.type} in ${city}` }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${property.name} | Vision LLC`,
-      description: desc,
+      description: metaDesc,
       images: [ogUrl],
     },
   };
@@ -149,7 +159,11 @@ export default async function PropertyDetailPage({ params }: Props) {
     offers: {
       "@type": "Offer",
       businessFunction: "https://purl.org/goodrelations/v1#LeaseOut",
-      availability: "https://schema.org/InStock",
+      availability: property.status === "Available"
+        ? "https://schema.org/InStock"
+        : property.status === "Coming Soon"
+          ? "https://schema.org/PreOrder"
+          : "https://schema.org/SoldOut",
       seller: {
         "@type": "Organization",
         name: "Vision LLC",

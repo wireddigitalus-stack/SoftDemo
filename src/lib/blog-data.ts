@@ -11,6 +11,7 @@ export interface BlogPost {
   targetKeyword: string;
   readTime: number;
   publishedAt: string;
+  updatedAt?: string;    // when content was last meaningfully updated (for dateModified in schema)
   author: string;
   authorTitle: string;
   excerpt: string;

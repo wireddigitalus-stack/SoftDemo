@@ -10,7 +10,7 @@ import { getAllSiteContent } from "@/lib/site-content";
 export const metadata: Metadata = {
   title: "About Vision LLC | J. Allen Hurley II — Bristol, TN/VA CRE Leader",
   description:
-    "Vision LLC is Downtown Bristol's largest private commercial property owner, led by CEO J. Allen Hurley II. 20+ years building the Tri-Cities through real estate, development & executive advisement. Call 423-573-1022.",
+    "Downtown Bristol's largest private commercial property owner, led by CEO J. Allen Hurley II. 20+ years of Tri-Cities real estate & executive advisement. Call 423-573-1022.",
   keywords: [
     "Vision LLC about",
     "J Allen Hurley II",

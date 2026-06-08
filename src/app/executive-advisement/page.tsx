@@ -21,7 +21,7 @@ import { getSiteContent } from "@/lib/site-content";
 export const metadata: Metadata = {
   title: "C-Suite Executive Advisement & Strategic Consulting | Vision LLC, Bristol TN/VA",
   description:
-    "Vision LLC delivers C-suite consulting, strategic planning, and government advisement grounded in 30+ years of real-world executive leadership by J. Allen Hurley II. Bristol, TN/VA. Call 423-573-1022.",
+    "C-suite consulting, strategic planning & government advisement from Vision LLC — led by J. Allen Hurley II. 30+ years of executive leadership. Bristol, TN. Call 423-573-1022.",
   alternates: {
     canonical: "https://www.teamvisionllc.com/executive-advisement",
   },
@@ -128,8 +128,66 @@ export default async function ExecutiveAdvisementPage() {
     desc: c(`div_${i + 1}_desc`, d.desc),
   }));
 
+  const advisementSchema = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Vision LLC — Executive Advisement",
+    description: "C-suite consulting, strategic planning, government advisement & private equity advisory from Vision LLC, led by J. Allen Hurley II. Serving the Tri-Cities TN/VA region.",
+    url: "https://www.teamvisionllc.com/executive-advisement",
+    telephone: "+14235731022",
+    email: "leasing@teamvisionllc.com",
+    priceRange: "$$$",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "100 5th St., Suite 2W",
+      addressLocality: "Bristol",
+      addressRegion: "TN",
+      postalCode: "37620",
+      addressCountry: "US",
+    },
+    areaServed: [
+      { "@type": "City", name: "Bristol", containedIn: "Tennessee" },
+      { "@type": "City", name: "Kingsport", containedIn: "Tennessee" },
+      { "@type": "City", name: "Johnson City", containedIn: "Tennessee" },
+      { "@type": "City", name: "Abingdon", containedIn: "Virginia" },
+    ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Executive Advisory Services",
+      itemListElement: [
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Executive Leadership Coaching" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Strategic Planning & Growth Execution" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Government & Public Sector Advisory" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Private Equity & Board Advisory" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Real Estate-Driven Business Optimization" } },
+      ],
+    },
+    founder: {
+      "@type": "Person",
+      name: "J. Allen Hurley II",
+      jobTitle: "Chief Executive Officer",
+      worksFor: { "@type": "Organization", name: "Vision LLC" },
+    },
+    parentOrganization: {
+      "@type": "Organization",
+      name: "Vision LLC",
+      url: "https://www.teamvisionllc.com",
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.teamvisionllc.com" },
+      { "@type": "ListItem", position: 2, name: "Executive Advisement", item: "https://www.teamvisionllc.com/executive-advisement" },
+    ],
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(advisementSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <Navigation />
       <main>
         {/* Hero */}
@@ -158,9 +216,9 @@ export default async function ExecutiveAdvisementPage() {
                 {c("hero_badge", "Division III — Executive Advisement")}
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
-                {c("hero_heading", "Big Moves. Smart Strategy. Fresh Insight.").includes("Smart Strategy.") ? (
-                  <>Big Moves.{" "}<span className="gradient-text-gold">Smart Strategy.</span><br />Fresh Insight.</>
-                ) : c("hero_heading", "Big Moves. Smart Strategy. Fresh Insight.")}
+                {c("hero_heading", "Executive Advisement & C-Suite Consulting").includes("C-Suite") ? (
+                  <>Executive Advisement &{" "}<span className="gradient-text-gold">C-Suite Consulting.</span></>
+                ) : c("hero_heading", "Executive Advisement & C-Suite Consulting")}
               </h1>
               <p className="text-xl text-gray-300 mb-4 leading-relaxed">
                 {c("hero_description", "Vision LLC's Executive Advisement division delivers C-suite consulting and strategic guidance grounded in 30+ years of real-world leadership — not theory.")}

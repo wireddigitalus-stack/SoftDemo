@@ -7,7 +7,7 @@ import { BLOG_POSTS, type BlogPost } from "@/lib/blog-data";
 export const metadata: Metadata = {
   title: "Commercial Real Estate Blog | Tri-Cities Market Insights | Vision LLC",
   description:
-    "Expert insights on commercial real estate in Bristol TN/VA, the Tri-Cities market, coworking, historic adaptive reuse, and executive business consulting from Vision LLC.",
+    "Expert commercial real estate insights from Vision LLC — Bristol TN/VA, Tri-Cities market analysis, coworking trends & development news. Written by the team that owns it.",
   keywords: [
     "Bristol TN commercial real estate blog",
     "Bristol VA commercial real estate blog",
@@ -103,8 +103,44 @@ export default async function BlogPage() {
   const allPosts: BlogPost[] = [...dbPosts, ...BLOG_POSTS.filter(p => !slugsSeen.has(p.slug))];
   const [featured, ...rest] = allPosts;
 
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Vision LLC CRE Intelligence Blog",
+    description: "Expert commercial real estate insights, market analysis, and development news covering Bristol TN/VA and the Tri-Cities region.",
+    url: "https://www.teamvisionllc.com/blog",
+    publisher: {
+      "@type": "Organization",
+      name: "Vision LLC",
+      url: "https://www.teamvisionllc.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.teamvisionllc.com/vision-logo.png",
+      },
+    },
+    blogPost: allPosts.slice(0, 5).map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: post.metaDescription,
+      url: `https://www.teamvisionllc.com/blog/${post.slug}`,
+      datePublished: post.publishedAt,
+      author: { "@type": "Organization", name: "Vision LLC" },
+    })),
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.teamvisionllc.com" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.teamvisionllc.com/blog" },
+    ],
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {/* Hero */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(74,222,128,0.07)_0%,transparent_60%)]" />

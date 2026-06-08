@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Commercial Real Estate Bristol TN/VA | Office, Retail & Industrial | Vision LLC",
   description:
-    "Browse Vision LLC's commercial property portfolio in Bristol, TN/VA. Executive office suites, retail storefronts, coworking, mixed-use & industrial. Largest private CRE owner Downtown Bristol. Call 423-573-1022.",
+    "Browse Vision LLC's commercial properties in Bristol TN/VA — office suites, retail storefronts, coworking, mixed-use & industrial. Downtown Bristol's largest private owner. Call 423-573-1022.",
   keywords: [
     "commercial real estate Bristol TN",
     "commercial real estate Bristol VA",

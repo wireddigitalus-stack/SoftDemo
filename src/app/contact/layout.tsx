@@ -3,7 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact Vision LLC | Lease Inquiries & Property Tours | Bristol, TN/VA",
   description:
-    "Contact Vision LLC for commercial real estate in Bristol TN/VA, Kingsport, Johnson City & the Tri-Cities. Call (423) 573-1022 or fill out our form to schedule a tour of office suites, retail space, or coworking memberships.",
+    "Contact Vision LLC for commercial real estate in Bristol TN/VA, Kingsport & Johnson City. Call (423) 573-1022 or submit a form to schedule a property tour. We respond same day.",
   keywords: [
     "contact Vision LLC Bristol TN",
     "contact Vision LLC Bristol VA",

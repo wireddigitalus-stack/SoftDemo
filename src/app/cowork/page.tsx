@@ -12,7 +12,7 @@ import { getSiteContent } from "@/lib/site-content";
 export const metadata: Metadata = {
   title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN/VA",
   description:
-    "Bristol CoWork at 620 State Street offers private offices, dedicated desks & conference rooms in the heart of Bristol, TN/VA. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
+    "Bristol CoWork at 620 State Street offers private offices, dedicated desks & conference rooms in downtown Bristol, TN. All-inclusive. Move-in ready. Call 423-573-1022.",
   alternates: {
     canonical: "https://www.teamvisionllc.com/cowork",
   },

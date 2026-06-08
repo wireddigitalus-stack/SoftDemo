@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.metaTitle,
     description: post.metaDescription,
-    keywords: [post.targetKeyword, ...post.tags, "Vision LLC", "Bristol TN", "Bristol VA", "Tri-Cities commercial real estate"],
+    keywords: [post.targetKeyword, ...post.tags, "Vision LLC"],
     authors: [{ name: post.author }],
     alternates: {
       canonical: `https://www.teamvisionllc.com/blog/${post.slug}`,
@@ -136,11 +136,11 @@ export default async function BlogPostPage({ params }: Props) {
       url: "https://www.teamvisionllc.com",
       logo: {
         "@type": "ImageObject",
-        url: "https://lirp.cdn-website.com/49369e6c/dms3rep/multi/opt/WHITE+VISION-+LLC.+LOGO+NO+TAGLINE-1920w.png",
+        url: "https://www.teamvisionllc.com/vision-logo.png",
       },
     },
     datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
+    dateModified: post.updatedAt || post.publishedAt,
     url: `https://www.teamvisionllc.com/blog/${post.slug}`,
     mainEntityOfPage: `https://www.teamvisionllc.com/blog/${post.slug}`,
     articleSection: post.category,
