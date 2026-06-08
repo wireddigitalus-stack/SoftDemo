@@ -90,7 +90,7 @@ function BlogSection() {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub: string) => void }) {
-  const [subTab, setSubTab] = useState<"press" | "blog" | "social" | "one-sheet" | "intel">("press");
+  const [subTab, setSubTab] = useState<"press" | "blog" | "social" | "one-sheet" | "intel">("blog");
 
   const switchSubTab = (key: "press" | "blog" | "social" | "one-sheet" | "intel") => {
     setSubTab(key);
@@ -195,16 +195,6 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {([
           {
-            key:   "press",
-            label: "Press Releases",
-            desc:  "AI-generated press copy",
-            icon:  FileText,
-            grad:  "from-[#60A5FA] to-[#3B82F6]",
-            glow:  "rgba(96,165,250,0.2)",
-            border:"rgba(96,165,250,0.4)",
-            tag:   "Generator",
-          },
-          {
             key:   "blog",
             label: "Blog Articles",
             desc:  "SEO articles, live on site",
@@ -213,6 +203,16 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
             glow:  "rgba(167,139,250,0.2)",
             border:"rgba(167,139,250,0.4)",
             tag:   "AI + Live",
+          },
+          {
+            key:   "press",
+            label: "Press Releases",
+            desc:  "AI-generated press copy",
+            icon:  FileText,
+            grad:  "from-[#60A5FA] to-[#3B82F6]",
+            glow:  "rgba(96,165,250,0.2)",
+            border:"rgba(96,165,250,0.4)",
+            tag:   "Generator",
           },
 
           {
