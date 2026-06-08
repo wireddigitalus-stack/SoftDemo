@@ -5,7 +5,7 @@ import {
   Plus, Pencil, Trash2, Globe, Eye, EyeOff, Save, X,
   Loader2, RefreshCw, ImageIcon, ChevronDown, ChevronRight,
   CheckCircle2, ArrowLeft, FileText, Tag, Clock, AlertCircle,
-  ExternalLink, Upload, Image as ImageLucide,
+  ExternalLink, Upload, Image as ImageLucide, DownloadCloud, Sparkles,
 } from "lucide-react";
 
 const CATEGORIES = [
@@ -61,6 +61,198 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// ─── Static Posts Seed Data ───────────────────────────────────────────────────
+// These are the 5 hardwired posts from blog-data.ts.
+// Once imported to Supabase they become editable like any DB post.
+// The blog page deduplicates by slug, so DB record always wins over static file.
+
+const STATIC_POSTS = [
+  {
+    slug: "downtown-bristol-tn-commercial-real-estate-market-2025",
+    title: "Downtown Bristol, TN Commercial Real Estate Market Outlook 2026",
+    meta_title: "Downtown Bristol TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
+    meta_description: "Deep dive into the 2025 commercial real estate market in Downtown Bristol, TN. Office vacancy rates, retail trends, adaptive reuse projects & investment opportunities on State Street.",
+    category: "Market Reports",
+    tags: ["Bristol TN", "Market Report", "Commercial Real Estate", "Tri-Cities"],
+    read_time: 6,
+    published_at: "2026-04-01T00:00:00.000Z",
+    author: "Vision LLC Team",
+    author_title: "Commercial Real Estate Experts — Tri-Cities, TN",
+    image_url: "/images/Hard_Rock_Bristol_VA.jpg",
+    image_alt: "Hard Rock Hotel & Casino Bristol, Virginia",
+    excerpt: "Downtown Bristol, TN is experiencing one of its most dynamic commercial real estate cycles in two decades. Here's what business owners and investors need to know heading into 2026.",
+    status: "published" as const,
+  },
+  {
+    slug: "coworking-vs-traditional-office-tri-cities-tennessee",
+    title: "Coworking vs. Traditional Office Space in the Tri-Cities: What's Right for Your Business?",
+    meta_title: "Coworking vs Traditional Office Space Tri-Cities TN | Bristol CoWork | Vision LLC",
+    meta_description: "Comparing coworking memberships vs. traditional commercial leases in the Tri-Cities. Learn how Bristol CoWork at 620 State Street serves startups, remote teams, and growing businesses.",
+    category: "Business Insights",
+    tags: ["Coworking", "Bristol TN", "Office Space", "Tri-Cities", "Small Business"],
+    read_time: 5,
+    published_at: "2026-04-04T00:00:00.000Z",
+    author: "Vision LLC Team",
+    author_title: "Commercial Real Estate Experts — Tri-Cities, TN",
+    image_url: "",
+    image_alt: "",
+    excerpt: "For growing businesses in the Tri-Cities, the choice between a coworking membership and a traditional lease is more nuanced than ever. Here's how to decide.",
+    status: "published" as const,
+  },
+  {
+    slug: "historic-adaptive-reuse-downtown-bristol-tennessee",
+    title: "Historic Adaptive Reuse: How Vision LLC Is Transforming Downtown Bristol, TN",
+    meta_title: "Historic Adaptive Reuse Downtown Bristol TN | Vision LLC Development",
+    meta_description: "How Vision LLC is leading the historic adaptive reuse movement in Downtown Bristol, TN — converting century-old buildings into premium commercial real estate on the TN/VA state line.",
+    category: "Development",
+    tags: ["Historic Preservation", "Adaptive Reuse", "Bristol TN", "Development"],
+    read_time: 6,
+    published_at: "2026-04-07T00:00:00.000Z",
+    author: "Vision LLC Team",
+    author_title: "Commercial Real Estate Experts — Tri-Cities, TN",
+    image_url: "",
+    image_alt: "",
+    excerpt: "Vision LLC has spent over 20 years converting historic downtown Bristol buildings into premium commercial assets. Here's what the adaptive reuse movement means for the Tri-Cities.",
+    status: "published" as const,
+  },
+  {
+    slug: "top-industries-driving-commercial-real-estate-kingsport-johnson-city",
+    title: "Top Industries Driving Commercial Real Estate Demand in Kingsport & Johnson City, TN",
+    meta_title: "Industries Driving Commercial Real Estate Kingsport & Johnson City TN | Vision LLC",
+    meta_description: "Eastman Chemical, ETSU, Ballad Health, and defense contractors are fueling office and industrial demand across Kingsport and Johnson City, TN. Vision LLC breaks down the market.",
+    category: "Market Reports",
+    tags: ["Kingsport TN", "Johnson City TN", "Market Report", "Industrial", "Tri-Cities"],
+    read_time: 6,
+    published_at: "2026-04-10T00:00:00.000Z",
+    author: "Vision LLC Team",
+    author_title: "Commercial Real Estate Experts — Tri-Cities, TN",
+    image_url: "",
+    image_alt: "",
+    excerpt: "The Tri-Cities commercial real estate market is being shaped by five dominant industries. Understanding their footprint is essential for any business looking to locate or expand in Kingsport or Johnson City.",
+    status: "published" as const,
+  },
+  {
+    slug: "executive-business-consulting-northeast-tennessee-2025",
+    title: "Executive Business Consulting in Northeast Tennessee: What CEOs Need in 2025",
+    meta_title: "Executive Business Consulting Northeast Tennessee 2025 | Vision LLC Advisement",
+    meta_description: "Vision LLC's Executive Advisement division offers C-suite strategy, site selection, market entry consulting, and high-stakes deal negotiation for business leaders across the Tri-Cities and Southwest Virginia.",
+    category: "Executive Advisement",
+    tags: ["Executive Consulting", "Business Strategy", "Tri-Cities", "Tennessee"],
+    read_time: 7,
+    published_at: "2026-04-14T00:00:00.000Z",
+    author: "Vision LLC Team",
+    author_title: "Executive Advisement Division — Vision LLC",
+    image_url: "",
+    image_alt: "",
+    excerpt: "The Tri-Cities region is an underappreciated strategic market in 2025. Vision LLC's Executive Advisement division works with CEOs, investors, and developers who see what others miss.",
+    status: "published" as const,
+  },
+];
+
+// ─── Static Posts Import Banner ────────────────────────────────────────────────
+
+function StaticPostsImportBanner({
+  dbSlugs,
+  onImported,
+}: {
+  dbSlugs: Set<string>;
+  onImported: () => void;
+}) {
+  const unimported = STATIC_POSTS.filter(p => !dbSlugs.has(p.slug));
+  const [importing, setImporting] = useState(false);
+  const [done, setDone] = useState(false);
+  const [result, setResult] = useState<{ imported: string[]; skipped: string[]; errors: string[] } | null>(null);
+  const [error, setError] = useState("");
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed || unimported.length === 0) return null;
+
+  async function importAll() {
+    setImporting(true);
+    setError("");
+    try {
+      // Server-side endpoint reads blog-data.ts and seeds full content + all fields
+      const res = await fetch("/api/blog-import-static", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Import failed");
+      setResult(data);
+      setDone(true);
+      onImported();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Import failed");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  if (done && result) {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[rgba(74,222,128,0.07)] border border-[rgba(74,222,128,0.25)]">
+        <CheckCircle2 size={15} className="text-[#4ADE80] flex-shrink-0" />
+        <p className="text-xs text-[#4ADE80] font-bold">
+          {result.imported.length} article{result.imported.length !== 1 ? "s" : ""} imported with full content — they now appear in the editor and are fully editable.
+          {result.skipped.length > 0 && ` (${result.skipped.length} already existed)`}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-[rgba(250,204,21,0.25)] bg-[rgba(250,204,21,0.04)] p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-[rgba(250,204,21,0.1)] border border-[rgba(250,204,21,0.25)] flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Sparkles size={13} className="text-[#FACC15]" />
+          </div>
+          <div>
+            <p className="text-xs font-black text-[#FACC15] uppercase tracking-widest mb-1">
+              {unimported.length} article{unimported.length !== 1 ? "s" : ""} not yet editable
+            </p>
+            <p className="text-[11px] text-gray-400 leading-relaxed">
+              The following posts are hardwired in the site code and can&apos;t be edited here yet:
+            </p>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {unimported.map(p => (
+                <span key={p.slug} className="text-[10px] px-2 py-0.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-gray-500">
+                  {p.title.length > 40 ? p.title.slice(0, 40) + "…" : p.title}
+                </span>
+              ))}
+            </div>
+            <p className="text-[10px] text-gray-600 mt-2">
+              Click import to move them into the database — after that you can edit, update photos, and manage them exactly like any other post. The live site won&apos;t change appearance at all.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setDismissed(true)}
+          className="text-gray-700 hover:text-gray-400 transition-colors flex-shrink-0"
+        >
+          <X size={13} />
+        </button>
+      </div>
+      {error && (
+        <p className="text-[11px] text-red-400 mt-2 ml-11">{error}</p>
+      )}
+      <div className="flex items-center gap-2 mt-3 ml-11">
+        <button
+          onClick={importAll}
+          disabled={importing}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#FACC15] to-[#F59E0B] text-black text-xs font-black hover:opacity-90 transition-all disabled:opacity-50"
+        >
+          {importing ? <Loader2 size={12} className="animate-spin" /> : <DownloadCloud size={12} />}
+          {importing ? `Importing…` : `Import ${unimported.length} Article${unimported.length !== 1 ? "s" : ""} to Database`}
+        </button>
+        <button
+          onClick={() => setDismissed(true)}
+          className="text-[11px] text-gray-600 hover:text-gray-400 transition-colors"
+        >
+          Remind me later
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ─── Client-Side Image Compression ───────────────────────────────────────────
@@ -939,6 +1131,12 @@ export default function BlogEditor() {
           </div>
         </div>
       </div>
+
+      {/* Static posts import banner */}
+      <StaticPostsImportBanner
+        dbSlugs={new Set(posts.map(p => p.slug))}
+        onImported={fetchPosts}
+      />
 
       {/* Filter + Search */}
       <div className="flex flex-wrap gap-3 items-center">
