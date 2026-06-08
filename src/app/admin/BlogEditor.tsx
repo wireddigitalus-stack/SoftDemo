@@ -1,0 +1,1013 @@
+"use client";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import {
+  Plus, Pencil, Trash2, Globe, Eye, EyeOff, Save, X,
+  Loader2, RefreshCw, ImageIcon, ChevronDown, ChevronRight,
+  CheckCircle2, ArrowLeft, FileText, Tag, Clock, AlertCircle,
+  ExternalLink, Upload, Image as ImageLucide,
+} from "lucide-react";
+
+const CATEGORIES = [
+  "Market Insights", "Investment", "Coworking", "Office Space",
+  "Retail", "Industrial", "Development", "Executive Advisement", "Tri-Cities News",
+];
+
+interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  meta_title: string;
+  meta_description: string;
+  excerpt: string;
+  category: string;
+  tags: string[];
+  read_time: number;
+  content: string;
+  status: "draft" | "published";
+  published_at: string;
+  created_at: string;
+  author: string;
+  author_title: string;
+  image_url?: string;
+  image_alt?: string;
+}
+
+const EMPTY_POST: Omit<BlogPost, "id" | "created_at" | "published_at"> = {
+  slug: "",
+  title: "",
+  meta_title: "",
+  meta_description: "",
+  excerpt: "",
+  category: "Market Insights",
+  tags: [],
+  read_time: 5,
+  content: "",
+  status: "draft",
+  author: "Vision LLC",
+  author_title: "Commercial Real Estate",
+  image_url: "",
+  image_alt: "",
+};
+
+const FIELD = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2.5 text-sm text-white focus:border-[rgba(167,139,250,0.5)] outline-none placeholder:text-gray-600 transition-colors";
+const LABEL = "text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5";
+
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// ─── Client-Side Image Compression ───────────────────────────────────────────
+// Uses the browser's Canvas API — zero npm dependencies.
+// Target: 1200×675px WebP at 82% quality (~100–200 KB from an 8-12 MB phone photo)
+
+async function compressImage(file: File): Promise<{ blob: Blob; originalSize: number; compressedSize: number }> {
+  const originalSize = file.size;
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Failed to decode image"));
+      img.onload = () => {
+        const MAX_W = 1200;
+        const MAX_H = 675;
+
+        // Calculate dimensions preserving aspect ratio
+        let { width, height } = img;
+        const ratio = width / height;
+
+        if (width > MAX_W) { width = MAX_W; height = Math.round(MAX_W / ratio); }
+        if (height > MAX_H) { height = MAX_H; width = Math.round(MAX_H * ratio); }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { reject(new Error("Canvas not supported")); return; }
+
+        // Smooth high-quality downscaling
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Try WebP first (best compression), fall back to JPEG
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) { reject(new Error("Compression failed")); return; }
+            resolve({ blob, originalSize, compressedSize: blob.size });
+          },
+          "image/webp",
+          0.82
+        );
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ─── Image Upload Component ───────────────────────────────────────────────────
+
+interface UploadState {
+  phase: "idle" | "compressing" | "uploading" | "done" | "error";
+  progress: number;          // 0–100
+  originalSize: number;
+  compressedSize: number;
+  error: string;
+}
+
+function BlogImageUploader({
+  currentUrl,
+  currentAlt,
+  onUrlChange,
+  onAltChange,
+}: {
+  currentUrl: string;
+  currentAlt: string;
+  onUrlChange: (url: string) => void;
+  onAltChange: (alt: string) => void;
+}) {
+  const [upload, setUpload] = useState<UploadState>({
+    phase: "idle", progress: 0, originalSize: 0, compressedSize: 0, error: "",
+  });
+  const [dragging, setDragging] = useState(false);
+  const [showUrlField, setShowUrlField] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/") && !file.name.match(/\.(heic|heif)$/i)) {
+      setUpload(u => ({ ...u, phase: "error", error: "Please select an image file." }));
+      return;
+    }
+
+    try {
+      // Step 1: Compress
+      setUpload({ phase: "compressing", progress: 20, originalSize: file.size, compressedSize: 0, error: "" });
+      const { blob, originalSize, compressedSize } = await compressImage(file);
+
+      // Step 2: Upload
+      setUpload(u => ({ ...u, phase: "uploading", progress: 60, compressedSize }));
+
+      const form = new FormData();
+      const ext = blob.type === "image/webp" ? "webp" : "jpg";
+      const filename = `blog-${Date.now()}.${ext}`;
+      form.append("file", blob, filename);
+
+      const res = await fetch("/api/blog-images", { method: "POST", body: form });
+      const data = await res.json();
+
+      if (!res.ok || !data.url) throw new Error(data.error || "Upload failed");
+
+      // Step 3: Done
+      setUpload({ phase: "done", progress: 100, originalSize, compressedSize, error: "" });
+      onUrlChange(data.url);
+
+    } catch (e: unknown) {
+      setUpload(u => ({ ...u, phase: "error", progress: 0, error: e instanceof Error ? e.message : "Upload failed" }));
+    }
+  }, [onUrlChange]);
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+    e.target.value = "";
+  };
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  }, [handleFile]);
+
+  const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setDragging(true); };
+  const onDragLeave = () => setDragging(false);
+
+  const savings = upload.originalSize > 0
+    ? Math.round((1 - upload.compressedSize / upload.originalSize) * 100)
+    : 0;
+
+  const hasImage = !!currentUrl;
+
+  return (
+    <div className="space-y-3">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,.heic,.heif"
+        className="hidden"
+        onChange={onInputChange}
+        capture={undefined}
+      />
+
+      {/* Drop zone / upload area */}
+      <div
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        className={`relative rounded-2xl border-2 transition-all duration-200 overflow-hidden ${
+          dragging
+            ? "border-[#A78BFA] bg-[rgba(167,139,250,0.08)]"
+            : hasImage
+            ? "border-[rgba(167,139,250,0.2)] bg-[rgba(255,255,255,0.02)]"
+            : "border-dashed border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(167,139,250,0.3)] hover:bg-[rgba(167,139,250,0.04)]"
+        }`}
+      >
+        {/* Image preview */}
+        {hasImage && (
+          <div className="relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={currentUrl}
+              alt={currentAlt || "Featured image"}
+              className="w-full h-48 object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
+            />
+            {/* Overlay controls on hover */}
+            <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#A78BFA] text-white text-xs font-black hover:bg-[#9333ea] transition-colors"
+              >
+                <Upload size={12} /> Replace Image
+              </button>
+              <button
+                type="button"
+                onClick={() => { onUrlChange(""); setUpload(u => ({ ...u, phase: "idle" })); }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600/80 text-white text-xs font-black hover:bg-red-600 transition-colors"
+              >
+                <X size={12} /> Remove
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Upload state overlays */}
+        {(upload.phase === "compressing" || upload.phase === "uploading") && (
+          <div className="absolute inset-0 bg-[rgba(10,15,25,0.85)] backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-10">
+            <Loader2 size={24} className="animate-spin text-[#A78BFA]" />
+            <div className="text-center">
+              <p className="text-sm font-bold text-white">
+                {upload.phase === "compressing" ? "Compressing image…" : "Uploading…"}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {upload.phase === "compressing"
+                  ? `${formatBytes(upload.originalSize)} → optimising for web`
+                  : `${formatBytes(upload.compressedSize)} uploading`}
+              </p>
+            </div>
+            {/* Progress bar */}
+            <div className="w-48 h-1.5 rounded-full bg-[rgba(255,255,255,0.08)] overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] transition-all duration-300"
+                style={{ width: `${upload.progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!hasImage && upload.phase === "idle" && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full flex flex-col items-center justify-center gap-3 py-10 px-6 text-center"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-[rgba(167,139,250,0.1)] border border-[rgba(167,139,250,0.2)] flex items-center justify-center">
+              <ImageLucide size={20} className="text-[#A78BFA]" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-300">Upload a photo</p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                From your camera roll, or drag & drop here
+              </p>
+              <p className="text-[10px] text-gray-700 mt-2">
+                iPhone photos auto-compressed: 8 MB → ~120 KB before upload
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] text-white text-xs font-black shadow-lg shadow-[rgba(167,139,250,0.2)]">
+                <Upload size={12} /> Choose Photo
+              </span>
+            </div>
+          </button>
+        )}
+
+        {/* Error state */}
+        {upload.phase === "error" && !hasImage && (
+          <div className="flex flex-col items-center justify-center gap-3 py-10 px-6 text-center">
+            <div className="w-10 h-10 rounded-2xl bg-red-950/50 border border-red-900/50 flex items-center justify-center">
+              <AlertCircle size={18} className="text-red-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-red-300">Upload failed</p>
+              <p className="text-xs text-red-500 mt-0.5">{upload.error}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setUpload(u => ({ ...u, phase: "idle", error: "" })); fileInputRef.current?.click(); }}
+              className="px-4 py-2 rounded-xl border border-red-800/50 text-red-400 text-xs font-bold hover:bg-red-950/30 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Compression success stats */}
+      {upload.phase === "done" && upload.originalSize > 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.2)]">
+          <CheckCircle2 size={13} className="text-[#4ADE80] flex-shrink-0" />
+          <p className="text-[11px] text-[#4ADE80]">
+            Compressed & uploaded — {formatBytes(upload.originalSize)} → {formatBytes(upload.compressedSize)}{" "}
+            <span className="font-black">({savings}% smaller)</span>
+          </p>
+        </div>
+      )}
+
+      {/* Alt text + URL fallback */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className={LABEL}>Image Alt Text <span className="text-gray-700 font-normal normal-case">(for SEO)</span></label>
+          <input
+            value={currentAlt}
+            onChange={e => onAltChange(e.target.value)}
+            className={FIELD}
+            placeholder="e.g. Downtown Bristol Tennessee State Street"
+          />
+        </div>
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className={LABEL} style={{ marginBottom: 0 }}>Or paste a URL</label>
+            <button
+              type="button"
+              onClick={() => setShowUrlField(p => !p)}
+              className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
+            >
+              {showUrlField ? "Hide" : "Show"}
+            </button>
+          </div>
+          {showUrlField && (
+            <input
+              value={currentUrl}
+              onChange={e => { onUrlChange(e.target.value); setUpload(u => ({ ...u, phase: "idle" })); }}
+              className={FIELD}
+              placeholder="https://example.com/image.jpg"
+            />
+          )}
+          {!showUrlField && (
+            <p className="text-[10px] text-gray-700 pt-2">
+              Alternatively, paste a public image URL from any source.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Post List Card ───────────────────────────────────────────────────────────
+
+function PostCard({
+  post,
+  onEdit,
+  onTogglePublish,
+  onDelete,
+}: {
+  post: BlogPost;
+  onEdit: (post: BlogPost) => void;
+  onTogglePublish: (post: BlogPost) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [deleting, setDeleting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+
+  async function handleDelete() {
+    if (!confirming) { setConfirming(true); return; }
+    setDeleting(true);
+    await onDelete(post.id);
+    setDeleting(false);
+    setConfirming(false);
+  }
+
+  return (
+    <div className="flex items-start gap-3 px-4 py-4 rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(167,139,250,0.2)] transition-all">
+      {/* Thumbnail */}
+      <div className="w-16 h-14 flex-shrink-0 rounded-xl overflow-hidden border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.04)] flex items-center justify-center">
+        {post.image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={post.image_url} alt={post.image_alt || post.title} className="w-full h-full object-cover" />
+        ) : (
+          <FileText size={18} className="text-gray-700" />
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-white truncate leading-snug">{post.title || "(Untitled)"}</p>
+            <div className="flex flex-wrap gap-2 mt-1 text-[10px] text-gray-600">
+              <span>{post.category}</span>
+              <span>·</span>
+              <span className="flex items-center gap-1"><Clock size={9} />{post.read_time} min</span>
+              <span>·</span>
+              <span>{new Date(post.published_at || post.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+            </div>
+          </div>
+          <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border flex-shrink-0 ${
+            post.status === "published"
+              ? "text-[#4ADE80] border-[rgba(74,222,128,0.4)] bg-[rgba(74,222,128,0.08)]"
+              : "text-gray-500 border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)]"
+          }`}>
+            {post.status === "published" ? "LIVE" : "DRAFT"}
+          </span>
+        </div>
+
+        {post.excerpt && (
+          <p className="text-[11px] text-gray-600 mt-1 line-clamp-2 leading-relaxed">{post.excerpt}</p>
+        )}
+
+        <div className="flex items-center gap-2 mt-3 flex-wrap">
+          <button
+            onClick={() => onEdit(post)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-[rgba(167,139,250,0.3)] text-[#A78BFA] hover:bg-[rgba(167,139,250,0.1)] transition-all"
+          >
+            <Pencil size={10} /> Edit Post
+          </button>
+
+          <button
+            onClick={() => onTogglePublish(post)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
+              post.status === "published"
+                ? "border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-yellow-400 hover:border-yellow-500/30"
+                : "border-[rgba(74,222,128,0.3)] text-[#4ADE80] hover:bg-[rgba(74,222,128,0.1)]"
+            }`}
+          >
+            {post.status === "published" ? <><EyeOff size={10} /> Unpublish</> : <><Globe size={10} /> Publish</>}
+          </button>
+
+          {post.status === "published" && (
+            <a
+              href={`/blog/${post.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-white transition-all"
+            >
+              <ExternalLink size={10} /> View Live
+            </a>
+          )}
+
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className={`ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
+              confirming
+                ? "border-red-500/40 text-red-400 bg-red-950/30"
+                : "border-[rgba(255,255,255,0.06)] text-gray-700 hover:text-red-400 hover:border-red-500/30"
+            }`}
+          >
+            {deleting ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={10} />}
+            {confirming ? "Confirm Delete" : "Delete"}
+          </button>
+
+          {confirming && !deleting && (
+            <button onClick={() => setConfirming(false)} className="text-[11px] text-gray-600 hover:text-gray-400 transition-colors">
+              Cancel
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Post Editor Form ──────────────────────────────────────────────────────────
+
+function PostEditor({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial: BlogPost | null;
+  onSave: (data: Partial<BlogPost> & { slug: string; status: "draft" | "published" }) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const isNew = !initial;
+  const [form, setForm] = useState<typeof EMPTY_POST & { slug: string }>(() => {
+    if (initial) {
+      return {
+        slug: initial.slug,
+        title: initial.title,
+        meta_title: initial.meta_title || "",
+        meta_description: initial.meta_description || "",
+        excerpt: initial.excerpt || "",
+        category: initial.category || "Market Insights",
+        tags: initial.tags || [],
+        read_time: initial.read_time || 5,
+        content: initial.content || "",
+        status: initial.status,
+        author: initial.author || "Vision LLC",
+        author_title: initial.author_title || "Commercial Real Estate",
+        image_url: initial.image_url || "",
+        image_alt: initial.image_alt || "",
+      };
+    }
+    return { ...EMPTY_POST, slug: "" };
+  });
+
+  const [tagInput, setTagInput] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [slugManual, setSlugManual] = useState(!!initial);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [previewContent, setPreviewContent] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { titleRef.current?.focus(); }, []);
+
+  useEffect(() => {
+    if (!slugManual && form.title) {
+      setForm(f => ({ ...f, slug: slugify(f.title) }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.title, slugManual]);
+
+  function addTag() {
+    const t = tagInput.trim();
+    if (!t || form.tags.includes(t)) { setTagInput(""); return; }
+    setForm(f => ({ ...f, tags: [...f.tags, t] }));
+    setTagInput("");
+  }
+
+  function removeTag(tag: string) {
+    setForm(f => ({ ...f, tags: f.tags.filter(t => t !== tag) }));
+  }
+
+  async function handleSave(status: "draft" | "published") {
+    if (!form.title.trim()) { setError("Title is required."); return; }
+    if (!form.slug.trim()) { setError("Slug is required."); return; }
+    if (!form.content.trim()) { setError("Content is required."); return; }
+    setSaving(true); setError("");
+    try {
+      await onSave({ ...form, status });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2500);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Save failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="space-y-5 animate-in fade-in slide-in-from-top-2 duration-200">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <button onClick={onCancel} className="p-2 rounded-xl border border-[rgba(255,255,255,0.08)] text-gray-500 hover:text-white hover:border-[rgba(255,255,255,0.2)] transition-all">
+            <ArrowLeft size={14} />
+          </button>
+          <div>
+            <p className="text-xs font-black text-[#A78BFA] uppercase tracking-widest">
+              {isNew ? "New Blog Post" : "Edit Post"}
+            </p>
+            {!isNew && <p className="text-[11px] text-gray-600 mt-0.5">/blog/{initial!.slug}</p>}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleSave("draft")}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[rgba(255,255,255,0.1)] text-gray-400 text-xs font-bold hover:text-white transition-all disabled:opacity-40"
+          >
+            {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+            Save Draft
+          </button>
+          <button
+            onClick={() => handleSave("published")}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] text-white text-xs font-black hover:opacity-90 transition-all disabled:opacity-40 shadow-lg shadow-[rgba(167,139,250,0.2)]"
+          >
+            {saving ? <Loader2 size={12} className="animate-spin" /> : success ? <CheckCircle2 size={12} /> : <Globe size={12} />}
+            {success ? "Saved!" : "Publish Live"}
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-950/30 border border-red-900/40 text-xs text-red-300">
+          <AlertCircle size={13} className="flex-shrink-0" /> {error}
+        </div>
+      )}
+
+      {/* Core fields */}
+      <div className="rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] p-5 space-y-4">
+        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Article Details</p>
+
+        <div>
+          <label className={LABEL}>Article Title *</label>
+          <input
+            ref={titleRef}
+            value={form.title}
+            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+            className={FIELD}
+            placeholder="e.g. Why Downtown Bristol is the Best Place to Open a Business in 2026"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className={LABEL} style={{ marginBottom: 0 }}>URL Slug *</label>
+            {!slugManual && (
+              <button onClick={() => setSlugManual(true)} className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors">
+                Edit manually
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-700 flex-shrink-0">/blog/</span>
+            <input
+              value={form.slug}
+              onChange={e => { setSlugManual(true); setForm(f => ({ ...f, slug: slugify(e.target.value) })); }}
+              className={`${FIELD} font-mono text-xs`}
+              placeholder="article-url-slug"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={LABEL}>Category</label>
+            <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className={FIELD} style={{ colorScheme: "dark" }}>
+              {CATEGORIES.map(c => <option key={c} value={c} className="bg-[#080C14]">{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={LABEL}>Read Time (minutes)</label>
+            <input
+              type="number" min={1} max={60}
+              value={form.read_time}
+              onChange={e => setForm(f => ({ ...f, read_time: Number(e.target.value) }))}
+              className={FIELD}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className={LABEL}>Excerpt / Summary</label>
+          <textarea
+            value={form.excerpt}
+            onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
+            rows={3}
+            className={`${FIELD} resize-none`}
+            placeholder="A 1–2 sentence summary shown in blog listing cards and search results..."
+          />
+        </div>
+
+        <div>
+          <label className={LABEL}>Tags</label>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {form.tags.map(tag => (
+              <span key={tag} className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg bg-[rgba(167,139,250,0.08)] border border-[rgba(167,139,250,0.2)] text-[#A78BFA]">
+                <Tag size={9} /> {tag}
+                <button onClick={() => removeTag(tag)} className="ml-1 text-gray-600 hover:text-red-400 transition-colors"><X size={9} /></button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={tagInput}
+              onChange={e => setTagInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
+              className={`${FIELD} flex-1`}
+              placeholder="Add a tag and press Enter..."
+            />
+            <button onClick={addTag} className="px-3 py-2 rounded-xl border border-[rgba(167,139,250,0.3)] text-[#A78BFA] text-xs font-bold hover:bg-[rgba(167,139,250,0.1)] transition-all">
+              Add
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Image — full upload component */}
+      <div className="rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] p-5 space-y-3">
+        <div className="flex items-center gap-2.5">
+          <ImageIcon size={14} className="text-[#A78BFA]" />
+          <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Featured Image</p>
+          <span className="text-[9px] px-2 py-0.5 rounded-full bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] text-[#4ADE80] font-bold">
+            Auto-compressed
+          </span>
+        </div>
+        <BlogImageUploader
+          currentUrl={form.image_url || ""}
+          currentAlt={form.image_alt || ""}
+          onUrlChange={url => setForm(f => ({ ...f, image_url: url }))}
+          onAltChange={alt => setForm(f => ({ ...f, image_alt: alt }))}
+        />
+      </div>
+
+      {/* Article Body */}
+      <div className="rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Article Body *</p>
+          <button
+            onClick={() => setPreviewContent(p => !p)}
+            className="flex items-center gap-1.5 text-[11px] text-gray-600 hover:text-gray-300 transition-colors"
+          >
+            {previewContent ? <><EyeOff size={10} /> Edit</> : <><Eye size={10} /> Preview</>}
+          </button>
+        </div>
+        <p className="text-[10px] text-gray-700">
+          Paste your article here — plain text or HTML. Paragraphs from Word or Google Docs work fine.
+        </p>
+
+        {previewContent ? (
+          <div
+            className="rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.01)] p-4 max-h-[500px] overflow-y-auto prose prose-invert prose-sm max-w-none text-gray-300 text-sm leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: form.content }}
+          />
+        ) : (
+          <textarea
+            value={form.content}
+            onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+            rows={20}
+            className={`${FIELD} resize-y font-mono text-xs leading-relaxed min-h-[300px]`}
+            placeholder={`Paste your article content here. Plain text or HTML both work.\n\nFor HTML:\n<h2>Section Heading</h2>\n<p>Paragraph text...</p>\n<ul><li>List item</li></ul>`}
+            spellCheck={true}
+          />
+        )}
+      </div>
+
+      {/* SEO & Author (collapsible) */}
+      <div className="rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] overflow-hidden">
+        <button
+          onClick={() => setShowAdvanced(p => !p)}
+          className="w-full flex items-center justify-between p-4 hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">SEO & Author Settings</p>
+            <span className="text-[9px] px-2 py-0.5 rounded-full bg-[rgba(167,139,250,0.08)] border border-[rgba(167,139,250,0.2)] text-[#A78BFA] font-bold">Optional</span>
+          </div>
+          {showAdvanced ? <ChevronDown size={14} className="text-gray-600" /> : <ChevronRight size={14} className="text-gray-600" />}
+        </button>
+
+        {showAdvanced && (
+          <div className="border-t border-[rgba(255,255,255,0.05)] p-5 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={LABEL}>Author Name</label>
+                <input value={form.author} onChange={e => setForm(f => ({ ...f, author: e.target.value }))} className={FIELD} placeholder="Vision LLC" />
+              </div>
+              <div>
+                <label className={LABEL}>Author Title</label>
+                <input value={form.author_title} onChange={e => setForm(f => ({ ...f, author_title: e.target.value }))} className={FIELD} placeholder="Commercial Real Estate" />
+              </div>
+            </div>
+            <div>
+              <label className={LABEL}>SEO Meta Title <span className="text-gray-700 font-normal normal-case">(leave blank to use article title)</span></label>
+              <input
+                value={form.meta_title}
+                onChange={e => setForm(f => ({ ...f, meta_title: e.target.value }))}
+                className={FIELD}
+                placeholder="Search result title (50–60 chars)"
+              />
+              <p className={`text-[10px] mt-1 ${form.meta_title.length > 60 ? "text-yellow-400" : "text-gray-700"}`}>
+                {form.meta_title.length}/60 characters
+              </p>
+            </div>
+            <div>
+              <label className={LABEL}>SEO Meta Description</label>
+              <textarea
+                value={form.meta_description}
+                onChange={e => setForm(f => ({ ...f, meta_description: e.target.value }))}
+                rows={3}
+                className={`${FIELD} resize-none`}
+                placeholder="Description shown in Google search results (150–160 chars)"
+              />
+              <p className={`text-[10px] mt-1 ${form.meta_description.length > 160 ? "text-yellow-400" : "text-gray-700"}`}>
+                {form.meta_description.length}/160 characters
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom actions */}
+      <div className="flex items-center justify-between pt-2 pb-6">
+        <button onClick={onCancel} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+          ← Back to all posts
+        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleSave("draft")}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-gray-400 text-sm font-bold hover:text-white transition-all disabled:opacity-40"
+          >
+            {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+            Save as Draft
+          </button>
+          <button
+            onClick={() => handleSave("published")}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] text-white text-sm font-black hover:opacity-90 transition-all disabled:opacity-40 shadow-lg shadow-[rgba(167,139,250,0.25)]"
+          >
+            {saving ? <Loader2 size={13} className="animate-spin" /> : success ? <CheckCircle2 size={13} /> : <Globe size={13} />}
+            {success ? "Saved!" : "Publish to Live Site"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main BlogEditor Component ────────────────────────────────────────────────
+
+export default function BlogEditor() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<BlogPost | null | "new">(null);
+  const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
+  const [search, setSearch] = useState("");
+  const [toggling, setToggling] = useState<string | null>(null);
+
+  async function fetchPosts() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/blog-posts?all=1");
+      const d = await res.json();
+      if (Array.isArray(d.posts)) setPosts(d.posts);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { fetchPosts(); }, []);
+
+  async function handleTogglePublish(post: BlogPost) {
+    const newStatus = post.status === "published" ? "draft" : "published";
+    setToggling(post.id);
+    await fetch(`/api/blog-posts?id=${post.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: newStatus } : p));
+    setToggling(null);
+  }
+
+  async function handleDelete(id: string) {
+    await fetch(`/api/blog-posts?id=${id}`, { method: "DELETE" });
+    setPosts(prev => prev.filter(p => p.id !== id));
+  }
+
+  async function handleSave(data: Partial<BlogPost> & { slug: string; status: "draft" | "published" }) {
+    if (typeof editing === "string") {
+      // New post
+      const res = await fetch("/api/blog-posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, published_at: new Date().toISOString() }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "Save failed");
+      await fetchPosts();
+      setEditing(null);
+    } else if (editing !== null) {
+      // Update existing
+      const res = await fetch(`/api/blog-posts?id=${editing.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Update failed");
+      await fetchPosts();
+    }
+  }
+
+  const filtered = posts
+    .filter(p => filter === "all" || p.status === filter)
+    .filter(p => !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()));
+
+  const live = posts.filter(p => p.status === "published").length;
+  const drafts = posts.filter(p => p.status === "draft").length;
+
+  if (editing !== null) {
+    return (
+      <PostEditor
+        initial={typeof editing === "string" ? null : editing}
+        onSave={handleSave}
+        onCancel={() => setEditing(null)}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="rounded-2xl border border-[rgba(167,139,250,0.2)] bg-[rgba(167,139,250,0.03)] p-5">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] flex items-center justify-center shadow-lg shadow-[rgba(167,139,250,0.2)]">
+              <FileText size={15} className="text-white" />
+            </div>
+            <div>
+              <p className="text-xs font-black text-[#A78BFA] uppercase tracking-widest">Blog Manager</p>
+              <p className="text-[11px] text-gray-600">{live} live · {drafts} drafts · {posts.length} total</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button onClick={fetchPosts} className="p-2 rounded-xl border border-[rgba(255,255,255,0.08)] text-gray-600 hover:text-white transition-colors">
+              <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+            </button>
+            <button
+              onClick={() => setEditing("new")}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] text-white text-xs font-black hover:opacity-90 transition-all shadow-lg shadow-[rgba(167,139,250,0.2)]"
+            >
+              <Plus size={13} /> New Blog Post
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter + Search */}
+      <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1 border border-[rgba(255,255,255,0.06)]">
+          {(["all", "published", "draft"] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all capitalize ${
+                filter === f
+                  ? "bg-[rgba(167,139,250,0.15)] text-[#A78BFA] border border-[rgba(167,139,250,0.3)]"
+                  : "text-gray-600 hover:text-gray-400"
+              }`}
+            >
+              {f === "all" ? `All (${posts.length})` : f === "published" ? `Live (${live})` : `Drafts (${drafts})`}
+            </button>
+          ))}
+        </div>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search posts..."
+          className="flex-1 min-w-[180px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2 text-xs text-white focus:border-[rgba(167,139,250,0.4)] outline-none placeholder:text-gray-700 transition-colors"
+        />
+      </div>
+
+      {/* Post list */}
+      {loading ? (
+        <div className="flex items-center justify-center py-16 gap-3 text-gray-600">
+          <Loader2 size={18} className="animate-spin text-[#A78BFA]" />
+          <span className="text-sm">Loading posts…</span>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-4 rounded-2xl border-2 border-dashed border-[rgba(255,255,255,0.06)]">
+          <FileText size={32} className="text-gray-700" />
+          <div className="text-center">
+            <p className="text-sm font-bold text-gray-600">{posts.length === 0 ? "No blog posts yet" : "No posts match your filter"}</p>
+            <p className="text-xs text-gray-700 mt-1">
+              {posts.length === 0 ? "Click \"New Blog Post\" to write your first article." : "Try changing the filter or search."}
+            </p>
+          </div>
+          {posts.length === 0 && (
+            <button
+              onClick={() => setEditing("new")}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] text-white text-sm font-black hover:opacity-90 transition-all"
+            >
+              <Plus size={14} /> Write First Post
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(post => (
+            <PostCard
+              key={post.id}
+              post={post}
+              onEdit={p => setEditing(p)}
+              onTogglePublish={toggling ? () => {} : handleTogglePublish}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="text-center pb-4">
+        <p className="text-xs text-gray-700">
+          {filtered.length} post{filtered.length !== 1 ? "s" : ""} shown · Live posts update within 60 seconds
+        </p>
+      </div>
+    </div>
+  );
+}

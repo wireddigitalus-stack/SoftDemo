@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Loader2, Sparkles, Copy, Download, CheckCircle2, Trash2, FileText, Clock, ChevronDown, BookOpen, Instagram, Radar } from "lucide-react";
 import BlogGenerator from "./BlogGenerator";
+import BlogEditor from "./BlogEditor";
 import PropertyOneSheet from "./PropertyOneSheet";
 import SocialStudio from "./SocialStudio";
 import MarketIntel from "./MarketIntel";
@@ -45,6 +46,45 @@ function loadQueue(): PressRelease[] {
 
 function saveQueue(q: PressRelease[]) {
   localStorage.setItem("vision_press_releases", JSON.stringify(q));
+}
+
+// ─── Blog Section (Editor + AI Generator tabs) ────────────────────────────────
+
+function BlogSection() {
+  const [blogView, setBlogView] = useState<"editor" | "generator">("editor");
+
+  return (
+    <div className="space-y-4">
+      {/* Inner tab toggle */}
+      <div className="flex gap-1 bg-[rgba(255,255,255,0.03)] rounded-xl p-1 border border-[rgba(255,255,255,0.06)]">
+        <button
+          onClick={() => setBlogView("editor")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all ${
+            blogView === "editor"
+              ? "bg-[rgba(167,139,250,0.15)] text-[#A78BFA] border border-[rgba(167,139,250,0.3)]"
+              : "text-gray-600 hover:text-gray-400"
+          }`}
+        >
+          <BookOpen size={13} />
+          Manage & Edit Posts
+        </button>
+        <button
+          onClick={() => setBlogView("generator")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold transition-all ${
+            blogView === "generator"
+              ? "bg-[rgba(167,139,250,0.15)] text-[#A78BFA] border border-[rgba(167,139,250,0.3)]"
+              : "text-gray-600 hover:text-gray-400"
+          }`}
+        >
+          <Sparkles size={13} />
+          AI Generator
+        </button>
+      </div>
+
+      {blogView === "editor" && <BlogEditor />}
+      {blogView === "generator" && <BlogGenerator />}
+    </div>
+  );
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -238,7 +278,7 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
       </div>
 
       {/* ── Blog Articles ── */}
-      {subTab === "blog" && <BlogGenerator />}
+      {subTab === "blog" && <BlogSection />}
 
       {/* Homepage Banner → moved to Content tab (HeroBannerManager) */}
 
