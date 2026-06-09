@@ -90,7 +90,7 @@ function AddSpaceModal({ properties, onAdd, onClose }: {
   };
 
   const F = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg text-xs text-white px-3 py-2.5 outline-none focus:border-[rgba(167,139,250,0.5)] transition-colors";
-  const L = "text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1";
+  const L = "text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1";
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
@@ -194,11 +194,11 @@ function Pill({ icon: I, label, value, color }: { icon: React.ElementType; label
   return (
     <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 border" style={{ background: `${color}08`, borderColor: `${color}20` }}>
       <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: `${color}18` }}>
-        <I size={11} style={{ color }} />
+        <I size={13} style={{ color }} />
       </div>
       <div className="min-w-0">
-        <p className="text-[10px] text-gray-600 leading-none mb-0.5">{label}</p>
-        <p className="text-xs font-bold text-white truncate">{value}</p>
+        <p className="text-xs text-gray-400 font-semibold leading-none mb-1">{label}</p>
+        <p className="text-sm font-black text-white truncate">{value}</p>
       </div>
     </div>
   );
@@ -207,9 +207,9 @@ function Pill({ icon: I, label, value, color }: { icon: React.ElementType; label
 function Field({ label, value, onChange, prefix = "$" }: { label: string; value: string; onChange: (v: string) => void; prefix?: string }) {
   return (
     <div>
-      <label className="text-[10px] text-gray-600 block mb-1">{label}</label>
+      <label className="text-xs text-gray-400 font-semibold block mb-1">{label}</label>
       <div className="flex items-center rounded-lg border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] overflow-hidden">
-        {prefix && <span className="text-xs text-gray-600 pl-2.5">{prefix}</span>}
+        {prefix && <span className="text-xs text-gray-400 pl-2.5">{prefix}</span>}
         <input
           type="number" min={0} value={value}
           onChange={e => onChange(e.target.value)}
@@ -233,11 +233,11 @@ function TrendSelector({ value, onChange }: { value: Trend; onChange: (v: Trend)
     <div className="flex gap-1.5">
       {TRENDS.map(({ value: v, label, icon: Icon, color }) => (
         <button key={v} onClick={() => onChange(v)}
-          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all"
+          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-bold border transition-all"
           style={value === v
             ? { background: `${color}18`, color, borderColor: `${color}40` }
-            : { background: "transparent", color: "#6b7280", borderColor: "rgba(255,255,255,0.08)" }}>
-          <Icon size={10} />{label}
+            : { background: "transparent", color: "#94A3B8", borderColor: "rgba(255,255,255,0.08)" }}>
+          <Icon size={12} />{label}
         </button>
       ))}
     </div>
@@ -491,19 +491,19 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
               <h3 className="text-sm font-black text-white leading-tight truncate">{displayName}</h3>
             )}
             <button onClick={(e) => { e.stopPropagation(); setEditingName(ed => !ed); }} title="Rename property"
-              className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-gray-600 hover:text-[#A78BFA] hover:bg-[rgba(167,139,250,0.1)] transition-all">
-              <Pencil size={10} />
+              className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-gray-400 hover:text-[#A78BFA] hover:bg-[rgba(167,139,250,0.1)] transition-all">
+              <Pencil size={11} />
             </button>
-            <span className="flex-shrink-0 flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+            <span className="flex-shrink-0 flex items-center gap-0.5 text-xs font-bold px-2 py-0.5 rounded-full"
               style={{ background: `${trendItem.color}15`, color: trendItem.color, border: `1px solid ${trendItem.color}30` }}>
-              <TrendIcon size={9} />{trendItem.label}
+              <TrendIcon size={11} />{trendItem.label}
             </span>
           </div>
           {form.displayName && form.displayName !== property.name && (
-            <p className="text-[9px] text-gray-700 mt-0.5 truncate italic">System: {property.name}</p>
+            <p className="text-xs text-gray-400 mt-1 truncate italic">System: {property.name}</p>
           )}
-          <p className="text-[11px] text-gray-500 mt-0.5 truncate">{property.city} · {property.type}</p>
-          <span className="mt-1.5 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
+          <p className="text-xs text-gray-400 mt-1 truncate">{property.city} · {property.type}</p>
+          <span className="mt-1.5 inline-block text-xs font-bold px-2.5 py-0.5 rounded-full"
             style={{ background: `${occColor}18`, color: occColor, border: `1px solid ${occColor}30` }}>
             {rented}/{totalUnits} units · {occupancy}% occupied
           </span>
@@ -511,7 +511,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
         <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:gap-1.5 flex-shrink-0 w-full sm:w-auto">
           {revenue > 0 && (
             <div className="text-right">
-              <p className="text-[10px] text-gray-600 mb-0.5">Revenue</p>
+              <p className="text-xs text-gray-400 font-semibold mb-1">Revenue</p>
               <p className="text-base font-black text-[#4ADE80]">${revenue.toLocaleString()}/mo</p>
             </div>
           )}
@@ -529,8 +529,8 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
           {property.isDynamic && onDelete && (
             <div className="px-4 pb-1 flex justify-end">
               <button onClick={() => { if (confirm(`Delete "${displayName}"? This cannot be undone.`)) onDelete(property.id); }}
-                className="flex items-center gap-1 text-[9px] text-red-500/50 hover:text-red-400 transition-colors" title="Delete property">
-                <Trash2 size={9} /> Remove
+                className="flex items-center gap-1 text-xs text-red-400/70 hover:text-red-400 transition-colors" title="Delete property">
+                <Trash2 size={11} /> Remove
               </button>
             </div>
           )}
@@ -561,7 +561,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
           {/* Tenant mini-list */}
           {propTenants.length > 0 && (
             <div className="border-t border-[rgba(255,255,255,0.04)] px-4 pb-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mt-3 mb-2">Tenants</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-3 mb-2">Tenants</p>
               <div className="space-y-1.5">
                 {propTenants.map(t => {
                   const d = daysUntil(t.leaseEnd || t.renewalDate);
@@ -570,18 +570,18 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
                   return (
                     <div key={t.id} className="flex items-center gap-3 rounded-lg px-3 py-2 border"
                       style={{ background: isExp ? "rgba(239,68,68,0.04)" : isSoon ? "rgba(250,204,21,0.04)" : "rgba(255,255,255,0.02)", borderColor: isExp ? "rgba(239,68,68,0.15)" : isSoon ? "rgba(250,204,21,0.15)" : "rgba(255,255,255,0.05)" }}>
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0"
                         style={{ background: "rgba(96,165,250,0.12)", color: "#60A5FA" }}>
                         {t.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-white truncate">{t.name}</p>
-                        <p className="text-[10px] text-gray-600 truncate">{t.unit ? `Unit ${t.unit} · ` : ""}{t.monthlyRent ? `$${t.monthlyRent.toLocaleString()}/mo` : ""}</p>
+                        <p className="text-xs text-gray-400 truncate">{t.unit ? `Unit ${t.unit} · ` : ""}{t.monthlyRent ? `$${t.monthlyRent.toLocaleString()}/mo` : ""}</p>
                       </div>
                       <div className="flex-shrink-0 text-right">
-                        {isExp  ? <span className="text-[10px] font-bold text-red-400">Expired</span>
-                        : isSoon ? <span className="text-[10px] font-bold text-yellow-400">{d}d left</span>
-                        : d !== null ? <span className="text-[10px] text-gray-600">{d}d</span>
+                        {isExp  ? <span className="text-xs font-bold text-red-400">Expired</span>
+                        : isSoon ? <span className="text-xs font-bold text-yellow-400">{d}d left</span>
+                        : d !== null ? <span className="text-xs text-gray-400">{d}d</span>
                         : <CheckCircle2 size={12} className="text-green-500" />}
                       </div>
                     </div>
@@ -616,11 +616,11 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
                   <Field label="Other / mo"         value={form.otherMonthly}     onChange={set("otherMonthly")} />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-600 block mb-1">Vacancy Trend</label>
+                  <label className="text-xs text-gray-400 font-semibold block mb-1">Vacancy Trend</label>
                   <TrendSelector value={form.trend} onChange={v => setForm(f => ({ ...f, trend: v }))} />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-600 block mb-1">Notes</label>
+                  <label className="text-xs text-gray-400 font-semibold block mb-1">Notes</label>
                   <textarea rows={2} value={form.notes} onChange={e => set("notes")(e.target.value)}
                     className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-lg text-xs text-white px-3 py-2 outline-none resize-none"
                     placeholder="Any notes about this property…" />
@@ -629,13 +629,13 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
                 {/* Expense summary */}
                 {expenses > 0 && (
                   <div className="rounded-xl p-3 border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-xs space-y-1">
-                    {taxMo > 0          && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Receipt size={10}/> Taxes</span><span>{fmt(taxMo)}/mo</span></div>}
-                    {insMo > 0          && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><ShieldCheck size={10}/> Insurance</span><span>{fmt(insMo)}/mo</span></div>}
-                    {n(form.electricMonthly) > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Zap size={10}/> Electric</span><span>{fmt(n(form.electricMonthly))}/mo</span></div>}
-                    {n(form.waterMonthly)    > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><Droplets size={10}/> Water</span><span>{fmt(n(form.waterMonthly))}/mo</span></div>}
-                    {n(form.otherMonthly)    > 0 && <div className="flex justify-between text-gray-500"><span className="flex items-center gap-1"><MoreHorizontal size={10}/> Other</span><span>{fmt(n(form.otherMonthly))}/mo</span></div>}
+                    {taxMo > 0          && <div className="flex justify-between text-gray-300"><span className="flex items-center gap-1"><Receipt size={12}/> Taxes</span><span>{fmt(taxMo)}/mo</span></div>}
+                    {insMo > 0          && <div className="flex justify-between text-gray-300"><span className="flex items-center gap-1"><ShieldCheck size={12}/> Insurance</span><span>{fmt(insMo)}/mo</span></div>}
+                    {n(form.electricMonthly) > 0 && <div className="flex justify-between text-gray-300"><span className="flex items-center gap-1"><Zap size={12}/> Electric</span><span>{fmt(n(form.electricMonthly))}/mo</span></div>}
+                    {n(form.waterMonthly)    > 0 && <div className="flex justify-between text-gray-300"><span className="flex items-center gap-1"><Droplets size={12}/> Water</span><span>{fmt(n(form.waterMonthly))}/mo</span></div>}
+                    {n(form.otherMonthly)    > 0 && <div className="flex justify-between text-gray-300"><span className="flex items-center gap-1"><MoreHorizontal size={12}/> Other</span><span>{fmt(n(form.otherMonthly))}/mo</span></div>}
                     <div className="border-t border-[rgba(255,255,255,0.06)] pt-1 mt-1 flex justify-between font-bold">
-                      <span className="text-gray-400">Total Expenses</span><span className="text-orange-400">{fmt(expenses)}/mo</span>
+                      <span className="text-gray-300">Total Expenses</span><span className="text-orange-400">{fmt(expenses)}/mo</span>
                     </div>
                     <div className="flex justify-between font-black">
                       <span className="text-gray-300">Net P&amp;L</span>
@@ -914,11 +914,11 @@ export default function PropDetailsTab() {
         ].map(({ icon: Icon, label, value, color }) => (
           <div key={label} className="glass rounded-xl p-4 border border-[rgba(255,255,255,0.06)] flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${color}15`, border: `1px solid ${color}25` }}>
-              <Icon size={15} style={{ color }} />
+              <Icon size={16} style={{ color }} />
             </div>
             <div>
-              <p className="text-[10px] text-gray-600">{label}</p>
-              <p className="text-sm font-black text-white">{value}</p>
+              <p className="text-xs text-gray-400 font-semibold">{label}</p>
+              <p className="text-base font-black text-white">{value}</p>
             </div>
           </div>
         ))}
@@ -1001,16 +1001,16 @@ export default function PropDetailsTab() {
           </div>
 
           {availableSpaces.length === 0 ? (
-            <div className="text-center py-8 text-gray-700 text-xs flex flex-col items-center gap-2">
+            <div className="text-center py-8 text-gray-400 text-xs flex flex-col items-center gap-2">
               <Building2 size={20} className="opacity-30" />
               <p>No unleased spaces registered.</p>
-              <p className="text-[10px] text-gray-600">All spaces are either occupied or not tracked here yet.</p>
+              <p className="text-xs text-gray-500">All spaces are either occupied or not tracked here yet.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[rgba(255,255,255,0.06)] text-gray-500 font-bold uppercase tracking-wider text-[10px]">
+                  <tr className="border-b border-[rgba(255,255,255,0.06)] text-gray-400 font-semibold uppercase tracking-wider text-xs">
                     <th className="py-2.5 px-3">Space / Unit</th>
                     <th className="py-2.5 px-3">Property</th>
                     <th className="py-2.5 px-3">Potential Rent</th>
@@ -1023,10 +1023,10 @@ export default function PropDetailsTab() {
                     const parentProperty = allProperties.find(p => p.id === space.property_id);
                     return (
                       <tr key={space.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-                        <td className="py-3 px-3 font-semibold text-white">{space.name}</td>
-                        <td className="py-3 px-3 text-gray-400">{parentProperty?.name || "Unknown Property"}</td>
-                        <td className="py-3 px-3 text-[#EF4444] font-bold">${space.monthly_rent.toLocaleString()}/mo</td>
-                        <td className="py-3 px-3 text-gray-500">{space.sqft ? `${space.sqft} sqft` : "—"}</td>
+                        <td className="py-3 px-3 font-semibold text-white text-xs">{space.name}</td>
+                        <td className="py-3 px-3 text-gray-300 text-xs">{parentProperty?.name || "Unknown Property"}</td>
+                        <td className="py-3 px-3 text-[#EF4444] font-bold text-xs">${space.monthly_rent.toLocaleString()}/mo</td>
+                        <td className="py-3 px-3 text-gray-400 text-xs">{space.sqft ? `${space.sqft} sqft` : "—"}</td>
                         <td className="py-3 px-3 text-right">
                           <button onClick={() => { if (confirm(`Remove unleased space "${space.name}"?`)) handleDeleteSpace(space.id); }}
                             className="w-7 h-7 rounded-lg border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-gray-600 hover:text-red-400 hover:border-red-500/30 transition-colors ml-auto"

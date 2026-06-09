@@ -129,7 +129,7 @@ function SVGAreaChart({ data, series }: { data: Snapshot[]; series: Series[] }) 
           <text key={i}
             x={padL - 8} y={t.y + 4}
             textAnchor="end"
-            fontSize="11" fill="#475569" fontFamily="system-ui,sans-serif" fontWeight="500"
+            fontSize="12" fill="#94A3B8" fontFamily="system-ui,sans-serif" fontWeight="600"
           >
             {t.label}
           </text>
@@ -175,7 +175,7 @@ function SVGAreaChart({ data, series }: { data: Snapshot[]; series: Series[] }) 
           <text key={i}
             x={px(i)} y={H - 6}
             textAnchor="middle"
-            fontSize="11" fill="#64748B" fontFamily="system-ui,sans-serif" fontWeight="600"
+            fontSize="12" fill="#E2E8F0" fontFamily="system-ui,sans-serif" fontWeight="700"
           >
             {fmtDate(d.snapshot_date)}
           </text>
@@ -344,12 +344,12 @@ export default function PortfolioHistoryChart() {
             <h3 style={{ color: "#F1F5F9", fontWeight: 700, fontSize: 16, margin: 0 }}>
               P&amp;L History
               {isSeedMode && (
-                <span style={{ marginLeft: 8, fontSize: 10, color: "#64748B", fontWeight: 500, background: "rgba(99,102,241,0.15)", padding: "2px 8px", borderRadius: 20, border: "1px solid rgba(99,102,241,0.25)" }}>
+                <span style={{ marginLeft: 8, fontSize: 11, color: "#A5B4FC", fontWeight: 600, background: "rgba(99,102,241,0.15)", padding: "2px 8px", borderRadius: 20, border: "1px solid rgba(99,102,241,0.25)" }}>
                   Preview Data
                 </span>
               )}
             </h3>
-            <p style={{ color: "#64748B", fontSize: 12, margin: 0 }}>Month-over-month portfolio trends</p>
+            <p style={{ color: "#94A3B8", fontSize: 12, margin: 0 }}>Month-over-month portfolio trends</p>
           </div>
         </div>
 
@@ -360,14 +360,14 @@ export default function PortfolioHistoryChart() {
               cursor: "pointer", transition: "all 0.2s",
               border: range === r.key ? "1px solid rgba(74,222,128,0.5)" : "1px solid rgba(148,163,184,0.15)",
               background: range === r.key ? "rgba(74,222,128,0.12)" : "rgba(148,163,184,0.05)",
-              color: range === r.key ? "#4ADE80" : "#64748B",
+              color: range === r.key ? "#4ADE80" : "#94A3B8",
             }}>{r.label}</button>
           ))}
           <button onClick={() => fetchSnapshots(range)} style={{
             padding: "6px 10px", borderRadius: 8,
             border: "1px solid rgba(148,163,184,0.15)",
             background: "rgba(148,163,184,0.05)",
-            color: "#64748B", cursor: "pointer", display: "flex", alignItems: "center",
+            color: "#94A3B8", cursor: "pointer", display: "flex", alignItems: "center",
           }}>
             <RefreshCw size={13} />
           </button>
@@ -420,8 +420,8 @@ export default function PortfolioHistoryChart() {
             { label: "Occupancy",  val: `${last?.occupancy_rate?.toFixed(1)}%`, delta: (last?.occupancy_rate ?? 0) - (first?.occupancy_rate ?? 0), base: first?.occupancy_rate ?? 1 },
           ].map(k => (
             <div key={k.label} style={{ background: "rgba(30,41,59,0.5)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(148,163,184,0.1)" }}>
-              <p style={{ color: "#64748B", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>{k.label}</p>
-              <p style={{ color: "#F1F5F9", fontSize: 20, fontWeight: 800, margin: "0 0 2px" }}>{k.val}</p>
+              <p style={{ color: "#94A3B8", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>{k.label}</p>
+              <p style={{ color: "#F1F5F9", fontSize: 22, fontWeight: 800, margin: "0 0 2px" }}>{k.val}</p>
               <p style={{ color: k.delta >= 0 ? "#4ADE80" : "#F87171", fontSize: 12, fontWeight: 600, margin: 0 }}>
                 {k.delta >= 0 ? "▲" : "▼"} {pct(k.delta, k.base)} vs {RANGES.find(r => r.key === range)?.label} ago
               </p>

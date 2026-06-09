@@ -259,7 +259,7 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
           <h2 className="text-base font-black text-white flex items-center gap-2">
             <BarChart3 size={17} className="text-[#A78BFA]" /> Executive Overview
           </h2>
-          <p className="text-[11px] text-gray-500 mt-0.5">Portfolio-wide snapshot · live data</p>
+          <p className="text-xs text-gray-400 mt-1">Portfolio-wide snapshot · live data</p>
         </div>
         {totalAlerts > 0 && (
           <div className="flex items-center gap-1.5 text-xs font-bold text-yellow-400 bg-yellow-950/30 border border-yellow-900/40 px-3 py-1.5 rounded-full">
@@ -272,12 +272,12 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-px bg-[rgba(255,255,255,0.04)]">
         {kpis.map(({ label, value, color, icon: Icon }) => (
           <div key={label} className="flex flex-col items-center justify-center py-5 px-3 bg-[#080C14] text-center">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5"
-              style={{ background: `${color}12`, border: `1px solid ${color}20` }}>
-              <Icon size={14} style={{ color }} />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2.5"
+              style={{ background: `${color}15`, border: `1px solid ${color}30` }}>
+              <Icon size={15} style={{ color }} />
             </div>
-            <p className="text-base font-black text-white leading-none">{value}</p>
-            <p className="text-[10px] text-gray-600 mt-1">{label}</p>
+            <p className="text-lg font-black text-white leading-none">{value}</p>
+            <p className="text-xs text-gray-400 font-semibold mt-1.5">{label}</p>
           </div>
         ))}
       </div>
@@ -319,11 +319,11 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
                 {/* P&L chip */}
                 <div className="w-28 text-right flex-shrink-0">
                   <p className="text-xs font-bold leading-none"
-                    style={{ color: expenses === 0 ? "#6b7280" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
+                    style={{ color: expenses === 0 ? "#94A3B8" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
                     {expenses === 0 ? "No data" : `${profit >= 0 ? "+" : ""}${fmtK(profit)}/mo`}
                   </p>
                   {propMissed > 0 && (
-                    <p className="text-[9px] font-bold text-red-500 mt-0.5">
+                    <p className="text-xs font-semibold text-red-400 mt-1">
                       -${propMissed.toLocaleString()} vacant
                     </p>
                   )}
