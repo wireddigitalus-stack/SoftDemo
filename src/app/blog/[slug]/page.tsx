@@ -14,9 +14,49 @@ export async function generateStaticParams() {
   return BLOG_POSTS.map((p) => ({ slug: p.slug }));
 }
 
+/** Fetch a post from Supabase (DB edits override static data) */
+async function getDbPost(slug: string) {
+  try {
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!SUPABASE_URL || !KEY) return null;
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/blog_posts?slug=eq.${encodeURIComponent(slug)}&select=*`,
+      {
+        headers: { apikey: KEY, Authorization: `Bearer ${KEY}` },
+        next: { revalidate: 60 }, // cache 60 s — picks up edits quickly without hammering DB on every request
+      }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!rows[0]) return null;
+    const r = rows[0];
+    // Normalise DB row → BlogPost shape
+    return {
+      slug:            r.slug,
+      title:           r.title,
+      metaTitle:       r.meta_title    || r.title,
+      metaDescription: r.meta_description || "",
+      category:        r.category       || "Market Reports",
+      tags:            r.tags           || [],
+      targetKeyword:   r.target_keyword || "",
+      readTime:        r.read_time      || 5,
+      publishedAt:     r.published_at   || r.created_at,
+      updatedAt:       r.updated_at     || undefined,
+      author:          r.author         || "Vision LLC Team",
+      authorTitle:     r.author_title   || "Vision LLC",
+      excerpt:         r.excerpt        || "",
+      content:         r.content        || "",
+      image:           r.image_url      || undefined,
+      imageAlt:        r.image_alt      || undefined,
+    };
+  } catch { return null; }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug);
+  // DB record takes priority — so admin edits to meta fields are reflected immediately
+  const post = await getDbPost(slug) || BLOG_POSTS.find((p) => p.slug === slug);
   if (!post) return {};
 
   return {
@@ -113,7 +153,8 @@ function formatDate(dateStr: string) {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug);
+  // DB record takes priority — admin edits (images, content, meta) show immediately
+  const post = await getDbPost(slug) || BLOG_POSTS.find((p) => p.slug === slug);
   if (!post) notFound();
 
   const relatedPosts = BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 3);
@@ -233,7 +274,7 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="mt-12 pt-8 border-t border-[rgba(74,222,128,0.1)]">
             <p className="text-xs font-bold text-[#4ADE80] uppercase tracking-widest mb-3">Topics</p>
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
+              {(post.tags as string[]).map((tag: string) => (
                 <span key={tag} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-gray-400">
                   <Tag size={10} /> {tag}
                 </span>

@@ -240,26 +240,59 @@ export default async function BlogPage() {
                 key={post.slug}
                 href={`/blog/${post.slug}`}
                 id={`blog-card-${post.slug}`}
-                className="group glass rounded-2xl border border-[rgba(74,222,128,0.08)] hover:border-[rgba(74,222,128,0.3)] p-6 flex flex-col property-card transition-all duration-300"
+                className="group glass rounded-2xl border border-[rgba(74,222,128,0.08)] hover:border-[rgba(74,222,128,0.3)] overflow-hidden flex flex-col property-card transition-all duration-300"
               >
-                {/* Category badge */}
-                <span className={`inline-flex items-center self-start px-2.5 py-1 rounded-lg text-[11px] font-bold border mb-4 ${categoryColors[post.category] || categoryColors["Market Reports"]}`}>
-                  {post.category}
-                </span>
-                <h3 className="text-base font-bold text-white mb-3 group-hover:text-[#4ADE80] transition-colors leading-snug flex-1">
-                  {post.title}
-                </h3>
-                <p className="text-xs text-gray-500 leading-relaxed mb-5 line-clamp-3">
-                  {post.excerpt}
-                </p>
-                <div className="flex items-center justify-between text-xs text-gray-600 mt-auto pt-4 border-t border-[rgba(255,255,255,0.05)]">
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={10} />
-                    {post.readTime} min
-                  </span>
-                  <span className="flex items-center gap-1 text-[#4ADE80] font-semibold group-hover:gap-2 transition-all">
-                    Read <ArrowRight size={11} />
-                  </span>
+                {/* Image or accent panel */}
+                <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                  {post.image ? (
+                    <Image
+                      src={post.image}
+                      alt={post.imageAlt || post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  ) : (
+                    <div className={`w-full h-full flex items-center justify-center ${categoryColors[post.category] ? "" : ""}`}
+                      style={{ background: "linear-gradient(135deg, rgba(74,222,128,0.08) 0%, rgba(74,222,128,0.02) 100%)" }}>
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold border ${categoryColors[post.category] || categoryColors["Market Reports"]}`}>
+                        {post.category}
+                      </span>
+                    </div>
+                  )}
+                  {/* Category badge overlay when image exists */}
+                  {post.image && (
+                    <div className="absolute top-2 left-2">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold border backdrop-blur-sm bg-[rgba(10,15,25,0.75)] ${categoryColors[post.category] || categoryColors["Market Reports"]}`}>
+                        {post.category}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card body */}
+                <div className="p-5 flex flex-col flex-1">
+                  {/* Category badge when no image */}
+                  {!post.image && (
+                    <span className={`inline-flex items-center self-start px-2.5 py-1 rounded-lg text-[11px] font-bold border mb-3 ${categoryColors[post.category] || categoryColors["Market Reports"]}`}>
+                      {post.category}
+                    </span>
+                  )}
+                  <h3 className="text-base font-bold text-white mb-2 group-hover:text-[#4ADE80] transition-colors leading-snug flex-1">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-600 mt-auto pt-3 border-t border-[rgba(255,255,255,0.05)]">
+                    <span className="flex items-center gap-1.5">
+                      <Clock size={10} />
+                      {post.readTime} min
+                    </span>
+                    <span className="flex items-center gap-1 text-[#4ADE80] font-semibold group-hover:gap-2 transition-all">
+                      Read <ArrowRight size={11} />
+                    </span>
+                  </div>
                 </div>
               </Link>
             ))}

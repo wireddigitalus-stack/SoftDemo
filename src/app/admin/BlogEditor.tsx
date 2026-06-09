@@ -1378,6 +1378,7 @@ export default function BlogEditor() {
       });
       if (!res.ok) throw new Error("Update failed");
       await fetchPosts();
+      setEditing(null); // ← return to list after saving edits
     }
   }
 
