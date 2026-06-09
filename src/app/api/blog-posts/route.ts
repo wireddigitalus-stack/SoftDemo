@@ -23,9 +23,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  // Upsert on slug — prevents duplicates when saving a static post for the first time.
+  // If a record with this slug already exists it gets updated; otherwise a new row is inserted.
   const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts`, {
     method: "POST",
-    headers: { ...H, Prefer: "return=representation" },
+    headers: { ...H, Prefer: "resolution=merge-duplicates,return=representation" },
     body: JSON.stringify(body),
   });
   if (!res.ok) return NextResponse.json({ error: await res.text() }, { status: res.status });
@@ -34,11 +36,15 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const id   = req.nextUrl.searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const id  = req.nextUrl.searchParams.get("id");
+  const slug = req.nextUrl.searchParams.get("slug");
+  // Must have either a DB id or a slug to update by
+  if (!id && !slug) return NextResponse.json({ error: "id or slug required" }, { status: 400 });
+  if (id === "undefined" || id === "null") return NextResponse.json({ error: "invalid id" }, { status: 400 });
   const body = await req.json();
+  const filter = id ? `id=eq.${id}` : `slug=eq.${encodeURIComponent(slug!)}`;
   const res  = await fetch(
-    `${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}`,
+    `${SUPABASE_URL}/rest/v1/blog_posts?${filter}`,
     {
       method: "PATCH",
       headers: { ...H, Prefer: "return=representation" },

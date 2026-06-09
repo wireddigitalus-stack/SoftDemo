@@ -22,7 +22,7 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
-    slug: "downtown-bristol-tn-commercial-real-estate-market-2025",
+    slug: "downtown-bristol-tn-commercial-real-estate-market-2026",
     title: "Downtown Bristol, TN Commercial Real Estate Market Outlook 2026",
     metaTitle: "Downtown Bristol TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
     metaDescription:
@@ -243,7 +243,7 @@ The convergence of these five demand drivers means the Tri-Cities commercial rea
 Call **423-573-1022** or email **leasing@teamvisionllc.com** to discuss what we're seeing in the market.`,
   },
   {
-    slug: "executive-business-consulting-northeast-tennessee-2025",
+    slug: "executive-business-consulting-northeast-tennessee-2026",
     title: "Executive Business Consulting in Northeast Tennessee: What CEOs Need in 2025",
     metaTitle: "Executive Business Consulting Northeast Tennessee 2025 | Vision LLC Advisement",
     metaDescription:

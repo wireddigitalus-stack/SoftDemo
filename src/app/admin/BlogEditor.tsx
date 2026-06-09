@@ -1361,6 +1361,7 @@ export default function BlogEditor() {
 
   async function handleSave(data: Partial<BlogPost> & { slug: string; status: "draft" | "published" }) {
     if (typeof editing === "string") {
+      // Brand-new post (editing === "new")
       const res = await fetch("/api/blog-posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1371,14 +1372,26 @@ export default function BlogEditor() {
       await fetchPosts();
       setEditing(null);
     } else if (editing !== null) {
-      const res = await fetch(`/api/blog-posts?id=${editing.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Update failed");
+      if (editing.id) {
+        // Existing DB post — update by id
+        const res = await fetch(`/api/blog-posts?id=${editing.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error("Update failed");
+      } else {
+        // Static post with no DB id yet — upsert by slug (POST with merge-duplicates)
+        const res = await fetch("/api/blog-posts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, published_at: (data as any).published_at || new Date().toISOString() }),
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || "Save failed");
+      }
       await fetchPosts();
-      setEditing(null); // ← return to list after saving edits
+      setEditing(null);
     }
   }
 
