@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
 import type { Tenant } from "./TenantsTab";
+import type { PropertyItem, AvailableSpace } from "./PropDetailsTab";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,8 +24,10 @@ interface PropDetail {
 }
 
 interface Props {
+  properties: PropertyItem[];
   tenants: Tenant[];
   details: PropDetail[];
+  availableSpaces?: AvailableSpace[];
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -178,12 +181,16 @@ function BarChart({ data }: { data: BarDatum[] }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function PortfolioOverviewCard({ tenants, details }: Props) {
+export default function PortfolioOverviewCard({ properties, tenants, details, availableSpaces }: Props) {
   const detailMap = useMemo(() =>
     Object.fromEntries(details.map(d => [d.property_id, d])), [details]);
 
+  const missedRevenue = useMemo(() => {
+    return (availableSpaces || []).reduce((s, space) => s + (space.monthly_rent || 0), 0);
+  }, [availableSpaces]);
+
   // Per-property derived data
-  const propData = useMemo(() => PROPERTIES.map(p => {
+  const propData = useMemo(() => properties.map(p => {
     const d = detailMap[p.id];
     const displayName = d?.display_name || "";
     const pts = tenants.filter(t => exactBuildingMatch(t.building || "", p.id, displayName));
@@ -199,8 +206,13 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
       const days = daysUntil(t.leaseEnd || t.renewalDate);
       return days !== null && days <= 90;
     }).length;
-    return { property: p, pts: activePts, revenue, expenses, profit: revenue - expenses, occupancy, alerts, trend: (d?.trend || "stable") as "up" | "stable" | "down" };
-  }), [tenants, detailMap]);
+
+    const propMissedRevenue = (availableSpaces || [])
+      .filter(space => space.property_id === p.id)
+      .reduce((s, space) => s + (space.monthly_rent || 0), 0);
+
+    return { property: p, pts: activePts, revenue, expenses, profit: revenue - expenses, occupancy, alerts, trend: (d?.trend || "stable") as "up" | "stable" | "down", missedRevenue: propMissedRevenue };
+  }), [properties, tenants, detailMap, availableSpaces]);
 
   // Portfolio KPIs
   const totalRevenue  = propData.reduce((s, p) => s + p.revenue, 0);
@@ -214,6 +226,7 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
     { label: "Portfolio Revenue",  value: `$${totalRevenue.toLocaleString()}/mo`,  color: "#4ADE80", icon: DollarSign  },
     { label: "Total Expenses",     value: totalExpenses ? `$${Math.round(totalExpenses).toLocaleString()}/mo` : "Not set", color: "#F97316", icon: BarChart3   },
     { label: "Net P&L",            value: totalExpenses ? `${netPL >= 0 ? "+" : ""}$${Math.round(netPL).toLocaleString()}/mo` : "—", color: netPL >= 0 ? "#4ADE80" : "#EF4444", icon: TrendingUp  },
+    { label: "Missed Revenue",     value: missedRevenue > 0 ? `$${missedRevenue.toLocaleString()}/mo` : "$0/mo", color: missedRevenue > 0 ? "#EF4444" : "#6B7280", icon: TrendingDown },
     { label: "Avg Occupancy",      value: `${avgOccupancy}%`,                       color: avgOccupancy >= 80 ? "#4ADE80" : avgOccupancy >= 50 ? "#FACC15" : "#EF4444", icon: Building2  },
     { label: "Active Tenants",     value: totalTenants,                             color: "#60A5FA", icon: Users       },
   ];
@@ -244,7 +257,7 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-[rgba(255,255,255,0.04)]">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-px bg-[rgba(255,255,255,0.04)]">
         {kpis.map(({ label, value, color, icon: Icon }) => (
           <div key={label} className="flex flex-col items-center justify-center py-5 px-3 bg-[#080C14] text-center">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5"
@@ -267,7 +280,7 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
       <div className="border-t border-[rgba(255,255,255,0.04)] px-6 py-4">
         <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Property Health</p>
         <div className="space-y-2.5">
-          {propData.map(({ property, occupancy, profit, trend, alerts, expenses }) => {
+          {propData.map(({ property, occupancy, profit, trend, alerts, expenses, missedRevenue: propMissed }) => {
             const trendCfg = TREND_MAP[trend];
             const TrendIcon = trendCfg.icon;
             const occColor = occupancy >= 80 ? "#4ADE80" : occupancy >= 40 ? "#FACC15" : "#EF4444";
@@ -292,10 +305,17 @@ export default function PortfolioOverviewCard({ tenants, details }: Props) {
                 </span>
 
                 {/* P&L chip */}
-                <span className="w-28 text-right text-xs font-bold flex-shrink-0"
-                  style={{ color: expenses === 0 ? "#6b7280" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
-                  {expenses === 0 ? "No data" : `${profit >= 0 ? "+" : ""}${fmtK(profit)}/mo`}
-                </span>
+                <div className="w-28 text-right flex-shrink-0">
+                  <p className="text-xs font-bold leading-none"
+                    style={{ color: expenses === 0 ? "#6b7280" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
+                    {expenses === 0 ? "No data" : `${profit >= 0 ? "+" : ""}${fmtK(profit)}/mo`}
+                  </p>
+                  {propMissed > 0 && (
+                    <p className="text-[9px] font-bold text-red-500 mt-0.5">
+                      -${propMissed.toLocaleString()} vacant
+                    </p>
+                  )}
+                </div>
 
                 {/* Alert badge */}
                 {alerts > 0 ? (

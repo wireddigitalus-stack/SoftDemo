@@ -203,6 +203,16 @@ const TIPS: Record<TabKey, Tip[]> = {
       title: "Removing a Custom Property",
       body: "Properties you added through the dashboard show a small 'Remove' link in the card header. Click it and confirm to permanently delete. Note: the 9 original SEO-linked properties cannot be deleted — only renamed.",
     },
+    {
+      emoji: "📉",
+      title: "Missed Revenue Tracking",
+      body: "The Executive Overview KPI card now features a 'Missed Revenue' metric. This sums up the potential monthly rents of all vacant suites and buildings so Allen can track unrealized income in one click.",
+    },
+    {
+      emoji: "🔑",
+      title: "Adding Unleased Spaces",
+      body: "Scroll to the bottom of the Prop Details tab and click '+ Add Unleased Space' to register a vacant suite or building with its expected monthly rent and square footage. They are listed under 'Available Properties'.",
+    },
   ],
   maintenance: [
     {
@@ -369,6 +379,21 @@ const TIPS: Record<TabKey, Tip[]> = {
       emoji: "🔄",
       title: "Repurpose Content",
       body: "A single blog post can become 3–4 social media posts, an email newsletter, and a press release angle. Write once, distribute everywhere.",
+    },
+    {
+      emoji: "📤",
+      title: "Mobile Photo Uploads",
+      body: "You can upload featured photos directly from your phone inside the Blog Editor. The system compresses large phone photos to fast-loading WebP images before uploading.",
+    },
+    {
+      emoji: "📥",
+      title: "Importing Static Articles",
+      body: "Static posts coded directly in the site cannot be edited until imported. Click the 'Import' button on the blog list to move them to the database to manage photos and copy.",
+    },
+    {
+      emoji: "🤖",
+      title: "AI SEO Check Panel",
+      body: "Use the AI SEO Panel in the blog editor to check character counts, review Google search appearance previews, and audit target keyword density before publishing.",
     },
   ],
   "marketing-photos": [

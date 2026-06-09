@@ -42,7 +42,7 @@ type DetailForm = {
 };
 
 // Unified shape used by PropertyCard — works for both static (data.ts) and DB properties
-interface PropertyItem {
+export interface PropertyItem {
   id: string;
   name: string;
   type: string;
@@ -51,6 +51,91 @@ interface PropertyItem {
   sqft: string;
   status?: string;
   isDynamic?: boolean; // true if from Supabase properties table
+}
+
+export interface AvailableSpace {
+  id: string;
+  property_id: string;
+  name: string;
+  monthly_rent: number;
+  sqft: string;
+  created_at?: string;
+}
+
+interface AddSpaceForm {
+  property_id: string;
+  name: string;
+  monthly_rent: string;
+  sqft: string;
+}
+
+function AddSpaceModal({ properties, onAdd, onClose }: {
+  properties: PropertyItem[];
+  onAdd: (form: AddSpaceForm) => Promise<void>;
+  onClose: () => void;
+}) {
+  const [form, setForm] = useState<AddSpaceForm>({
+    property_id: properties[0]?.id || "",
+    name: "",
+    monthly_rent: "",
+    sqft: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const valid = form.name.trim().length >= 1 && form.property_id !== "";
+
+  const handle = async () => {
+    setSaving(true);
+    await onAdd(form);
+    setSaving(false);
+  };
+
+  const F = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg text-xs text-white px-3 py-2.5 outline-none focus:border-[rgba(167,139,250,0.5)] transition-colors";
+  const L = "text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1";
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="glass rounded-2xl border border-[rgba(167,139,250,0.2)] w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-black text-white flex items-center gap-2">
+            <Plus size={14} className="text-[#A78BFA]" /> Add Unleased Space
+          </h3>
+          <button onClick={onClose} className="w-7 h-7 rounded-full bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] flex items-center justify-center transition-colors">
+            <X size={12} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div>
+          <label className={L}>Parent Property *</label>
+          <select value={form.property_id} onChange={e => setForm(f => ({ ...f, property_id: e.target.value }))} className={F}>
+            {properties.map(p => (
+              <option key={p.id} value={p.id} className="bg-gray-900">{p.name} ({p.city})</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className={L}>Space / Unit Name *</label>
+          <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Suite 205, Building B" className={F} autoFocus />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={L}>Potential Rent ($ / mo)</label>
+            <input type="number" min={0} value={form.monthly_rent} onChange={e => setForm(f => ({ ...f, monthly_rent: e.target.value }))} placeholder="e.g. 1500" className={F} />
+          </div>
+          <div>
+            <label className={L}>Sq Ft</label>
+            <input value={form.sqft} onChange={e => setForm(f => ({ ...f, sqft: e.target.value }))} placeholder="e.g. 750" className={F} />
+          </div>
+        </div>
+
+        <button onClick={handle} disabled={!valid || saving}
+          className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${valid ? "bg-[rgba(167,139,250,0.2)] text-[#A78BFA] hover:bg-[rgba(167,139,250,0.3)] border border-[rgba(167,139,250,0.3)]" : "bg-[rgba(255,255,255,0.03)] text-gray-700 border border-[rgba(255,255,255,0.05)] cursor-not-allowed"}`}>
+          {saving ? <><Loader2 size={12} className="animate-spin" /> Adding…</> : <><Plus size={12} /> Add Space</>}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -643,18 +728,22 @@ export default function PropDetailsTab() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [details, setDetails] = useState<PropDetail[]>([]);
   const [dynProps, setDynProps] = useState<PropertyItem[]>([]);
+  const [availableSpaces, setAvailableSpaces] = useState<AvailableSpace[]>([]);
   const [loading, setLoading] = useState(true);
   const [migrationSql, setMigrationSql] = useState<string | null>(null);
+  const [spacesMigrationSql, setSpacesMigrationSql] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const [showPrint, setShowPrint] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [showAddSpace, setShowAddSpace] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [tRes, dRes, pRes] = await Promise.all([
+    const [tRes, dRes, pRes, sRes] = await Promise.all([
       fetch("/api/tenants").catch(() => null),
       fetch("/api/property-details").catch(() => null),
       fetch("/api/properties-dynamic?admin=1").catch(() => null),
+      fetch("/api/available-spaces").catch(() => null),
     ]);
     if (tRes?.ok) { const d = await tRes.json(); if (Array.isArray(d.tenants)) setTenants(d.tenants.map(rowToTenant)); }
     if (dRes?.ok) {
@@ -675,6 +764,11 @@ export default function PropDetailsTab() {
           isDynamic: true,
         })));
       }
+    }
+    if (sRes?.ok) {
+      const d = await sRes.json();
+      if (d.needsMigration) setSpacesMigrationSql(d.sql || "Run migration SQL in Supabase.");
+      if (Array.isArray(d.spaces)) setAvailableSpaces(d.spaces);
     }
     setLoading(false);
   }, []);
@@ -716,6 +810,32 @@ export default function PropDetailsTab() {
     }
   };
 
+  const handleAddSpace = async (form: AddSpaceForm) => {
+    const res = await fetch("/api/available-spaces", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        propertyId: form.property_id,
+        name: form.name,
+        monthlyRent: Number(form.monthly_rent) || 0,
+        sqft: form.sqft,
+      }),
+    });
+    if (res.ok) {
+      const d = await res.json();
+      if (d.error === "migration_required") { setSpacesMigrationSql(d.sql); return; }
+      setShowAddSpace(false);
+      setTick(t => t + 1);
+    }
+  };
+
+  const handleDeleteSpace = async (id: string) => {
+    const res = await fetch(`/api/available-spaces?id=${id}`, { method: "DELETE" }).catch(() => null);
+    if (res?.ok) {
+      setTick(t => t + 1);
+    }
+  };
+
   const handleDeleteProperty = async (id: string) => {
     // Delete from properties-dynamic (Supabase)
     await fetch(`/api/properties-dynamic?id=${id}`, { method: "DELETE" }).catch(() => null);
@@ -740,6 +860,8 @@ export default function PropDetailsTab() {
     }),
     detail: detailMap[p.id],
   })), [allProperties, tenants, detailMap]);
+
+  const overviewProperties = useMemo(() => allProperties, [allProperties]);
 
   return (
     <div className="space-y-5">
@@ -779,7 +901,7 @@ export default function PropDetailsTab() {
 
       {/* CEO Overview Card */}
       {!loading && (
-        <PortfolioOverviewCard tenants={tenants} details={details} />
+        <PortfolioOverviewCard properties={overviewProperties} tenants={tenants} details={details} availableSpaces={availableSpaces} />
       )}
 
       {/* Portfolio KPI bar */}
@@ -851,12 +973,80 @@ export default function PropDetailsTab() {
         </div>
       )}
 
+      {/* Available Spaces Migration Banner */}
+      {spacesMigrationSql && (
+        <div className="rounded-xl border border-yellow-800/50 bg-yellow-950/30 p-4">
+          <p className="text-xs font-bold text-yellow-400 mb-2">⚠️ One-time setup required for Available Spaces — run this SQL in Supabase:</p>
+          <pre className="text-[10px] text-yellow-300 bg-black/30 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">{spacesMigrationSql}</pre>
+        </div>
+      )}
 
+      {/* Available Properties (Unleased Spaces) Section */}
+      {!loading && (
+        <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-5 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-black text-white flex items-center gap-2">
+                <Building2 size={16} className="text-[#A78BFA]" />
+                Available Properties (Unleased Spaces)
+              </h3>
+              <p className="text-[11px] text-gray-500 mt-1">
+                Add and manage specific suites, rooms, or buildings that are vacant to calculate missed potential revenue.
+              </p>
+            </div>
+            <button onClick={() => setShowAddSpace(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] px-3 py-2 rounded-lg border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-all sm:self-start">
+              <Plus size={12} /> Add Unleased Space
+            </button>
+          </div>
 
-
+          {availableSpaces.length === 0 ? (
+            <div className="text-center py-8 text-gray-700 text-xs flex flex-col items-center gap-2">
+              <Building2 size={20} className="opacity-30" />
+              <p>No unleased spaces registered.</p>
+              <p className="text-[10px] text-gray-600">All spaces are either occupied or not tracked here yet.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[rgba(255,255,255,0.06)] text-gray-500 font-bold uppercase tracking-wider text-[10px]">
+                    <th className="py-2.5 px-3">Space / Unit</th>
+                    <th className="py-2.5 px-3">Property</th>
+                    <th className="py-2.5 px-3">Potential Rent</th>
+                    <th className="py-2.5 px-3">Sq Ft</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+                  {availableSpaces.map(space => {
+                    const parentProperty = allProperties.find(p => p.id === space.property_id);
+                    return (
+                      <tr key={space.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+                        <td className="py-3 px-3 font-semibold text-white">{space.name}</td>
+                        <td className="py-3 px-3 text-gray-400">{parentProperty?.name || "Unknown Property"}</td>
+                        <td className="py-3 px-3 text-[#EF4444] font-bold">${space.monthly_rent.toLocaleString()}/mo</td>
+                        <td className="py-3 px-3 text-gray-500">{space.sqft ? `${space.sqft} sqft` : "—"}</td>
+                        <td className="py-3 px-3 text-right">
+                          <button onClick={() => { if (confirm(`Remove unleased space "${space.name}"?`)) handleDeleteSpace(space.id); }}
+                            className="w-7 h-7 rounded-lg border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-gray-600 hover:text-red-400 hover:border-red-500/30 transition-colors ml-auto"
+                            title="Delete unleased space">
+                            <Trash2 size={11} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {showPrint && <PrintReport data={printData} onClose={() => setShowPrint(false)} />}
       {showAdd && <AddPropertyForm onAdd={handleAddProperty} onClose={() => setShowAdd(false)} />}
+      {showAddSpace && <AddSpaceModal properties={allProperties} onAdd={handleAddSpace} onClose={() => setShowAddSpace(false)} />}
     </div>
   );
 }
