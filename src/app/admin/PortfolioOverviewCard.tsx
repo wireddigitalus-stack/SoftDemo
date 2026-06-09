@@ -186,7 +186,13 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
     Object.fromEntries(details.map(d => [d.property_id, d])), [details]);
 
   const missedRevenue = useMemo(() => {
-    return (availableSpaces || []).reduce((s, space) => s + (space.monthly_rent || 0), 0);
+    return (availableSpaces || []).reduce((s, space) => {
+      const rent = space.monthly_rent || 0;
+      const nnn = space.nnn_fee || 0;
+      const nn = space.nn_fee || 0;
+      const util = space.utility_fee || 0;
+      return s + rent + nnn + nn + util;
+    }, 0);
   }, [availableSpaces]);
 
   // Per-property derived data
@@ -210,7 +216,13 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
 
     const propMissedRevenue = (availableSpaces || [])
       .filter(space => space.property_id === p.id)
-      .reduce((s, space) => s + (space.monthly_rent || 0), 0);
+      .reduce((s, space) => {
+        const rent = space.monthly_rent || 0;
+        const nnn = space.nnn_fee || 0;
+        const nn = space.nn_fee || 0;
+        const util = space.utility_fee || 0;
+        return s + rent + nnn + nn + util;
+      }, 0);
 
     return {
       property: p,

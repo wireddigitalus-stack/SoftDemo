@@ -35,7 +35,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { propertyId, name, monthlyRent, sqft } = body;
+    const { propertyId, name, monthlyRent, sqft, nnnFee, nnFee, utilityFee } = body;
     if (!propertyId || !name) {
       return NextResponse.json({ error: "propertyId and name required" }, { status: 400 });
     }
@@ -45,6 +45,9 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       monthly_rent: Number(monthlyRent) || 0,
       sqft: (sqft as string)?.trim() || "",
+      nnn_fee: Number(nnnFee) || 0,
+      nn_fee: Number(nnFee) || 0,
+      utility_fee: Number(utilityFee) || 0,
       updated_at: new Date().toISOString(),
     };
 
@@ -89,6 +92,7 @@ export async function DELETE(req: NextRequest) {
 }
 
 const MIGRATION_SQL = `
+-- Create table if it doesn't exist
 CREATE TABLE IF NOT EXISTS available_spaces (
   id            TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   property_id   TEXT NOT NULL,
@@ -98,5 +102,12 @@ CREATE TABLE IF NOT EXISTS available_spaces (
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   updated_at    TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Enable RLS
 ALTER TABLE available_spaces ENABLE ROW LEVEL SECURITY;
+
+-- Add new fee columns if they don't exist yet
+ALTER TABLE available_spaces ADD COLUMN IF NOT EXISTS nnn_fee NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE available_spaces ADD COLUMN IF NOT EXISTS nn_fee NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE available_spaces ADD COLUMN IF NOT EXISTS utility_fee NUMERIC(10,2) DEFAULT 0;
 `.trim();

@@ -59,6 +59,9 @@ export interface AvailableSpace {
   name: string;
   monthly_rent: number;
   sqft: string;
+  nnn_fee?: number;
+  nn_fee?: number;
+  utility_fee?: number;
   created_at?: string;
 }
 
@@ -67,6 +70,9 @@ interface AddSpaceForm {
   name: string;
   monthly_rent: string;
   sqft: string;
+  nnn_fee: string;
+  nn_fee: string;
+  utility_fee: string;
 }
 
 function AddSpaceModal({ properties, onAdd, onClose }: {
@@ -79,6 +85,9 @@ function AddSpaceModal({ properties, onAdd, onClose }: {
     name: "",
     monthly_rent: "",
     sqft: "",
+    nnn_fee: "",
+    nn_fee: "",
+    utility_fee: "",
   });
   const [saving, setSaving] = useState(false);
   const valid = form.name.trim().length >= 1 && form.property_id !== "";
@@ -126,6 +135,21 @@ function AddSpaceModal({ properties, onAdd, onClose }: {
           <div>
             <label className={L}>Sq Ft</label>
             <input value={form.sqft} onChange={e => setForm(f => ({ ...f, sqft: e.target.value }))} placeholder="e.g. 750" className={F} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          <div>
+            <label className={L}>NNN Fee ($)</label>
+            <input type="number" min={0} value={form.nnn_fee} onChange={e => setForm(f => ({ ...f, nnn_fee: e.target.value }))} placeholder="0" className={F} />
+          </div>
+          <div>
+            <label className={L}>NN Fee ($)</label>
+            <input type="number" min={0} value={form.nn_fee} onChange={e => setForm(f => ({ ...f, nn_fee: e.target.value }))} placeholder="0" className={F} />
+          </div>
+          <div>
+            <label className={L}>Utility Fee ($)</label>
+            <input type="number" min={0} value={form.utility_fee} onChange={e => setForm(f => ({ ...f, utility_fee: e.target.value }))} placeholder="0" className={F} />
           </div>
         </div>
 
@@ -811,21 +835,34 @@ export default function PropDetailsTab() {
   };
 
   const handleAddSpace = async (form: AddSpaceForm) => {
-    const res = await fetch("/api/available-spaces", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        propertyId: form.property_id,
-        name: form.name,
-        monthlyRent: Number(form.monthly_rent) || 0,
-        sqft: form.sqft,
-      }),
-    });
-    if (res.ok) {
-      const d = await res.json();
-      if (d.error === "migration_required") { setSpacesMigrationSql(d.sql); return; }
-      setShowAddSpace(false);
-      setTick(t => t + 1);
+    try {
+      const res = await fetch("/api/available-spaces", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: form.property_id,
+          name: form.name,
+          monthlyRent: Number(form.monthly_rent) || 0,
+          sqft: form.sqft,
+          nnnFee: Number(form.nnn_fee) || 0,
+          nnFee: Number(form.nn_fee) || 0,
+          utilityFee: Number(form.utility_fee) || 0,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setShowAddSpace(false);
+        setTick(t => t + 1);
+      } else {
+        if (data.error === "migration_required") {
+          setSpacesMigrationSql(data.sql || "Run migration SQL in Supabase.");
+          alert("Database setup required! Please run the updated SQL migration shown at the top of the page in your Supabase SQL Editor.");
+        } else {
+          alert(`Error adding space: ${data.error || "Save failed"}`);
+        }
+      }
+    } catch (err) {
+      alert("An unexpected error occurred while saving. Please try again.");
     }
   };
 
@@ -1025,7 +1062,16 @@ export default function PropDetailsTab() {
                       <tr key={space.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
                         <td className="py-3 px-3 font-semibold text-white text-xs">{space.name}</td>
                         <td className="py-3 px-3 text-gray-300 text-xs">{parentProperty?.name || "Unknown Property"}</td>
-                        <td className="py-3 px-3 text-[#EF4444] font-bold text-xs">${space.monthly_rent.toLocaleString()}/mo</td>
+                        <td className="py-3 px-3 text-xs">
+                          <span className="text-[#EF4444] font-bold block">${space.monthly_rent.toLocaleString()}/mo</span>
+                          {(space.nnn_fee || space.nn_fee || space.utility_fee) ? (
+                            <span className="text-[10px] text-gray-400 block mt-0.5">
+                              {space.nnn_fee ? `NNN: $${space.nnn_fee} ` : ""}
+                              {space.nn_fee ? `NN: $${space.nn_fee} ` : ""}
+                              {space.utility_fee ? `Util: $${space.utility_fee}` : ""}
+                            </span>
+                          ) : null}
+                        </td>
                         <td className="py-3 px-3 text-gray-400 text-xs">{space.sqft ? `${space.sqft} sqft` : "—"}</td>
                         <td className="py-3 px-3 text-right">
                           <button onClick={() => { if (confirm(`Remove unleased space "${space.name}"?`)) handleDeleteSpace(space.id); }}
