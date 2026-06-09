@@ -546,7 +546,7 @@ function PropertyCard({ property, tenants, detail, onSave, onDelete }: {
             {totalUtil > 0 && <Pill icon={Thermometer}   label="Utility"    value={`$${Math.round(totalUtil).toLocaleString()}/mo`}  color="#F472B6" />}
             {totalCleaning > 0 && <Pill icon={Droplets}  label="Cleaning"   value={`$${Math.round(totalCleaning).toLocaleString()}/mo`} color="#A78BFA" />}
             {expenses > 0 && <Pill icon={Receipt}        label="Expenses"   value={`$${Math.round(expenses).toLocaleString()}/mo`}   color="#F97316" />}
-            {expenses > 0 && (
+            {(revenue > 0 || expenses > 0) && (
               <Pill
                 icon={profit >= 0 ? TrendingUp : AlertTriangle}
                 label="Net P&L"

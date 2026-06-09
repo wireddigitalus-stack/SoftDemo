@@ -292,7 +292,7 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
       <div className="border-t border-[rgba(255,255,255,0.04)] px-6 py-4">
         <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Property Health</p>
         <div className="space-y-2.5">
-          {propData.map(({ property, occupancy, profit, trend, alerts, expenses, missedRevenue: propMissed, expiringTenants }) => {
+          {propData.map(({ property, occupancy, revenue, profit, trend, alerts, expenses, missedRevenue: propMissed, expiringTenants }) => {
             const trendCfg = TREND_MAP[trend];
             const TrendIcon = trendCfg.icon;
             const occColor = occupancy >= 80 ? "#4ADE80" : occupancy >= 40 ? "#FACC15" : "#EF4444";
@@ -319,8 +319,8 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
                 {/* P&L chip */}
                 <div className="w-28 text-right flex-shrink-0">
                   <p className="text-xs font-bold leading-none"
-                    style={{ color: expenses === 0 ? "#94A3B8" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
-                    {expenses === 0 ? "No data" : `${profit >= 0 ? "+" : ""}${fmtK(profit)}/mo`}
+                    style={{ color: (revenue === 0 && expenses === 0) ? "#94A3B8" : profit >= 0 ? "#4ADE80" : "#EF4444" }}>
+                    {(revenue === 0 && expenses === 0) ? "No data" : `${profit >= 0 ? "+" : ""}${fmtK(profit)}/mo`}
                   </p>
                   {propMissed > 0 && (
                     <p className="text-xs font-semibold text-red-400 mt-1">
