@@ -69,7 +69,7 @@ function formatBytes(bytes: number): string {
 
 const STATIC_POSTS = [
   {
-    slug: "downtown-bristol-tn-commercial-real-estate-market-2025",
+    slug: "downtown-bristol-tn-commercial-real-estate-market-2026",
     title: "Downtown Bristol, TN Commercial Real Estate Market Outlook 2026",
     meta_title: "Downtown Bristol TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
     meta_description: "Deep dive into the 2025 commercial real estate market in Downtown Bristol, TN.",
@@ -133,7 +133,7 @@ const STATIC_POSTS = [
     status: "published" as const,
   },
   {
-    slug: "executive-business-consulting-northeast-tennessee-2025",
+    slug: "executive-business-consulting-northeast-tennessee-2026",
     title: "Executive Business Consulting in Northeast Tennessee: What CEOs Need in 2025",
     meta_title: "Executive Business Consulting Northeast Tennessee 2025 | Vision LLC Advisement",
     meta_description: "Vision LLC's Executive Advisement division offers C-suite strategy, site selection, and market entry consulting.",
