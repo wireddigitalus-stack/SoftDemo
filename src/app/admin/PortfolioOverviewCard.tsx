@@ -192,7 +192,7 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
   // Per-property derived data
   const propData = useMemo(() => properties.map(p => {
     const d = detailMap[p.id];
-    const displayName = d?.display_name || "";
+    const displayName = d?.display_name || p.name;
     const pts = tenants.filter(t => exactBuildingMatch(t.building || "", p.id, displayName));
     const activePts = pts.filter(t => t.status === "active");
     const revenue = activePts.reduce((s, t) =>
