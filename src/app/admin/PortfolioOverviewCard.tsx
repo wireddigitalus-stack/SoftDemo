@@ -202,16 +202,28 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
     const expenses = taxMo + insMo + (d?.electric_monthly || 0) + (d?.water_monthly || 0) + (d?.other_monthly || 0);
     const totalUnits = d?.total_units || activePts.length || 1;
     const occupancy = Math.min(100, Math.round((activePts.length / totalUnits) * 100));
-    const alerts = pts.filter(t => {
+    const expiringTenants = pts.filter(t => {
       const days = daysUntil(t.leaseEnd || t.renewalDate);
       return days !== null && days <= 90;
-    }).length;
+    });
+    const alerts = expiringTenants.length;
 
     const propMissedRevenue = (availableSpaces || [])
       .filter(space => space.property_id === p.id)
       .reduce((s, space) => s + (space.monthly_rent || 0), 0);
 
-    return { property: p, pts: activePts, revenue, expenses, profit: revenue - expenses, occupancy, alerts, trend: (d?.trend || "stable") as "up" | "stable" | "down", missedRevenue: propMissedRevenue };
+    return {
+      property: p,
+      pts: activePts,
+      revenue,
+      expenses,
+      profit: revenue - expenses,
+      occupancy,
+      alerts,
+      trend: (d?.trend || "stable") as "up" | "stable" | "down",
+      missedRevenue: propMissedRevenue,
+      expiringTenants,
+    };
   }), [properties, tenants, detailMap, availableSpaces]);
 
   // Portfolio KPIs
@@ -280,7 +292,7 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
       <div className="border-t border-[rgba(255,255,255,0.04)] px-6 py-4">
         <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Property Health</p>
         <div className="space-y-2.5">
-          {propData.map(({ property, occupancy, profit, trend, alerts, expenses, missedRevenue: propMissed }) => {
+          {propData.map(({ property, occupancy, profit, trend, alerts, expenses, missedRevenue: propMissed, expiringTenants }) => {
             const trendCfg = TREND_MAP[trend];
             const TrendIcon = trendCfg.icon;
             const occColor = occupancy >= 80 ? "#4ADE80" : occupancy >= 40 ? "#FACC15" : "#EF4444";
@@ -319,7 +331,8 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
 
                 {/* Alert badge */}
                 {alerts > 0 ? (
-                  <span className="flex-shrink-0 flex items-center gap-1 text-xs font-bold text-yellow-400">
+                  <span className="flex-shrink-0 flex items-center gap-1 text-xs font-bold text-yellow-400 cursor-help"
+                    title={`Expiring Lease(s):\n${expiringTenants.map(t => `• ${t.name} (ends ${t.leaseEnd || t.renewalDate || "TBD"})`).join("\n")}`}>
                     <AlertTriangle size={11} />{alerts}
                   </span>
                 ) : (
