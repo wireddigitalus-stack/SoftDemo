@@ -263,7 +263,7 @@ export default async function BlogPage() {
                   {/* Category badge overlay when image exists */}
                   {post.image && (
                     <div className="absolute top-2 left-2">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold border backdrop-blur-sm bg-[rgba(10,15,25,0.75)] ${categoryColors[post.category] || categoryColors["Market Reports"]}`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold backdrop-blur-sm bg-[rgba(5,8,15,0.88)] border border-[rgba(255,255,255,0.08)] ${categoryColors[post.category] || categoryColors["Market Reports"]}`}>
                         {post.category}
                       </span>
                     </div>
