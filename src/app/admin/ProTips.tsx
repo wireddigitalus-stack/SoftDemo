@@ -21,7 +21,7 @@ export type TabKey =
   | "marketing-properties"
   | "marketing-social"
   | "marketing-intel"
-  | "one-sheet"
+  | "marketing-one-sheet"
   | "archived"
   | "content"
   | "content-homepage"
@@ -531,7 +531,7 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "This is Phase 2 (RSS + AI scoring). Phase 3 will add job posting monitoring (companies posting roles in Tri-Cities = expansion signal), SEC filing analysis for lease expirations, and automatic weekly email digests of hot leads.",
     },
   ],
-  "one-sheet": [
+  "marketing-one-sheet": [
     {
       emoji: "🏢",
       title: "What Is a One-Sheet?",
@@ -620,6 +620,16 @@ const TIPS: Record<TabKey, Tip[]> = {
       emoji: "👁️",
       title: "Activity Log Identity",
       body: "Every action in the dashboard is logged with the name of the admin who performed it — not just 'Admin.' The system reads your name from your user profile. Make sure each admin account has a proper name set in the staff list for accurate audit trails.",
+    },
+    {
+      emoji: "🛡️",
+      title: "AI Login Guard Score",
+      body: "The AI Login Guard monitors login attempts and calculates a real-time Security Score (0–100). Standard logins from authorized emails at typical hours maintain a high score, while anomalies or blocked attempts drop the score to signal possible threats.",
+    },
+    {
+      emoji: "🚨",
+      title: "Evaluating Login Anomalies",
+      body: "The AI checks for parameters like unusual login hours (e.g. 3 AM logins), unrecognized email signatures, and brute-force patterns. You can test the system's response by clicking 'Simulate Login Threat' to run a demo evaluation safely.",
     },
     {
       emoji: "🗑️",
@@ -856,7 +866,7 @@ export default function ProTips({ activeTab }: ProTipsProps) {
     "marketing-properties": "Add Property",
     "marketing-social": "Social Copy",
     "marketing-intel": "Market Intel",
-    "one-sheet": "One-Sheet",
+    "marketing-one-sheet": "One-Sheet",
     archived: "Archive",
     content: "Content",
     "content-homepage": "Homepage Editor",

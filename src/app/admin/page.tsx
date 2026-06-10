@@ -843,8 +843,8 @@ export default function AdminPage() {
     setActiveTab(tab);
     router.replace(`/admin?tab=${tab}`, { scroll: false });
   };
-  const [marketingSubTab, setMarketingSubTab] = useState("properties");
-  const [contentSubView, setContentSubView] = useState("content-homepage");
+  const [marketingSubTab, setMarketingSubTab] = useState("blog");
+  const [contentSubView, setContentSubView] = useState("content-properties");
 
   // Always start at the very top — prevents browser scroll-restoration from
   // loading the dashboard mid-page and hiding the tab nav under the site nav
@@ -952,6 +952,23 @@ export default function AdminPage() {
         if (!access && !isEnvAllowed) {
           setAccessDenied(true);
           setAuthChecking(false);
+          // ── Log blocked access attempt ──
+          try {
+            const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+            const resolvedName = data.user.user_metadata?.full_name || email.split("@")[0] || "Team";
+            fetch("/api/activity-log", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "admin_blocked",
+                resource_type: "auth",
+                resource_name: resolvedName,
+                actor_name: resolvedName,
+                actor_email: email,
+                metadata: { device: isMobile ? "mobile" : "desktop", reason: "Unauthorized admin email attempt" },
+              }),
+            }).catch(() => {});
+          } catch { /**/ }
           return;
         }
       } catch {
