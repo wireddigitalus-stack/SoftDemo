@@ -1245,85 +1245,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── Global Lease Renewal Alert Banner ─────────────────────────────── */}
-        {leaseAlerts.length > 0 && !leaseAlertsDismissed && (
-          <div className="mb-4 rounded-2xl border overflow-hidden"
-            style={{
-              borderColor: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                ? "rgba(239,68,68,0.4)" : leaseAlerts.some(a => a.urgency === "soon")
-                ? "rgba(249,115,22,0.35)" : "rgba(250,204,21,0.3)",
-              background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                ? "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02))"
-                : leaseAlerts.some(a => a.urgency === "soon")
-                ? "linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02))"
-                : "linear-gradient(135deg, rgba(250,204,21,0.08), rgba(250,204,21,0.02))",
-            }}>
-            {/* Banner header */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{
-                    background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                      ? "rgba(239,68,68,0.15)" : "rgba(250,204,21,0.15)",
-                    border: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                      ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(250,204,21,0.3)",
-                  }}>
-                  <AlertCircle size={15} style={{
-                    color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15"
-                  }} />
-                </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest"
-                    style={{ color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15" }}>
-                    Lease Renewal Alerts
-                    <span className="ml-2 px-1.5 py-0.5 rounded-md text-[10px] font-black bg-[rgba(255,255,255,0.06)]">
-                      {leaseAlerts.length}
-                    </span>
-                  </p>
-                  <p className="text-[11px] text-gray-500 mt-0.5">Tenants with leases expiring within their alert window</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setLeaseAlertsDismissed(true)}
-                className="text-gray-600 hover:text-white transition-colors p-1"
-                title="Dismiss alerts"
-              >
-                <X size={14} />
-              </button>
-            </div>
-
-            {/* Alert items */}
-            <div className="px-4 pb-3">
-              <div className="flex flex-wrap gap-2">
-                {leaseAlerts.map(({ tenant, days, urgency }) => {
-                  const colorMap = {
-                    expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
-                    urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
-                    soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
-                    watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
-                    early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
-                  };
-                  const c = colorMap[urgency];
-                  const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
-                  return (
-                    <button
-                      key={tenant.id}
-                      onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
-                      <span className="text-white font-semibold">{tenant.name}</span>
-                      {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
-                      <span className="font-black">{label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Page Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -1562,6 +1483,85 @@ export default function AdminPage() {
             })}
           </div>
         </div>
+
+        {/* ── Global Lease Renewal Alert Banner ─────────────────────────────── */}
+        {leaseAlerts.length > 0 && !leaseAlertsDismissed && (
+          <div className="mb-4 rounded-2xl border overflow-hidden"
+            style={{
+              borderColor: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                ? "rgba(239,68,68,0.4)" : leaseAlerts.some(a => a.urgency === "soon")
+                ? "rgba(249,115,22,0.35)" : "rgba(250,204,21,0.3)",
+              background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                ? "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02))"
+                : leaseAlerts.some(a => a.urgency === "soon")
+                ? "linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02))"
+                : "linear-gradient(135deg, rgba(250,204,21,0.08), rgba(250,204,21,0.02))",
+            }}>
+            {/* Banner header */}
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{
+                    background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                      ? "rgba(239,68,68,0.15)" : "rgba(250,204,21,0.15)",
+                    border: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                      ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(250,204,21,0.3)",
+                  }}>
+                  <AlertCircle size={15} style={{
+                    color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15"
+                  }} />
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest"
+                    style={{ color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15" }}>
+                    Lease Renewal Alerts
+                    <span className="ml-2 px-1.5 py-0.5 rounded-md text-[10px] font-black bg-[rgba(255,255,255,0.06)]">
+                      {leaseAlerts.length}
+                    </span>
+                  </p>
+                  <p className="text-[11px] text-gray-500 mt-0.5">Tenants with leases expiring within their alert window</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setLeaseAlertsDismissed(true)}
+                className="text-gray-600 hover:text-white transition-colors p-1"
+                title="Dismiss alerts"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Alert items */}
+            <div className="px-4 pb-3">
+              <div className="flex flex-wrap gap-2">
+                {leaseAlerts.map(({ tenant, days, urgency }) => {
+                  const colorMap = {
+                    expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
+                    urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
+                    soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
+                    watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
+                    early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
+                  };
+                  const c = colorMap[urgency];
+                  const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
+                  return (
+                    <button
+                      key={tenant.id}
+                      onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
+                      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
+                      <span className="text-white font-semibold">{tenant.name}</span>
+                      {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
+                      <span className="font-black">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ─ LEADS TAB ──────────────────────────────────────────────────────── */}
         {activeTab === "leads" && (
