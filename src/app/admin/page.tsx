@@ -875,6 +875,7 @@ export default function AdminPage() {
   }
   const [leaseAlerts, setLeaseAlerts] = useState<LeaseAlert[]>([]);
   const [leaseAlertsDismissed, setLeaseAlertsDismissed] = useState(false);
+  const [leaseAlertsExpanded, setLeaseAlertsExpanded] = useState(false);
 
   useEffect(() => {
     fetch("/api/tenants", { cache: "no-store" })
@@ -1484,111 +1485,143 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* ── Global Lease Renewal Alert Banner ─────────────────────────────── */}
-        {leaseAlerts.length > 0 && !leaseAlertsDismissed && (
-          <div className="mb-4 rounded-2xl border overflow-hidden"
-            style={{
-              borderColor: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                ? "rgba(239,68,68,0.4)" : leaseAlerts.some(a => a.urgency === "soon")
-                ? "rgba(249,115,22,0.35)" : "rgba(250,204,21,0.3)",
-              background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                ? "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02))"
-                : leaseAlerts.some(a => a.urgency === "soon")
-                ? "linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02))"
-                : "linear-gradient(135deg, rgba(250,204,21,0.08), rgba(250,204,21,0.02))",
-            }}>
-            {/* Banner header */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{
-                    background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                      ? "rgba(239,68,68,0.15)" : "rgba(250,204,21,0.15)",
-                    border: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
-                      ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(250,204,21,0.3)",
-                  }}>
-                  <AlertCircle size={15} style={{
-                    color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15"
-                  }} />
+        {/* Personalized greeting — global */}
+        {currentUser && (() => {
+          const hour = new Date().getHours();
+          const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+          const firstName = currentUser.name.split(" ")[0];
+          return (
+            <div className="mb-4 flex items-center gap-3">
+              {currentUser.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={currentUser.avatar} alt={currentUser.name} className="w-10 h-10 rounded-full border-2 border-[rgba(74,222,128,0.3)] flex-shrink-0" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4ADE80]/30 to-[#22C55E]/20 border-2 border-[rgba(74,222,128,0.3)] flex items-center justify-center text-sm font-black text-[#4ADE80] flex-shrink-0">
+                  {currentUser.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
                 </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest"
-                    style={{ color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15" }}>
-                    Lease Renewal Alerts
-                    <span className="ml-2 px-1.5 py-0.5 rounded-md text-[10px] font-black bg-[rgba(255,255,255,0.06)]">
-                      {leaseAlerts.length}
-                    </span>
-                  </p>
-                  <p className="text-[11px] text-gray-500 mt-0.5">Tenants with leases expiring within their alert window</p>
-                </div>
+              )}
+              <div>
+                <h2 className="text-xl font-black text-white">{greeting}, {firstName} 👋</h2>
+                <p className="text-xs text-gray-500">Here&apos;s your portfolio snapshot for today.</p>
               </div>
-              <button
-                onClick={() => setLeaseAlertsDismissed(true)}
-                className="text-gray-600 hover:text-white transition-colors p-1"
-                title="Dismiss alerts"
-              >
-                <X size={14} />
-              </button>
             </div>
+          );
+        })()}
 
-            {/* Alert items */}
-            <div className="px-4 pb-3">
-              <div className="flex flex-wrap gap-2">
-                {leaseAlerts.map(({ tenant, days, urgency }) => {
-                  const colorMap = {
-                    expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
-                    urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
-                    soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
-                    watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
-                    early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
-                  };
-                  const c = colorMap[urgency];
-                  const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
-                  return (
+        {/* ── Global Lease Renewal Alert Banner ─────────────────────────────── */}
+        {leaseAlerts.length > 0 && !leaseAlertsDismissed && (() => {
+          const hasUrgent = leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent");
+          const hasSoon = leaseAlerts.some(a => a.urgency === "soon");
+          const accentColor = hasUrgent ? "#EF4444" : hasSoon ? "#F97316" : "#FACC15";
+          const expiredCount = leaseAlerts.filter(a => a.urgency === "expired").length;
+          const urgentCount = leaseAlerts.filter(a => a.urgency === "urgent").length;
+          const soonCount = leaseAlerts.filter(a => a.urgency === "soon").length;
+          return (
+            <>
+              <style>{`
+                @keyframes leaseAlertPulse {
+                  0%, 100% { box-shadow: 0 0 8px ${accentColor}30, inset 0 0 0 1px ${accentColor}50; }
+                  50%      { box-shadow: 0 0 22px ${accentColor}50, inset 0 0 0 1px ${accentColor}80; }
+                }
+              `}</style>
+              <div
+                className="mb-4 rounded-2xl overflow-hidden transition-all duration-300"
+                style={{
+                  border: `1.5px solid ${accentColor}55`,
+                  background: `linear-gradient(135deg, ${accentColor}0D, ${accentColor}05)`,
+                  animation: leaseAlertsExpanded ? "none" : "leaseAlertPulse 2s ease-in-out infinite",
+                }}>
+
+                {/* Collapsed header — always visible, clickable */}
+                <button
+                  onClick={() => setLeaseAlertsExpanded(prev => !prev)}
+                  className="w-full flex items-center justify-between px-4 py-3 cursor-pointer group transition-colors hover:bg-[rgba(255,255,255,0.03)]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    {/* Pulsing icon */}
+                    <div className="relative w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}35` }}>
+                      <AlertCircle size={16} style={{ color: accentColor }} />
+                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
+                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full" style={{ backgroundColor: accentColor }} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-black uppercase tracking-widest flex items-center gap-2" style={{ color: accentColor }}>
+                        Lease Renewal Alerts
+                        <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black" style={{ background: `${accentColor}18`, color: accentColor }}>
+                          {leaseAlerts.length}
+                        </span>
+                      </p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
+                        {expiredCount > 0 && <span className="text-red-400 font-bold">{expiredCount} expired</span>}
+                        {expiredCount > 0 && (urgentCount > 0 || soonCount > 0) && <span> · </span>}
+                        {urgentCount > 0 && <span className="text-red-400 font-bold">{urgentCount} urgent</span>}
+                        {urgentCount > 0 && soonCount > 0 && <span> · </span>}
+                        {soonCount > 0 && <span className="text-orange-400 font-bold">{soonCount} soon</span>}
+                        {expiredCount === 0 && urgentCount === 0 && soonCount === 0 && <span>Upcoming renewals need attention</span>}
+                        <span className="text-gray-600"> — click to {leaseAlertsExpanded ? "collapse" : "review"}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all"
+                      style={{
+                        background: leaseAlertsExpanded ? "rgba(255,255,255,0.04)" : `${accentColor}15`,
+                        color: leaseAlertsExpanded ? "#6B7280" : accentColor,
+                        border: `1px solid ${leaseAlertsExpanded ? "rgba(255,255,255,0.08)" : accentColor + "30"}`,
+                      }}>
+                      {leaseAlertsExpanded ? "Collapse" : "Review Alerts ▾"}
+                    </span>
                     <button
-                      key={tenant.id}
-                      onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
+                      onClick={(e) => { e.stopPropagation(); setLeaseAlertsDismissed(true); }}
+                      className="text-gray-600 hover:text-white transition-colors p-1"
+                      title="Dismiss alerts"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
-                      <span className="text-white font-semibold">{tenant.name}</span>
-                      {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
-                      <span className="font-black">{label}</span>
+                      <X size={14} />
                     </button>
-                  );
-                })}
+                  </div>
+                </button>
+
+                {/* Expanded alert items */}
+                {leaseAlertsExpanded && (
+                  <div className="px-4 pb-3 pt-1 border-t border-[rgba(255,255,255,0.06)]" style={{ animation: "slideDown 0.25s ease-out" }}>
+                    <style>{`@keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 500px; } }`}</style>
+                    <div className="flex flex-wrap gap-2">
+                      {leaseAlerts.map(({ tenant, days, urgency }) => {
+                        const colorMap = {
+                          expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
+                          urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
+                          soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
+                          watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
+                          early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
+                        };
+                        const c = colorMap[urgency];
+                        const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
+                        return (
+                          <button
+                            key={tenant.id}
+                            onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
+                            style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
+                            <span className="text-white font-semibold">{tenant.name}</span>
+                            {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
+                            <span className="font-black">{label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-        )}
+            </>
+          );
+        })()}
 
         {/* ─ LEADS TAB ──────────────────────────────────────────────────────── */}
         {activeTab === "leads" && (
           <>
-            {/* Personalized greeting */}
-            {currentUser && (() => {
-              const hour = new Date().getHours();
-              const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-              const firstName = currentUser.name.split(" ")[0];
-              return (
-                <div className="mb-5 flex items-center gap-3">
-                  {currentUser.avatar ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={currentUser.avatar} alt={currentUser.name} className="w-10 h-10 rounded-full border-2 border-[rgba(74,222,128,0.3)] flex-shrink-0" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4ADE80]/30 to-[#22C55E]/20 border-2 border-[rgba(74,222,128,0.3)] flex items-center justify-center text-sm font-black text-[#4ADE80] flex-shrink-0">
-                      {currentUser.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <h2 className="text-xl font-black text-white">{greeting}, {firstName} 👋</h2>
-                    <p className="text-xs text-gray-500">Here&apos;s your pipeline snapshot for today.</p>
-                  </div>
-                </div>
-              );
-            })()}
-
             {/* Daily Brief — first thing a CEO sees */}
             <DailyBriefCard
               key={briefKey}
