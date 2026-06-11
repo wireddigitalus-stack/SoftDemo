@@ -451,5 +451,23 @@ textarea {
   .admin-dash .border-\[rgba\(255\,255\,255\,0\.04\)\] {
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
+
+  /* Force dark rendering on all dropdowns — fixes Edge/Windows rendering
+     white/gray backgrounds with white text on <select> elements */
+  .admin-dash select,
+  .admin-dash option {
+    color-scheme: dark;
+    background-color: #111827 !important; /* gray-900 */
+    color: #f9fafb !important;            /* gray-50  */
+  }
+
+  .admin-dash select:focus {
+    background-color: #1f2937 !important; /* gray-800 on focus */
+  }
+
+  .admin-dash option:hover,
+  .admin-dash option:checked {
+    background-color: #1f2937 !important; /* gray-800 */
+  }
 }
 

@@ -1003,7 +1003,7 @@ export default function PropDetailsTab() {
           <span className="ml-3 text-sm text-gray-500">Loading…</span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           {allProperties.map(p => (
             <PropertyCard key={p.id} property={p} tenants={tenants} detail={detailMap[p.id]} onSave={handleSave} onDelete={handleDeleteProperty} />
           ))}
