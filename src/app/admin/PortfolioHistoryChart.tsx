@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { TrendingUp, BarChart3, AlertCircle, RefreshCw, Calendar } from "lucide-react";
+import { TrendingUp, BarChart3, AlertCircle, RefreshCw } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Snapshot {
@@ -22,26 +22,6 @@ const RANGES: { label: string; key: RangeKey }[] = [
   { label: "6 M", key: "6" },
   { label: "12 M", key: "12" },
 ];
-
-function makeSeedData(): Snapshot[] {
-  const today = new Date();
-  return Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(today);
-    d.setMonth(d.getMonth() - (5 - i));
-    const rev = 52000 + Math.sin(i * 0.8) * 6000 + i * 800;
-    const exp = 28000 + Math.sin(i * 1.2) * 3000 + i * 200;
-    return {
-      id: `seed-${i}`,
-      snapshot_date: d.toISOString().split("T")[0],
-      total_revenue: Math.round(rev),
-      total_expenses: Math.round(exp),
-      net_income: Math.round(rev - exp),
-      occupancy_rate: 82 + Math.sin(i * 0.6) * 8,
-      total_tenants: 18 + (i % 3),
-      open_tickets: Math.floor(Math.random() * 7),
-    };
-  });
-}
 
 // ─── SVG Area Chart — pixel-accurate, no text distortion ─────────────────────
 interface Series { key: keyof Snapshot; label: string; color: string }
@@ -248,12 +228,14 @@ export default function PortfolioHistoryChart() {
   const [migrationSql, setMigrationSql] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState<RangeKey>("6");
-  const [showSeedBanner, setShowSeedBanner] = useState(false);
-  const [isSeedMode, setIsSeedMode] = useState(false);
-  const seedingRef = useRef(false);
+  const recordedRef = useRef(false);
 
-  const SEED_DATA = useRef<Snapshot[]>([]);
-  if (!SEED_DATA.current.length) SEED_DATA.current = makeSeedData();
+  // Record today's real snapshot from live data (runs once on mount)
+  useEffect(() => {
+    if (recordedRef.current) return;
+    recordedRef.current = true;
+    fetch("/api/portfolio-snapshot/record", { method: "POST" }).catch(() => {});
+  }, []);
 
   const fetchSnapshots = useCallback(async (months: RangeKey) => {
     setLoading(true);
@@ -262,53 +244,24 @@ export default function PortfolioHistoryChart() {
       const data = await res.json();
       if (data.migrationSql) {
         setMigrationSql(data.migrationSql);
-        setSnapshots(SEED_DATA.current);
-        setIsSeedMode(true);
-      } else if (Array.isArray(data.snapshots) && data.snapshots.length > 0) {
+        setSnapshots([]);
+      } else if (Array.isArray(data.snapshots)) {
         setSnapshots(data.snapshots);
-        setShowSeedBanner(false);
-        setIsSeedMode(false);
       } else {
-        setShowSeedBanner(true);
-        setIsSeedMode(true);
-        setSnapshots(SEED_DATA.current);
+        setSnapshots([]);
       }
     } catch {
-      setSnapshots(SEED_DATA.current);
-      setIsSeedMode(true);
+      setSnapshots([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchSnapshots(range); }, [range, fetchSnapshots]);
-
-  const seedDemoData = async () => {
-    if (seedingRef.current) return;
-    seedingRef.current = true;
-    try {
-      await Promise.all(
-        SEED_DATA.current.map(s =>
-          fetch("/api/portfolio-snapshot", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              snapshot_date: s.snapshot_date,
-              total_revenue: s.total_revenue,
-              total_expenses: s.total_expenses,
-              occupancy_rate: s.occupancy_rate,
-              total_tenants: s.total_tenants,
-              open_tickets: s.open_tickets,
-            }),
-          })
-        )
-      );
-      setShowSeedBanner(false);
-      fetchSnapshots(range);
-    } finally {
-      seedingRef.current = false;
-    }
-  };
+  // Small delay on first fetch to let the record POST finish
+  useEffect(() => {
+    const timer = setTimeout(() => fetchSnapshots(range), 600);
+    return () => clearTimeout(timer);
+  }, [range, fetchSnapshots]);
 
   const first = snapshots[0];
   const last  = snapshots[snapshots.length - 1];
@@ -343,13 +296,8 @@ export default function PortfolioHistoryChart() {
           <div>
             <h3 style={{ color: "#F1F5F9", fontWeight: 700, fontSize: 16, margin: 0 }}>
               P&amp;L History
-              {isSeedMode && (
-                <span style={{ marginLeft: 8, fontSize: 11, color: "#A5B4FC", fontWeight: 600, background: "rgba(99,102,241,0.15)", padding: "2px 8px", borderRadius: 20, border: "1px solid rgba(99,102,241,0.25)" }}>
-                  Preview Data
-                </span>
-              )}
             </h3>
-            <p style={{ color: "#94A3B8", fontSize: 12, margin: 0 }}>Month-over-month portfolio trends</p>
+            <p style={{ color: "#94A3B8", fontSize: 12, margin: 0 }}>Month-over-month portfolio trends · live data</p>
           </div>
         </div>
 
@@ -392,25 +340,6 @@ export default function PortfolioHistoryChart() {
         </div>
       )}
 
-      {/* Seed banner */}
-      {showSeedBanner && !migrationSql && (
-        <div style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 12, padding: "12px 16px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <Calendar size={14} style={{ color: "#818CF8" }} />
-            <p style={{ color: "#A5B4FC", fontSize: 13, fontWeight: 600, margin: 0 }}>
-              No historical data yet — showing preview. Seed sample data or start recording daily snapshots.
-            </p>
-          </div>
-          <button onClick={seedDemoData} style={{
-            background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.4)",
-            color: "#A5B4FC", padding: "6px 14px", borderRadius: 8,
-            fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap",
-          }}>
-            Seed Demo Data
-          </button>
-        </div>
-      )}
-
       {/* KPI delta row */}
       {snapshots.length >= 2 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 24 }}>
@@ -430,15 +359,39 @@ export default function PortfolioHistoryChart() {
         </div>
       )}
 
+      {/* Single snapshot — show current values without delta comparison */}
+      {snapshots.length === 1 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 24 }}>
+          {[
+            { label: "Net Income", val: fmt(last?.net_income ?? 0),    color: (last?.net_income ?? 0) >= 0 ? "#4ADE80" : "#F87171" },
+            { label: "Revenue",    val: fmt(last?.total_revenue ?? 0), color: "#4ADE80" },
+            { label: "Occupancy",  val: `${last?.occupancy_rate?.toFixed(1)}%`, color: (last?.occupancy_rate ?? 0) >= 80 ? "#4ADE80" : "#FACC15" },
+          ].map(k => (
+            <div key={k.label} style={{ background: "rgba(30,41,59,0.5)", borderRadius: 12, padding: "12px 16px", border: "1px solid rgba(148,163,184,0.1)" }}>
+              <p style={{ color: "#94A3B8", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>{k.label}</p>
+              <p style={{ color: k.color, fontSize: 22, fontWeight: 800, margin: "0 0 2px" }}>{k.val}</p>
+              <p style={{ color: "#64748B", fontSize: 12, fontWeight: 600, margin: 0 }}>
+                Current snapshot · tracking starts now
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Chart */}
       {loading ? (
         <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <span style={{ color: "#475569", fontSize: 14 }}>Loading…</span>
         </div>
-      ) : snapshots.length === 0 ? (
+      ) : snapshots.length < 2 ? (
         <div style={{ height: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
           <BarChart3 size={36} style={{ color: "#334155" }} />
-          <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>No snapshot data available.</p>
+          <p style={{ color: "#94A3B8", fontSize: 14, margin: 0, fontWeight: 600 }}>
+            {snapshots.length === 1 ? "First snapshot recorded! Chart will appear once you have 2+ data points." : "No snapshot data yet."}
+          </p>
+          <p style={{ color: "#64748B", fontSize: 12, margin: 0 }}>
+            A new data point is recorded each time you visit this page. Check back tomorrow for trends.
+          </p>
         </div>
       ) : (
         <SVGAreaChart data={snapshots} series={SERIES} />
@@ -446,3 +399,4 @@ export default function PortfolioHistoryChart() {
     </div>
   );
 }
+
