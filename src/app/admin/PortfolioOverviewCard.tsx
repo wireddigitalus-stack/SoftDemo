@@ -231,6 +231,8 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
       expenses,
       profit: revenue - expenses,
       occupancy,
+      totalUnits,
+      occupiedUnits: activePts.length,
       alerts,
       trend: (d?.trend || "stable") as "up" | "stable" | "down",
       missedRevenue: propMissedRevenue,
@@ -243,7 +245,10 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
   const totalExpenses = propData.reduce((s, p) => s + p.expenses, 0);
   const netPL         = totalRevenue - totalExpenses;
   const totalTenants  = tenants.length;
-  const avgOccupancy  = Math.round(propData.reduce((s, p) => s + p.occupancy, 0) / Math.max(propData.length, 1));
+  // Actual portfolio-wide occupancy: total occupied units / total units (weighted, not averaged)
+  const portfolioUnits    = propData.reduce((s, p) => s + p.totalUnits, 0);
+  const portfolioOccupied = propData.reduce((s, p) => s + p.occupiedUnits, 0);
+  const occupancy         = portfolioUnits > 0 ? Math.min(100, Math.round((portfolioOccupied / portfolioUnits) * 100)) : 0;
   const totalAlerts   = propData.reduce((s, p) => s + p.alerts, 0);
 
   const kpis = [
@@ -251,7 +256,7 @@ export default function PortfolioOverviewCard({ properties, tenants, details, av
     { label: "Total Expenses",     value: totalExpenses ? `$${Math.round(totalExpenses).toLocaleString()}/mo` : "Not set", color: "#F97316", icon: BarChart3   },
     { label: "Net P&L",            value: totalExpenses ? `${netPL >= 0 ? "+" : ""}$${Math.round(netPL).toLocaleString()}/mo` : "—", color: netPL >= 0 ? "#4ADE80" : "#EF4444", icon: TrendingUp  },
     { label: "Missed Revenue",     value: missedRevenue > 0 ? `$${missedRevenue.toLocaleString()}/mo` : "$0/mo", color: missedRevenue > 0 ? "#EF4444" : "#6B7280", icon: TrendingDown },
-    { label: "Avg Occupancy",      value: `${avgOccupancy}%`,                       color: avgOccupancy >= 80 ? "#4ADE80" : avgOccupancy >= 50 ? "#FACC15" : "#EF4444", icon: Building2  },
+    { label: "Occupancy",          value: `${occupancy}%`,                           color: occupancy >= 80 ? "#4ADE80" : occupancy >= 50 ? "#FACC15" : "#EF4444", icon: Building2  },
     { label: "Active Tenants",     value: totalTenants,                             color: "#60A5FA", icon: Users       },
   ];
 
