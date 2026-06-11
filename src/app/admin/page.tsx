@@ -1618,6 +1618,8 @@ export default function AdminPage() {
         {/* ─ LEADS TAB ──────────────────────────────────────────────────────── */}
         {activeTab === "leads" && (
           <>
+            {renderLeaseAlerts()}
+
             {/* Daily Brief — first thing a CEO sees */}
             <DailyBriefCard
               key={briefKey}
@@ -1641,8 +1643,6 @@ export default function AdminPage() {
                 }, 80);
               }}
             />
-
-            {renderLeaseAlerts()}
 
             {/* Pipeline Banner */}
             <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-gradient-to-r from-[rgba(74,222,128,0.07)] to-[rgba(74,222,128,0.02)] p-4 sm:p-6 mb-6">
