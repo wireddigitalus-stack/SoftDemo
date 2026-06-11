@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import TenantsTab from "./TenantsTab";
+import TenantsTab, { rowToTenant, type Tenant } from "./TenantsTab";
 import PropDetailsTab from "./PropDetailsTab";
 import AnalyticsTab, { type AnalyticsLead } from "./AnalyticsTab";
 import MaintenanceTab from "./MaintenanceTab";
@@ -867,6 +867,42 @@ export default function AdminPage() {
   const seenIdsRef = useRef<Set<string>>(new Set());
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── Global Lease Renewal Alerts ──
+  interface LeaseAlert {
+    tenant: Tenant;
+    days: number;
+    urgency: "expired" | "urgent" | "soon" | "watch" | "early";
+  }
+  const [leaseAlerts, setLeaseAlerts] = useState<LeaseAlert[]>([]);
+  const [leaseAlertsDismissed, setLeaseAlertsDismissed] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/tenants", { cache: "no-store" })
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data.tenants)) return;
+        const tenants = data.tenants.map(rowToTenant);
+        const active = tenants.filter((t: Tenant) => t.status === "active");
+        const alerts: LeaseAlert[] = [];
+        active.forEach((t: Tenant) => {
+          const dateStr = t.renewalDate || t.leaseEnd;
+          if (!dateStr) return;
+          const days = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
+          const threshold = t.leaseAlertDays ?? 90;
+          if (days > threshold) return;
+          let urgency: LeaseAlert["urgency"] = "early";
+          if (days <= 0)  urgency = "expired";
+          else if (days <= 30) urgency = "urgent";
+          else if (days <= 60) urgency = "soon";
+          else if (days <= 90) urgency = "watch";
+          alerts.push({ tenant: t, days, urgency });
+        });
+        alerts.sort((a, b) => a.days - b.days);
+        setLeaseAlerts(alerts);
+      })
+      .catch(() => {});
+  }, []);
+
   // ── Delete a single lead ──
   const deleteLead = async (id: string) => {
     const lead = leads.find(l => l.id === id);
@@ -1205,6 +1241,85 @@ export default function AdminPage() {
               <button onClick={() => setNewLeadToast(null)} className="text-gray-600 hover:text-white transition-colors flex-shrink-0 mt-0.5">
                 <X size={14} />
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Global Lease Renewal Alert Banner ─────────────────────────────── */}
+        {leaseAlerts.length > 0 && !leaseAlertsDismissed && (
+          <div className="mb-4 rounded-2xl border overflow-hidden"
+            style={{
+              borderColor: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                ? "rgba(239,68,68,0.4)" : leaseAlerts.some(a => a.urgency === "soon")
+                ? "rgba(249,115,22,0.35)" : "rgba(250,204,21,0.3)",
+              background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                ? "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02))"
+                : leaseAlerts.some(a => a.urgency === "soon")
+                ? "linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02))"
+                : "linear-gradient(135deg, rgba(250,204,21,0.08), rgba(250,204,21,0.02))",
+            }}>
+            {/* Banner header */}
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{
+                    background: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                      ? "rgba(239,68,68,0.15)" : "rgba(250,204,21,0.15)",
+                    border: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent")
+                      ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(250,204,21,0.3)",
+                  }}>
+                  <AlertCircle size={15} style={{
+                    color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15"
+                  }} />
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest"
+                    style={{ color: leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent") ? "#EF4444" : "#FACC15" }}>
+                    Lease Renewal Alerts
+                    <span className="ml-2 px-1.5 py-0.5 rounded-md text-[10px] font-black bg-[rgba(255,255,255,0.06)]">
+                      {leaseAlerts.length}
+                    </span>
+                  </p>
+                  <p className="text-[11px] text-gray-500 mt-0.5">Tenants with leases expiring within their alert window</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setLeaseAlertsDismissed(true)}
+                className="text-gray-600 hover:text-white transition-colors p-1"
+                title="Dismiss alerts"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Alert items */}
+            <div className="px-4 pb-3">
+              <div className="flex flex-wrap gap-2">
+                {leaseAlerts.map(({ tenant, days, urgency }) => {
+                  const colorMap = {
+                    expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
+                    urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
+                    soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
+                    watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
+                    early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
+                  };
+                  const c = colorMap[urgency];
+                  const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
+                  return (
+                    <button
+                      key={tenant.id}
+                      onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
+                      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
+                      <span className="text-white font-semibold">{tenant.name}</span>
+                      {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
+                      <span className="font-black">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}

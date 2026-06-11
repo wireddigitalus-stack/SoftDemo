@@ -31,7 +31,7 @@ export interface Tenant {
   leaseStart: string | null;
   leaseEnd: string | null;
   renewalDate: string | null;
-  leaseAlertDays: 30 | 60 | 180 | null;  // days-before-expiry to start alerting
+  leaseAlertDays: 30 | 60 | 180 | 230 | null;  // days-before-expiry to start alerting
   escalationPct: number;
   escalationDate: string | null;
   status: "active" | "pending" | "expired";
@@ -62,7 +62,7 @@ export function rowToTenant(r: Record<string, unknown>): Tenant {
     leaseStart: (r.lease_start as string) || null,
     leaseEnd: (r.lease_end as string) || null,
     renewalDate: (r.renewal_date as string) || null,
-    leaseAlertDays: (r.lease_alert_days as 30 | 60 | 180 | null) || null,
+    leaseAlertDays: (r.lease_alert_days as 30 | 60 | 180 | 230 | null) || null,
     escalationPct: Number(r.escalation_pct) || 0,
     escalationDate: (r.escalation_date as string) || null,
     status: (r.status as "active" | "pending" | "expired") || "active",
@@ -250,8 +250,8 @@ function TenantForm({
       <div>
         <label className={LABEL}>Lease Renewal Alert Window</label>
         <p className="text-[10px] text-gray-600 mb-2">Get an alert this many days before lease expiry</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {([30, 60, 180, null] as const).map(v => (
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+          {([30, 60, 180, 230, null] as const).map(v => (
             <button
               key={String(v)}
               type="button"
