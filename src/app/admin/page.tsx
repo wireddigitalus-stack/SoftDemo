@@ -1508,117 +1508,6 @@ export default function AdminPage() {
           );
         })()}
 
-        {/* ── Global Lease Renewal Alert Banner ─────────────────────────────── */}
-        {leaseAlerts.length > 0 && !leaseAlertsDismissed && (() => {
-          const hasUrgent = leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent");
-          const hasSoon = leaseAlerts.some(a => a.urgency === "soon");
-          const accentColor = hasUrgent ? "#EF4444" : hasSoon ? "#F97316" : "#FACC15";
-          const expiredCount = leaseAlerts.filter(a => a.urgency === "expired").length;
-          const urgentCount = leaseAlerts.filter(a => a.urgency === "urgent").length;
-          const soonCount = leaseAlerts.filter(a => a.urgency === "soon").length;
-          return (
-            <>
-              <style>{`
-                @keyframes leaseAlertPulse {
-                  0%, 100% { box-shadow: 0 0 8px ${accentColor}30, inset 0 0 0 1px ${accentColor}50; }
-                  50%      { box-shadow: 0 0 22px ${accentColor}50, inset 0 0 0 1px ${accentColor}80; }
-                }
-              `}</style>
-              <div
-                className="mb-4 rounded-2xl overflow-hidden transition-all duration-300"
-                style={{
-                  border: `1.5px solid ${accentColor}55`,
-                  background: `linear-gradient(135deg, ${accentColor}0D, ${accentColor}05)`,
-                  animation: leaseAlertsExpanded ? "none" : "leaseAlertPulse 2s ease-in-out infinite",
-                }}>
-
-                {/* Collapsed header — always visible, clickable */}
-                <button
-                  onClick={() => setLeaseAlertsExpanded(prev => !prev)}
-                  className="w-full flex items-center justify-between px-4 py-3 cursor-pointer group transition-colors hover:bg-[rgba(255,255,255,0.03)]"
-                >
-                  <div className="flex items-center gap-2.5">
-                    {/* Pulsing icon */}
-                    <div className="relative w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}35` }}>
-                      <AlertCircle size={16} style={{ color: accentColor }} />
-                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
-                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full" style={{ backgroundColor: accentColor }} />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-black uppercase tracking-widest flex items-center gap-2" style={{ color: accentColor }}>
-                        Lease Renewal Alerts
-                        <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black" style={{ background: `${accentColor}18`, color: accentColor }}>
-                          {leaseAlerts.length}
-                        </span>
-                      </p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">
-                        {expiredCount > 0 && <span className="text-red-400 font-bold">{expiredCount} expired</span>}
-                        {expiredCount > 0 && (urgentCount > 0 || soonCount > 0) && <span> · </span>}
-                        {urgentCount > 0 && <span className="text-red-400 font-bold">{urgentCount} urgent</span>}
-                        {urgentCount > 0 && soonCount > 0 && <span> · </span>}
-                        {soonCount > 0 && <span className="text-orange-400 font-bold">{soonCount} soon</span>}
-                        {expiredCount === 0 && urgentCount === 0 && soonCount === 0 && <span>Upcoming renewals need attention</span>}
-                        <span className="text-gray-600"> — click to {leaseAlertsExpanded ? "collapse" : "review"}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all"
-                      style={{
-                        background: leaseAlertsExpanded ? "rgba(255,255,255,0.04)" : `${accentColor}15`,
-                        color: leaseAlertsExpanded ? "#6B7280" : accentColor,
-                        border: `1px solid ${leaseAlertsExpanded ? "rgba(255,255,255,0.08)" : accentColor + "30"}`,
-                      }}>
-                      {leaseAlertsExpanded ? "Collapse" : "Review Alerts ▾"}
-                    </span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setLeaseAlertsDismissed(true); }}
-                      className="text-gray-600 hover:text-white transition-colors p-1"
-                      title="Dismiss alerts"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                </button>
-
-                {/* Expanded alert items */}
-                {leaseAlertsExpanded && (
-                  <div className="px-4 pb-3 pt-1 border-t border-[rgba(255,255,255,0.06)]" style={{ animation: "slideDown 0.25s ease-out" }}>
-                    <style>{`@keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 500px; } }`}</style>
-                    <div className="flex flex-wrap gap-2">
-                      {leaseAlerts.map(({ tenant, days, urgency }) => {
-                        const colorMap = {
-                          expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
-                          urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
-                          soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
-                          watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
-                          early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
-                        };
-                        const c = colorMap[urgency];
-                        const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
-                        return (
-                          <button
-                            key={tenant.id}
-                            onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
-                            style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
-                            <span className="text-white font-semibold">{tenant.name}</span>
-                            {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
-                            <span className="font-black">{label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          );
-        })()}
-
         {/* ─ LEADS TAB ──────────────────────────────────────────────────────── */}
         {activeTab === "leads" && (
           <>
@@ -1645,6 +1534,112 @@ export default function AdminPage() {
                 }, 80);
               }}
             />
+
+            {/* ── Lease Renewal Alert Banner ─────────────────────────────── */}
+            {leaseAlerts.length > 0 && !leaseAlertsDismissed && (() => {
+              const hasUrgent = leaseAlerts.some(a => a.urgency === "expired" || a.urgency === "urgent");
+              const hasSoon = leaseAlerts.some(a => a.urgency === "soon");
+              const accentColor = hasUrgent ? "#EF4444" : hasSoon ? "#F97316" : "#FACC15";
+              const expiredCount = leaseAlerts.filter(a => a.urgency === "expired").length;
+              const urgentCount = leaseAlerts.filter(a => a.urgency === "urgent").length;
+              const soonCount = leaseAlerts.filter(a => a.urgency === "soon").length;
+              return (
+                <>
+                  <style>{`
+                    @keyframes leaseAlertPulse {
+                      0%, 100% { box-shadow: 0 0 8px ${accentColor}30, inset 0 0 0 1px ${accentColor}50; }
+                      50%      { box-shadow: 0 0 22px ${accentColor}50, inset 0 0 0 1px ${accentColor}80; }
+                    }
+                  `}</style>
+                  <div
+                    className="mb-4 rounded-2xl overflow-hidden transition-all duration-300"
+                    style={{
+                      border: `1.5px solid ${accentColor}55`,
+                      background: `linear-gradient(135deg, ${accentColor}0D, ${accentColor}05)`,
+                      animation: leaseAlertsExpanded ? "none" : "leaseAlertPulse 2s ease-in-out infinite",
+                    }}>
+                    <button
+                      onClick={() => setLeaseAlertsExpanded(prev => !prev)}
+                      className="w-full flex items-center justify-between px-4 py-3 cursor-pointer group transition-colors hover:bg-[rgba(255,255,255,0.03)]"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="relative w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}35` }}>
+                          <AlertCircle size={16} style={{ color: accentColor }} />
+                          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
+                          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full" style={{ backgroundColor: accentColor }} />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-xs font-black uppercase tracking-widest flex items-center gap-2" style={{ color: accentColor }}>
+                            Lease Renewal Alerts
+                            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black" style={{ background: `${accentColor}18`, color: accentColor }}>
+                              {leaseAlerts.length}
+                            </span>
+                          </p>
+                          <p className="text-[11px] text-gray-500 mt-0.5">
+                            {expiredCount > 0 && <span className="text-red-400 font-bold">{expiredCount} expired</span>}
+                            {expiredCount > 0 && (urgentCount > 0 || soonCount > 0) && <span> · </span>}
+                            {urgentCount > 0 && <span className="text-red-400 font-bold">{urgentCount} urgent</span>}
+                            {urgentCount > 0 && soonCount > 0 && <span> · </span>}
+                            {soonCount > 0 && <span className="text-orange-400 font-bold">{soonCount} soon</span>}
+                            {expiredCount === 0 && urgentCount === 0 && soonCount === 0 && <span>Upcoming renewals need attention</span>}
+                            <span className="text-gray-600"> — click to {leaseAlertsExpanded ? "collapse" : "review"}</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all"
+                          style={{
+                            background: leaseAlertsExpanded ? "rgba(255,255,255,0.04)" : `${accentColor}15`,
+                            color: leaseAlertsExpanded ? "#6B7280" : accentColor,
+                            border: `1px solid ${leaseAlertsExpanded ? "rgba(255,255,255,0.08)" : accentColor + "30"}`,
+                          }}>
+                          {leaseAlertsExpanded ? "Collapse" : "Review Alerts ▾"}
+                        </span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setLeaseAlertsDismissed(true); }}
+                          className="text-gray-600 hover:text-white transition-colors p-1"
+                          title="Dismiss alerts"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    </button>
+                    {leaseAlertsExpanded && (
+                      <div className="px-4 pb-3 pt-1 border-t border-[rgba(255,255,255,0.06)]" style={{ animation: "slideDown 0.25s ease-out" }}>
+                        <style>{`@keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 500px; } }`}</style>
+                        <div className="flex flex-wrap gap-2">
+                          {leaseAlerts.map(({ tenant, days, urgency }) => {
+                            const colorMap = {
+                              expired: { text: "#EF4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
+                              urgent:  { text: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
+                              soon:    { text: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.25)" },
+                              watch:   { text: "#FACC15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.25)" },
+                              early:   { text: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.25)" },
+                            };
+                            const c = colorMap[urgency];
+                            const label = days <= 0 ? "EXPIRED" : days <= 30 ? `${days}d URGENT` : days <= 60 ? `${days}d SOON` : days <= 90 ? `${days}d WATCH` : `${days}d`;
+                            return (
+                              <button
+                                key={tenant.id}
+                                onClick={() => { switchTab("tenants"); setTimeout(() => document.getElementById(`tenant-card-${tenant.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400); }}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
+                                style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.text }} />
+                                <span className="text-white font-semibold">{tenant.name}</span>
+                                {tenant.building && <span className="text-gray-500 hidden sm:inline">· {tenant.building}</span>}
+                                <span className="font-black">{label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
 
             {/* Pipeline Banner */}
             <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-gradient-to-r from-[rgba(74,222,128,0.07)] to-[rgba(74,222,128,0.02)] p-4 sm:p-6 mb-6">
