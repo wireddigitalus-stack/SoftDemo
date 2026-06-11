@@ -1019,76 +1019,187 @@ export default function PropDetailsTab() {
       )}
 
       {/* Available Properties (Unleased Spaces) Section */}
-      {!loading && (
-        <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] p-5 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-black text-white flex items-center gap-2">
-                <Building2 size={16} className="text-[#A78BFA]" />
-                Available Properties (Unleased Spaces)
-              </h3>
-              <p className="text-[11px] text-gray-500 mt-1">
-                Add and manage specific suites, rooms, or buildings that are vacant to calculate missed potential revenue.
-              </p>
-            </div>
-            <button onClick={() => setShowAddSpace(true)}
-              className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] px-3 py-2 rounded-lg border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-all sm:self-start">
-              <Plus size={12} /> Add Unleased Space
-            </button>
-          </div>
+      {!loading && (() => {
+        // ── Compute totals ──
+        const totalSpaces = availableSpaces.length;
+        const totalRent = availableSpaces.reduce((s, sp) => s + (sp.monthly_rent || 0), 0);
+        const totalSqft = availableSpaces.reduce((s, sp) => s + (parseInt(String(sp.sqft)) || 0), 0);
+        const totalFees = availableSpaces.reduce((s, sp) => s + (sp.nnn_fee || 0) + (sp.nn_fee || 0) + (sp.utility_fee || 0), 0);
+        const avgRent = totalSpaces ? Math.round(totalRent / totalSpaces) : 0;
 
-          {availableSpaces.length === 0 ? (
-            <div className="text-center py-8 text-gray-400 text-xs flex flex-col items-center gap-2">
-              <Building2 size={20} className="opacity-30" />
-              <p>No unleased spaces registered.</p>
-              <p className="text-xs text-gray-500">All spaces are either occupied or not tracked here yet.</p>
+        // ── Group by property ──
+        const grouped: Record<string, { property: PropertyItem | undefined; spaces: AvailableSpace[] }> = {};
+        availableSpaces.forEach(sp => {
+          if (!grouped[sp.property_id]) {
+            grouped[sp.property_id] = { property: allProperties.find(p => p.id === sp.property_id), spaces: [] };
+          }
+          grouped[sp.property_id].spaces.push(sp);
+        });
+        const groups = Object.values(grouped).sort((a, b) =>
+          (a.property?.name || "").localeCompare(b.property?.name || "")
+        );
+
+        return (
+          <div className="glass rounded-2xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 sm:p-6 border-b border-[rgba(255,255,255,0.05)]">
+              <div>
+                <h3 className="text-sm font-black text-white flex items-center gap-2">
+                  <Building2 size={16} className="text-[#A78BFA]" />
+                  Available Properties (Unleased Spaces)
+                </h3>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Vacant suites, rooms, and units — potential revenue you{"'"}re missing.
+                </p>
+              </div>
+              <button onClick={() => setShowAddSpace(true)}
+                className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] px-3 py-2 rounded-lg border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-all sm:self-start">
+                <Plus size={12} /> Add Unleased Space
+              </button>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-[rgba(255,255,255,0.06)] text-gray-400 font-semibold uppercase tracking-wider text-xs">
-                    <th className="py-2.5 px-3">Space / Unit</th>
-                    <th className="py-2.5 px-3">Property</th>
-                    <th className="py-2.5 px-3">Potential Rent</th>
-                    <th className="py-2.5 px-3">Sq Ft</th>
-                    <th className="py-2.5 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
-                  {availableSpaces.map(space => {
-                    const parentProperty = allProperties.find(p => p.id === space.property_id);
+
+            {totalSpaces === 0 ? (
+              <div className="text-center py-12 text-gray-400 text-xs flex flex-col items-center gap-2">
+                <CheckCircle2 size={24} className="text-green-500/40" />
+                <p className="text-sm font-bold text-gray-300">All Spaces Occupied!</p>
+                <p className="text-xs text-gray-500">No unleased spaces registered — add one if a vacancy opens up.</p>
+              </div>
+            ) : (
+              <>
+                {/* ── KPI Summary Bar ── */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-px bg-[rgba(255,255,255,0.04)]">
+                  {[
+                    { icon: Building2,    label: "Vacant Spaces", value: String(totalSpaces),                              color: "#A78BFA", accent: "rgba(167,139,250,0.12)" },
+                    { icon: DollarSign,   label: "Missed Revenue", value: `$${totalRent.toLocaleString()}/mo`,             color: "#EF4444", accent: "rgba(239,68,68,0.10)" },
+                    { icon: Home,         label: "Total Sq Ft",   value: totalSqft > 0 ? totalSqft.toLocaleString() : "—", color: "#60A5FA", accent: "rgba(96,165,250,0.10)" },
+                    { icon: TrendingUp,   label: "Avg Rent",      value: `$${avgRent.toLocaleString()}/mo`,                color: "#FACC15", accent: "rgba(250,204,21,0.10)" },
+                    { icon: Receipt,      label: "Est. Fees",     value: totalFees > 0 ? `$${totalFees.toLocaleString()}/mo` : "—", color: "#F97316", accent: "rgba(249,115,22,0.10)" },
+                  ].map(({ icon: Icon, label, value, color, accent }) => (
+                    <div key={label} className="flex items-center gap-3 px-4 py-4" style={{ background: "rgba(17,24,39,0.6)" }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: accent, border: `1px solid ${color}25` }}>
+                        <Icon size={15} style={{ color }} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">{label}</p>
+                        <p className="text-sm font-black text-white truncate">{value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* ── Annual Impact Banner ── */}
+                <div className="mx-5 mt-4 flex items-center gap-3 rounded-xl px-4 py-3 border"
+                  style={{ background: "rgba(239,68,68,0.06)", borderColor: "rgba(239,68,68,0.15)" }}>
+                  <AlertTriangle size={14} className="text-red-400 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs text-gray-300">
+                      Estimated <strong className="text-red-400">${(totalRent * 12).toLocaleString()}/yr</strong> in unrealized revenue
+                      {totalFees > 0 && <> plus <strong className="text-orange-400">${(totalFees * 12).toLocaleString()}/yr</strong> in fees</>}
+                    </span>
+                  </div>
+                </div>
+
+                {/* ── Grouped By Property ── */}
+                <div className="p-5 space-y-3">
+                  {groups.map(({ property, spaces }) => {
+                    const groupRent = spaces.reduce((s, sp) => s + (sp.monthly_rent || 0), 0);
+                    const groupFees = spaces.reduce((s, sp) => s + (sp.nnn_fee || 0) + (sp.nn_fee || 0) + (sp.utility_fee || 0), 0);
+                    const groupSqft = spaces.reduce((s, sp) => s + (parseInt(String(sp.sqft)) || 0), 0);
+                    const propName = property?.name || "Unknown Property";
+
                     return (
-                      <tr key={space.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-                        <td className="py-3 px-3 font-semibold text-white text-xs">{space.name}</td>
-                        <td className="py-3 px-3 text-gray-300 text-xs">{parentProperty?.name || "Unknown Property"}</td>
-                        <td className="py-3 px-3 text-xs">
-                          <span className="text-[#EF4444] font-bold block">${space.monthly_rent.toLocaleString()}/mo</span>
-                          {(space.nnn_fee || space.nn_fee || space.utility_fee) ? (
-                            <span className="text-[10px] text-gray-400 block mt-0.5">
-                              {space.nnn_fee ? `NNN: $${space.nnn_fee} ` : ""}
-                              {space.nn_fee ? `NN: $${space.nn_fee} ` : ""}
-                              {space.utility_fee ? `Util: $${space.utility_fee}` : ""}
+                      <div key={property?.id || "unknown"} className="rounded-xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
+                        {/* Property group header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-3 bg-[rgba(255,255,255,0.02)]">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                              style={{ background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.2)" }}>
+                              <Building2 size={13} className="text-[#A78BFA]" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-black text-white truncate">{propName}</p>
+                              {property?.city && <p className="text-[10px] text-gray-500">{property.city}</p>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 py-0.5 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)]">
+                              {spaces.length} space{spaces.length !== 1 ? "s" : ""}
                             </span>
-                          ) : null}
-                        </td>
-                        <td className="py-3 px-3 text-gray-400 text-xs">{space.sqft ? `${space.sqft} sqft` : "—"}</td>
-                        <td className="py-3 px-3 text-right">
-                          <button onClick={() => { if (confirm(`Remove unleased space "${space.name}"?`)) handleDeleteSpace(space.id); }}
-                            className="w-7 h-7 rounded-lg border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-gray-600 hover:text-red-400 hover:border-red-500/30 transition-colors ml-auto"
-                            title="Delete unleased space">
-                            <Trash2 size={11} />
-                          </button>
-                        </td>
-                      </tr>
+                            <span className="text-xs font-bold text-red-400">
+                              ${groupRent.toLocaleString()}/mo
+                            </span>
+                            {groupSqft > 0 && (
+                              <span className="text-[10px] text-gray-500">{groupSqft.toLocaleString()} sqft</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Spaces within this property */}
+                        <div className="divide-y divide-[rgba(255,255,255,0.04)]">
+                          {spaces.map(space => (
+                            <div key={space.id} className="flex items-center gap-3 px-4 py-3 hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
+                              {/* Icon dot */}
+                              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "rgba(239,68,68,0.5)" }} />
+
+                              {/* Space info */}
+                              <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                                <p className="text-xs font-semibold text-white truncate sm:w-44 flex-shrink-0">{space.name}</p>
+                                <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
+                                  <span className="text-xs font-bold text-red-400">${space.monthly_rent.toLocaleString()}/mo</span>
+                                  {space.sqft && <span className="text-[10px] text-gray-500">{space.sqft} sqft</span>}
+                                  {(space.nnn_fee || space.nn_fee || space.utility_fee) ? (
+                                    <span className="text-[10px] text-gray-500 flex items-center gap-1">
+                                      <Receipt size={9} className="text-orange-400/60" />
+                                      {space.nnn_fee ? `NNN $${space.nnn_fee}` : ""}
+                                      {space.nn_fee ? ` NN $${space.nn_fee}` : ""}
+                                      {space.utility_fee ? ` Util $${space.utility_fee}` : ""}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+
+                              {/* Delete */}
+                              <button onClick={() => { if (confirm(`Remove unleased space "${space.name}"?`)) handleDeleteSpace(space.id); }}
+                                className="w-7 h-7 rounded-lg border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-gray-700 hover:text-red-400 hover:border-red-500/30 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                                title="Remove space">
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Group subtotal footer (only if > 1 space) */}
+                        {spaces.length > 1 && (
+                          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.015)]">
+                            <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Subtotal</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-bold text-red-400">${groupRent.toLocaleString()}/mo</span>
+                              {groupFees > 0 && <span className="text-[10px] text-orange-400">+${groupFees.toLocaleString()} fees</span>}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+                </div>
+
+                {/* ── Grand Total Footer ── */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-5 py-4 border-t border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)]">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    Grand Total — {totalSpaces} Unleased Space{totalSpaces !== 1 ? "s" : ""} across {groups.length} Propert{groups.length !== 1 ? "ies" : "y"}
+                  </span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-black text-red-400">${totalRent.toLocaleString()}/mo</span>
+                    {totalFees > 0 && <span className="text-xs font-bold text-orange-400">+${totalFees.toLocaleString()} fees/mo</span>}
+                    <span className="text-xs text-gray-500 border-l border-[rgba(255,255,255,0.08)] pl-4">${(totalRent * 12).toLocaleString()}/yr</span>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        );
+      })()}
 
       {showPrint && <PrintReport data={printData} onClose={() => setShowPrint(false)} />}
       {showAdd && <AddPropertyForm onAdd={handleAddProperty} onClose={() => setShowAdd(false)} />}
