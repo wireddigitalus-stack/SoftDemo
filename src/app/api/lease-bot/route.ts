@@ -8,6 +8,92 @@ import { writeActivityLog } from "@/lib/activity-log";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY environment variable is not set");
 
+// ── Email notification config ─────────────────────────────────────────────────
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const LEAD_NOTIFY_TO = ["jmcclanahan@teamvisionllc.com", "dmyers@teamvisionllc.com"];
+const FROM_EMAIL = process.env.RESEND_FROM ?? "Vision LLC <noreply@teamvisionllc.com>";
+
+function buildLeadEmailHtml(lead: Lead): string {
+  const scoreColor = lead.score >= 70 ? "#4ADE80" : lead.score >= 40 ? "#FACC15" : "#94A3B8";
+  const scoreEmoji = lead.score >= 70 ? "🔥" : lead.score >= 40 ? "📋" : "📎";
+  const row = (label: string, value: string | number | undefined) =>
+    value
+      ? `<tr>
+           <td style="padding:8px 12px 8px 0;color:#9CA3AF;font-size:12px;text-transform:uppercase;white-space:nowrap;vertical-align:top;">${label}</td>
+           <td style="padding:8px 0;color:#fff;font-weight:600;">${value}</td>
+         </tr>`
+      : "";
+
+  const whaleSection = lead.isWhale
+    ? `<div style="margin:16px 0;padding:12px 16px;background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.3);border-radius:10px;">
+         <p style="margin:0;font-size:13px;font-weight:800;color:#FACC15;">🐋 WHALE ALERT — ${lead.whaleTier?.toUpperCase()}</p>
+         <p style="margin:4px 0 0;font-size:12px;color:#D4D4D8;">Keywords: ${(lead.whaleKeywords || []).join(", ")}</p>
+       </div>`
+    : "";
+
+  const propertiesSection = (lead.matchedProperties || []).length > 0
+    ? `<div style="margin-top:16px;">
+         <p style="margin:0 0 8px;color:#9CA3AF;font-size:12px;text-transform:uppercase;">Matched Properties</p>
+         ${(lead.matchedProperties || []).map((p: { name?: string; type?: string; sqft?: string; matchReason?: string }) =>
+           `<div style="padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-bottom:6px;">
+              <p style="margin:0;color:#fff;font-weight:700;font-size:13px;">${p.name || "Property"}</p>
+              <p style="margin:2px 0 0;color:#9CA3AF;font-size:11px;">${p.type || ""} · ${p.sqft || ""}</p>
+              <p style="margin:4px 0 0;color:#D4D4D8;font-size:12px;">${p.matchReason || ""}</p>
+            </div>`
+         ).join("")}
+       </div>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#0D1117;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div style="max-width:580px;margin:40px auto;padding:0 16px;">
+    <div style="background:#080C14;border:1px solid ${scoreColor}40;border-radius:16px;padding:32px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:${scoreColor};flex-shrink:0;"></div>
+        <h1 style="margin:0;font-size:20px;font-weight:800;color:#fff;">${scoreEmoji} New Lead: ${lead.name}</h1>
+      </div>
+      <div style="display:inline-block;padding:4px 12px;background:${scoreColor}18;border:1px solid ${scoreColor}40;border-radius:20px;margin-bottom:20px;">
+        <span style="font-size:13px;font-weight:800;color:${scoreColor};">${lead.scoreLabel} · Score: ${lead.score}/100</span>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;">
+        ${row("Name", lead.name)}
+        ${row("Email", lead.email)}
+        ${row("Phone", lead.phone)}
+        ${row("Space Type", lead.spaceType)}
+        ${row("Budget", lead.budget ? `$${lead.budget.toLocaleString()}/mo` : undefined)}
+        ${row("Timeline", lead.timeline)}
+        ${row("Team Size", lead.teamSize)}
+        ${row("Source", lead.source)}
+      </table>
+
+      ${lead.reasoning ? `
+      <div style="margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">
+        <p style="margin:0 0 4px;color:#9CA3AF;font-size:12px;text-transform:uppercase;">AI Analysis</p>
+        <p style="margin:0;color:#D4D4D8;font-size:13px;line-height:1.5;">${lead.reasoning}</p>
+      </div>` : ""}
+
+      ${whaleSection}
+      ${propertiesSection}
+
+      ${lead.additionalInfo ? `
+      <div style="margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">
+        <p style="margin:0 0 4px;color:#9CA3AF;font-size:12px;text-transform:uppercase;">Additional Info</p>
+        <p style="margin:0;color:#D4D4D8;font-size:13px;line-height:1.5;">${lead.additionalInfo}</p>
+      </div>` : ""}
+
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.07);">
+        ${lead.email ? `<p style="margin:0;color:#4B5563;font-size:12px;">Reply to reach <strong style="color:#9CA3AF;">${lead.name}</strong> at <a href="mailto:${lead.email}" style="color:#4ADE80;">${lead.email}</a></p>` : ""}
+        <p style="margin:8px 0 0;color:#374151;font-size:11px;">Submitted via Vision LLC Lease Bot · <a href="https://teamvisionllc.com/admin" style="color:#4ADE80;">Open Dashboard →</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 
 const PROPERTIES_CONTEXT = `
 Available Vision LLC Properties (use EXACT id values shown):
@@ -217,6 +303,36 @@ export async function POST(req: NextRequest) {
       }
     } catch (dbErr) {
       console.error("Supabase insert error:", dbErr);
+    }
+
+    // ── Send email notification to team ──────────────────────────────────────
+    if (RESEND_API_KEY) {
+      try {
+        const scoreEmoji = lead.score >= 70 ? "🔥" : lead.score >= 40 ? "📋" : "📎";
+        const budgetStr = lead.budget ? ` ($${lead.budget.toLocaleString()}/mo)` : "";
+        const emailRes = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: FROM_EMAIL,
+            to: LEAD_NOTIFY_TO,
+            reply_to: lead.email || undefined,
+            subject: `${scoreEmoji} ${lead.scoreLabel}: ${lead.name} — ${lead.spaceType}${budgetStr}`,
+            html: buildLeadEmailHtml(lead),
+          }),
+        });
+        if (!emailRes.ok) {
+          const errText = await emailRes.text();
+          console.error("[lease-bot] Resend email error:", errText);
+        }
+      } catch (emailErr) {
+        console.error("[lease-bot] Email notification failed:", emailErr);
+      }
+    } else {
+      console.warn("[lease-bot] RESEND_API_KEY not set — lead email notification skipped");
     }
 
     return NextResponse.json({ success: true, lead });

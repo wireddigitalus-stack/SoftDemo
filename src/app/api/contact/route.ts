@@ -3,7 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { checkRateLimit } from "@/lib/rateLimit";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const TO_EMAIL = "leasing@teamvisionllc.com";
+const TO_EMAILS = ["leasing@teamvisionllc.com", "jmcclanahan@teamvisionllc.com", "dmyers@teamvisionllc.com"];
 // Must match a verified domain in Resend — set RESEND_FROM env var or update below
 const FROM_EMAIL = process.env.RESEND_FROM ?? "Vision LLC <noreply@teamvisionllc.com>";
 
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           from: FROM_EMAIL,
-          to: [TO_EMAIL],
+          to: TO_EMAILS,
           reply_to: cleanEmail,
           subject: `New Inquiry: ${cleanInterest} — ${cleanName}`,
           html: buildHtml({
