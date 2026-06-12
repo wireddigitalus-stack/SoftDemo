@@ -94,6 +94,171 @@ function ExportButton({ leads }: { leads: Lead[] }) {
   );
 }
 
+// ─── QuickBooks Desktop Export ────────────────────────────────────────────────
+
+interface TenantRow {
+  name: string; contactName: string; email: string; phone: string;
+  building: string; unit: string; monthlyRent: number;
+  utilitiesFee: number; nnnFee: number; camFee: number;
+  cleaningFee: number; nnFee: number; securityDeposit: number;
+  leaseStart: string | null; leaseEnd: string | null;
+  status: string;
+}
+
+function QBExportButton() {
+  const [exporting, setExporting] = useState(false);
+  const [tenantCount, setTenantCount] = useState<number | null>(null);
+
+  // Fetch tenant count on mount for display
+  useEffect(() => {
+    fetch("/api/tenants")
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d.tenants)) setTenantCount(d.tenants.length); })
+      .catch(() => {});
+  }, []);
+
+  async function exportIIF() {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/tenants");
+      const data = await res.json();
+      const tenants: TenantRow[] = (data.tenants || []).map((r: Record<string, unknown>) => ({
+        name: r.name as string || "",
+        contactName: (r.contact_name as string) || "",
+        email: (r.email as string) || "",
+        phone: (r.phone as string) || "",
+        building: (r.building as string) || "",
+        unit: (r.unit as string) || "",
+        monthlyRent: Number(r.monthly_rent) || 0,
+        utilitiesFee: Number(r.utilities_fee) || 0,
+        nnnFee: Number(r.nnn_fee) || 0,
+        camFee: Number(r.cam_fee) || 0,
+        cleaningFee: Number(r.cleaning_fee) || 0,
+        nnFee: Number(r.nn_fee) || 0,
+        securityDeposit: Number(r.security_deposit) || 0,
+        leaseStart: (r.lease_start as string) || null,
+        leaseEnd: (r.lease_end as string) || null,
+        status: (r.status as string) || "active",
+      }));
+
+      // ── Build IIF content ──
+      const lines: string[] = [];
+      const today = new Date().toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
+
+      // --- Customer List ---
+      lines.push("!CUST\tNAME\tBALFWD\tCONT1\tPHONE1\tEMAIL");
+      tenants.forEach(t => {
+        const custName = t.unit ? `${t.name} - ${t.building} ${t.unit}` : `${t.name} - ${t.building}`;
+        lines.push(`CUST\t${custName}\t0\t${t.contactName || t.name}\t${t.phone}\t${t.email}`);
+      });
+
+      lines.push(""); // blank separator
+
+      // --- Invoices (monthly rent roll) ---
+      lines.push("!TRNS\tTRNSTYPE\tDATE\tACCNT\tNAME\tAMOUNT\tMEMO");
+      lines.push("!SPL\tTRNSTYPE\tDATE\tACCNT\tNAME\tAMOUNT\tMEMO");
+      lines.push("!ENDTRNS");
+
+      tenants.filter(t => t.status === "active").forEach(t => {
+        const custName = t.unit ? `${t.name} - ${t.building} ${t.unit}` : `${t.name} - ${t.building}`;
+        const totalMonthly = t.monthlyRent + t.utilitiesFee + t.nnnFee + t.camFee + t.cleaningFee + t.nnFee;
+
+        if (totalMonthly <= 0) return;
+
+        // Header line — total receivable
+        lines.push(`TRNS\tINVOICE\t${today}\tAccounts Receivable\t${custName}\t${totalMonthly.toFixed(2)}\tMonthly Rent - ${new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}`);
+
+        // Split lines — individual income items
+        if (t.monthlyRent > 0)
+          lines.push(`SPL\tINVOICE\t${today}\tRental Income\t${custName}\t-${t.monthlyRent.toFixed(2)}\tBase Rent`);
+        if (t.utilitiesFee > 0)
+          lines.push(`SPL\tINVOICE\t${today}\tUtilities Income\t${custName}\t-${t.utilitiesFee.toFixed(2)}\tUtilities`);
+        if (t.nnnFee > 0)
+          lines.push(`SPL\tINVOICE\t${today}\tNNN Income\t${custName}\t-${t.nnnFee.toFixed(2)}\tNNN Charges`);
+        if (t.camFee > 0)
+          lines.push(`SPL\tINVOICE\t${today}\tCAM Income\t${custName}\t-${t.camFee.toFixed(2)}\tCAM Charges`);
+        if (t.cleaningFee > 0)
+          lines.push(`SPL\tINVOICE\t${today}\tCleaning Income\t${custName}\t-${t.cleaningFee.toFixed(2)}\tCleaning`);
+        if (t.nnFee > 0)
+          lines.push(`SPL\tINVOICE\t${today}\tNN Income\t${custName}\t-${t.nnFee.toFixed(2)}\tNN Charges`);
+
+        lines.push("ENDTRNS");
+      });
+
+      // ── Also generate a clean Excel rent roll ──
+      const wb = XLSX.utils.book_new();
+
+      // Sheet 1: Rent Roll
+      const rentRows = tenants.filter(t => t.status === "active").map(t => ({
+        "Tenant": t.name,
+        "Contact": t.contactName,
+        "Building": t.building,
+        "Unit": t.unit,
+        "Base Rent": t.monthlyRent,
+        "Utilities": t.utilitiesFee,
+        "NNN": t.nnnFee,
+        "CAM": t.camFee,
+        "Cleaning": t.cleaningFee,
+        "NN": t.nnFee,
+        "Total Monthly": t.monthlyRent + t.utilitiesFee + t.nnnFee + t.camFee + t.cleaningFee + t.nnFee,
+        "Annual": (t.monthlyRent + t.utilitiesFee + t.nnnFee + t.camFee + t.cleaningFee + t.nnFee) * 12,
+        "Lease Start": t.leaseStart || "",
+        "Lease End": t.leaseEnd || "",
+        "Status": t.status,
+        "Phone": t.phone,
+        "Email": t.email,
+      }));
+      const ws1 = XLSX.utils.json_to_sheet(rentRows);
+      XLSX.utils.book_append_sheet(wb, ws1, "Rent Roll");
+
+      // Sheet 2: QB Customer Import
+      const custRows = tenants.map(t => ({
+        "Customer Name": t.unit ? `${t.name} - ${t.building} ${t.unit}` : `${t.name} - ${t.building}`,
+        "Contact": t.contactName || t.name,
+        "Phone": t.phone,
+        "Email": t.email,
+        "Building": t.building,
+        "Unit": t.unit,
+      }));
+      const ws2 = XLSX.utils.json_to_sheet(custRows);
+      XLSX.utils.book_append_sheet(wb, ws2, "QB Customers");
+
+      // Download Excel
+      const dateStr = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `vision-qb-export-${dateStr}.xlsx`);
+
+      // Download IIF
+      const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `vision-qb-import-${dateStr}.iif`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+    } catch (e) {
+      console.error("QB export error:", e);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        onClick={exportIIF}
+        disabled={exporting}
+        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#60A5FA] to-[#3B82F6] text-white text-sm font-black hover:opacity-90 disabled:opacity-40 transition-all"
+      >
+        {exporting ? <><Loader2 size={13} className="animate-spin" /> Generating…</> : <><Download size={13} /> Export for QuickBooks</>}
+      </button>
+      {tenantCount !== null && (
+        <p className="text-[10px] text-gray-600 text-center">{tenantCount} active tenant{tenantCount !== 1 ? "s" : ""} will be exported</p>
+      )}
+    </div>
+  );
+}
+
 // ─── Import Panel ─────────────────────────────────────────────────────────────
 
 type ImportRow = Record<string, string | number>;
@@ -1145,36 +1310,86 @@ function DataExportSection({ leads }: { leads: Lead[] }) {
         Bring in historical leads from Excel, or export your full dashboard data for backup, sharing, or analysis.
       </p>
       {expanded && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] p-5 flex flex-col gap-3"
-            style={{ boxShadow: "0 0 22px rgba(74,222,128,0.08)" }}>
-            <div className="flex items-center gap-2">
-              <Download size={15} className="text-[#4ADE80]" />
-              <p className="text-xs font-black text-white uppercase tracking-widest">Export Leads</p>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] p-5 flex flex-col gap-3"
+              style={{ boxShadow: "0 0 22px rgba(74,222,128,0.08)" }}>
+              <div className="flex items-center gap-2">
+                <Download size={15} className="text-[#4ADE80]" />
+                <p className="text-xs font-black text-white uppercase tracking-widest">Export Leads</p>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Download all active leads as a formatted Excel spreadsheet — names, phones, scores, budgets, timelines and more.
+              </p>
+              <div className="rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] p-3">
+                <p className="text-xs text-gray-600 font-bold uppercase tracking-wider mb-2">Columns included</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {["Name","Phone","Email","Space Type","Budget/mo","Timeline","Team Size","AI Score","Label","Source","Submitted"].map(c => (
+                    <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.12)] text-gray-500">{c}</span>
+                  ))}
+                </div>
+              </div>
+              <ExportButton leads={leads} />
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Download all active leads as a formatted Excel spreadsheet — names, phones, scores, budgets, timelines and more.
-            </p>
-            <div className="rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] p-3">
-              <p className="text-xs text-gray-600 font-bold uppercase tracking-wider mb-2">Columns included</p>
-              <div className="flex flex-wrap gap-1.5">
-                {["Name","Phone","Email","Space Type","Budget/mo","Timeline","Team Size","AI Score","Label","Source","Submitted"].map(c => (
-                  <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.12)] text-gray-500">{c}</span>
-                ))}
+            <div className="rounded-2xl border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.03)] p-5 flex flex-col gap-3"
+              style={{ boxShadow: "0 0 22px rgba(96,165,250,0.08)" }}>
+              <div className="flex items-center gap-2">
+                <Upload size={15} className="text-[#60A5FA]" />
+                <p className="text-xs font-black text-white uppercase tracking-widest">Import Leads</p>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Upload an Excel (.xlsx) or CSV file. We&apos;ll map the columns automatically.
+              </p>
+              <ImportPanel />
+            </div>
+          </div>
+
+          {/* ── QuickBooks Desktop Export ── */}
+          <div className="rounded-2xl border border-[rgba(250,204,21,0.2)] bg-[rgba(250,204,21,0.03)] p-5"
+            style={{ boxShadow: "0 0 22px rgba(250,204,21,0.06)" }}>
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-xl bg-[rgba(250,204,21,0.12)] flex items-center justify-center text-base">📒</div>
+                  <div>
+                    <p className="text-xs font-black text-white uppercase tracking-widest">QuickBooks Desktop</p>
+                    <p className="text-[10px] text-gray-500">Export tenant data for QB Desktop import</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                  Downloads <strong className="text-gray-400">two files</strong>: an IIF file (QuickBooks native import format) with your customer list and monthly invoices, plus an Excel workbook with a clean rent roll and customer list.
+                </p>
+                <div className="rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] p-3 mb-3">
+                  <p className="text-xs text-gray-600 font-bold uppercase tracking-wider mb-2">What&apos;s included</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
+                      Customer list (all tenants)
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
+                      Monthly invoices per tenant
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
+                      Rent, NNN, CAM, utilities, cleaning
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
+                      Excel rent roll with annual totals
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-[rgba(250,204,21,0.1)] bg-[rgba(0,0,0,0.2)] p-3">
+                  <p className="text-[10px] text-gray-600 leading-relaxed">
+                    <strong className="text-[#FACC15]">How to import:</strong> In QuickBooks Desktop → File → Utilities → Import → IIF Files → select the downloaded .iif file. The Excel file is for your reference.
+                  </p>
+                </div>
+              </div>
+              <div className="flex-shrink-0 sm:pt-8">
+                <QBExportButton />
               </div>
             </div>
-            <ExportButton leads={leads} />
-          </div>
-          <div className="rounded-2xl border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.03)] p-5 flex flex-col gap-3"
-            style={{ boxShadow: "0 0 22px rgba(96,165,250,0.08)" }}>
-            <div className="flex items-center gap-2">
-              <Upload size={15} className="text-[#60A5FA]" />
-              <p className="text-xs font-black text-white uppercase tracking-widest">Import Leads</p>
-            </div>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Upload an Excel (.xlsx) or CSV file. We&apos;ll map the columns automatically.
-            </p>
-            <ImportPanel />
           </div>
         </div>
       )}

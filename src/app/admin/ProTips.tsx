@@ -592,6 +592,21 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "Lost or compromised PIN? Click the pencil icon on the staff row, then the dice button to generate a new random PIN instantly. The old PIN stops working immediately — share the new one via text using the copy button.",
     },
     {
+      emoji: "🔔",
+      title: "Email Notifications",
+      body: "The Notifications section shows exactly who receives email alerts and what triggers them. Currently, new leads from the chatbot and contact form automatically email jmcclanahan@ and dmyers@. SMS alerts and per-user customization are coming soon.",
+    },
+    {
+      emoji: "📊",
+      title: "Data Export",
+      body: "Download all leads as a CSV file from the Data Import/Export section. The export includes every field: name, email, phone, score, source, status, notes, and timestamps. Great for importing into a CRM or sharing with partners.",
+    },
+    {
+      emoji: "📒",
+      title: "QuickBooks Desktop Export",
+      body: "Export your tenant data directly for QuickBooks Desktop. Go to Settings → Data Import/Export and click 'Export for QuickBooks'. You'll get two files: an IIF file (QuickBooks native import) with customer lists and monthly invoices, plus an Excel rent roll. Import the IIF in QB via File → Utilities → Import → IIF Files.",
+    },
+    {
       emoji: "📲",
       title: "Social Capture Links",
       body: "The Social Capture Links card gives you ready-to-copy URLs for Facebook and Instagram posts. Each link can feature a specific property — so when you post about The Executive, the landing page highlights The Executive with a hero card, photo, and CTA. Just click the 📘 FB or 📷 IG button next to the property to copy the link.",
@@ -602,19 +617,9 @@ const TIPS: Record<TabKey, Tip[]> = {
       body: "When you copy a link like '/l/fb?feature=the-executive', anyone clicking that link from your Facebook post sees a branded page with The Executive front and center — big hero image, description, tags, and a 'View This Property' button. Other properties still appear below. No feature param = all properties shown equally.",
     },
     {
-      emoji: "🔔",
-      title: "Notification Preferences (Beta)",
-      body: "The Notifications card lets you toggle email alerts for new leads, maintenance emergencies, AI chat escalations, cleaning completions, and weekly digests. Set quiet hours so you're not pinged overnight. SMS via Twilio is coming soon — the toggle is visible but locked until post-launch.",
-    },
-    {
       emoji: "🤝",
       title: "QR Meet Pages",
       body: "Each team member has a personal QR code page at teamvisionllc.com/meet/[name]. When scanned in person, prospects fill out a quick form and the lead is auto-captured in your dashboard tagged 'qr / in-person' with the team member's name as the campaign source.",
-    },
-    {
-      emoji: "📊",
-      title: "Data Export",
-      body: "Download all leads as a CSV file from the Data Import/Export section. The export includes every field: name, email, phone, score, source, status, notes, and timestamps. Great for importing into a CRM or sharing with partners.",
     },
     {
       emoji: "👁️",
