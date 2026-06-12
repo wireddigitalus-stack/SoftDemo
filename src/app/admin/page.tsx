@@ -1172,29 +1172,34 @@ export default function AdminPage() {
   const coldSet        = new Set(coldLeads.map(l => l.id));
   const activeLeads    = allNonArchived.filter(l => !coldSet.has(l.id));
   const archivedLeads  = leads.filter(l => isArchived(l.timestamp));
-  // Temperature priority: Hot (0) > Warm (1) > Nurture (2), then highest score first, then newest
-  const tempRank = (l: Lead) => l.scoreLabel === "Hot Lead" ? 0 : l.scoreLabel === "Warm Lead" ? 1 : 2;
+  // Temperature priority based on DECAYED score: Hot (0) > Warm (1) > Nurture (2), then highest decayed score first, then newest
+  const decayedRank = (l: Lead) => {
+    const dLabel = getDecayedLabel(getDecayedScore(l.score, l, callLogs));
+    return dLabel === "Hot Lead" ? 0 : dLabel === "Warm Lead" ? 1 : 2;
+  };
   const sortedActive = [...activeLeads].sort((a, b) => {
-    const r = tempRank(a) - tempRank(b);
+    const r = decayedRank(a) - decayedRank(b);
     if (r !== 0) return r;
-    if (b.score !== a.score) return b.score - a.score; // highest score first
+    const dA = getDecayedScore(a.score, a, callLogs);
+    const dB = getDecayedScore(b.score, b, callLogs);
+    if (dB !== dA) return dB - dA; // highest decayed score first
     return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
   });
   const filtered =
     filter === "All"      ? sortedActive :
     filter === "Whale"    ? sortedActive.filter(l => l.isWhale) :
     filter === "New Today" ? sortedActive.filter(l => (Date.now() - new Date(l.timestamp).getTime()) < 864e5) :
-    sortedActive.filter(l => l.scoreLabel === filter);
-  const hotLeads = activeLeads.filter(l => l.scoreLabel === "Hot Lead");
-  const warmCount = activeLeads.filter(l => l.scoreLabel === "Warm Lead").length;
+    sortedActive.filter(l => getDecayedLabel(getDecayedScore(l.score, l, callLogs)) === filter);
+  const hotLeads = activeLeads.filter(l => getDecayedLabel(getDecayedScore(l.score, l, callLogs)) === "Hot Lead");
+  const warmCount = activeLeads.filter(l => getDecayedLabel(getDecayedScore(l.score, l, callLogs)) === "Warm Lead").length;
   const urgentLeads = activeLeads.filter(isUrgent);
   const whaleLeads = activeLeads.filter(l => l.isWhale);
-  const avgScore = Math.round(activeLeads.reduce((a, l) => a + l.score, 0) / (activeLeads.length || 1));
+  const avgScore = Math.round(activeLeads.reduce((a, l) => a + getDecayedScore(l.score, l, callLogs), 0) / (activeLeads.length || 1));
   const hotMonthlyPipeline = hotLeads.reduce((a, l) => a + l.budget, 0);
   const totalMonthlyPipeline = activeLeads.reduce((a, l) => a + l.budget, 0);
   const annualProjection = hotMonthlyPipeline * 12;
-  // Call list sorted by revenue potential: budget × (score/100) — highest $/mo first
-  const callList = [...activeLeads].filter(l => l.phone).sort((a, b) => (b.budget * b.score) - (a.budget * a.score));
+  // Call list sorted by revenue potential: budget × (decayedScore/100) — highest $/mo first
+  const callList = [...activeLeads].filter(l => l.phone).sort((a, b) => (b.budget * getDecayedScore(b.score, b, callLogs)) - (a.budget * getDecayedScore(a.score, a, callLogs)));
 
   // Access denied screen
   if (accessDenied) {
@@ -1890,7 +1895,7 @@ export default function AdminPage() {
                         {f === "Whale" ? "🐳 Whales" : f === "New Today" ? "🆕 New Today" : f}
                         {f === "Whale" && ` (${activeLeads.filter(l => l.isWhale).length})`}
                         {f === "New Today" && ` (${activeLeads.filter(l => (Date.now() - new Date(l.timestamp).getTime()) < 864e5).length})`}
-                        {f !== "All" && f !== "Whale" && f !== "New Today" && ` (${activeLeads.filter(l => l.scoreLabel === f).length})`}
+                        {f !== "All" && f !== "Whale" && f !== "New Today" && ` (${activeLeads.filter(l => getDecayedLabel(getDecayedScore(l.score, l, callLogs)) === f).length})`}
                       </button>
                     </Tooltip>
                   );
