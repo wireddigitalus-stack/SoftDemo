@@ -115,13 +115,14 @@ const FIELD = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,25
 const FIELD_SM = FIELD + " text-xs py-1.5";
 
 function TenantForm({
-  initial, onSave, onCancel, currentUserName, buildingOptions = [],
+  initial, onSave, onCancel, currentUserName, buildingOptions = [], leads = [],
 }: {
   initial: Partial<Tenant>;
   onSave: (data: Partial<Tenant>) => Promise<void>;
   onCancel: () => void;
   currentUserName?: string;
   buildingOptions?: string[];
+  leads?: any[];
 }) {
   const [form, setForm] = useState<Partial<Tenant>>({ ...initial });
   const [saving, setSaving] = useState(false);
@@ -268,8 +269,8 @@ function TenantForm({
         </div>
       </div>
 
-      {/* Rep + Status */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Rep + Status + Source Lead */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div><label className={LABEL}>Assigned Rep</label>
           <div className="flex gap-1.5 items-center"><input value={form.rep || ""} onChange={e => set("rep", e.target.value)}
             placeholder={currentUserName || "Allen Hurley"} className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("rep", (form.rep || "") + (form.rep ? " " : "") + t)} /></div></div>
@@ -278,6 +279,16 @@ function TenantForm({
             <option value="active" className="bg-[#0A0F1A]">Active</option>
             <option value="pending" className="bg-[#0A0F1A]">Pending</option>
             <option value="expired" className="bg-[#0A0F1A]">Expired</option>
+          </select>
+        </div>
+        <div><label className={LABEL}>Source Lead (Optional)</label>
+          <select value={form.sourceLeadId || ""} onChange={e => set("sourceLeadId", e.target.value)} className={FIELD}>
+            <option value="" className="bg-[#0A0F1A]">None / Pre-existing</option>
+            {leads.map((l: any) => (
+              <option key={l.id} value={l.id} className="bg-[#0A0F1A]">
+                {l.name} ({l.spaceType || "Lead"})
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -675,13 +686,32 @@ function TenantCard({
 
 // ─── Main TenantsTab ──────────────────────────────────────────────────────────
 
-export default function TenantsTab({ currentUserName, currentUserEmail }: { currentUserName?: string; currentUserEmail?: string }) {
+export default function TenantsTab({
+  currentUserName,
+  currentUserEmail,
+  leads = [],
+  prepopulatedTenant = null,
+  onClearPrepopulated,
+}: {
+  currentUserName?: string;
+  currentUserEmail?: string;
+  leads?: any[];
+  prepopulatedTenant?: Partial<Tenant> | null;
+  onClearPrepopulated?: () => void;
+}) {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [setupError, setSetupError] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
   const [showImporter, setShowImporter] = useState(false);
+
+  useEffect(() => {
+    if (prepopulatedTenant) {
+      setEditingTenant(null);
+      setShowForm(true);
+    }
+  }, [prepopulatedTenant]);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "pending" | "expired">("all");
   const [sortBy, setSortBy] = useState<"name" | "rent" | "lease_end">("lease_end");
   const [filterProperty, setFilterProperty] = useState<string>("all");
@@ -754,6 +784,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
+        sourceLeadId: form.sourceLeadId || "",
         actorName: currentUserName || currentUserEmail?.split("@")[0] || "Staff",
         actorEmail: currentUserEmail || "",
       }),
@@ -773,7 +804,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
       "building", "unit", "rep",
       "monthlyRent", "utilitiesFee", "securityDeposit", "nnnFee", "cleaningFee", "camFee", "nnFee",
       "leaseStart", "leaseEnd", "renewalDate", "leaseAlertDays",
-      "escalationPct", "escalationDate", "status", "notes",
+      "escalationPct", "escalationDate", "status", "notes", "sourceLeadId",
     ];
     const changes: Record<string, { from: unknown; to: unknown }> = {};
     for (const key of TRACKED) {
@@ -809,6 +840,7 @@ export default function TenantsTab({ currentUserName, currentUserEmail }: { curr
         leaseAlertDays: form.leaseAlertDays ?? null,
         escalationPct: form.escalationPct, escalationDate: form.escalationDate || null,
         status: form.status, notes: form.notes,
+        sourceLeadId: form.sourceLeadId || "",
         actorName:  currentUserName  || currentUserEmail?.split("@")[0] || "Staff",
         actorEmail: currentUserEmail || "",
         // Pass the diff so the audit log shows what actually changed
@@ -977,12 +1009,32 @@ ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nn_fee NUMERIC DEFAULT 0;`}</pre>
 
       {/* Add form */}
       {showForm && !editingTenant && (
-        <TenantForm initial={BLANK()} onSave={handleSaveNew} onCancel={() => setShowForm(false)} currentUserName={currentUserName} buildingOptions={buildingOptions} />
+        <TenantForm
+          initial={prepopulatedTenant || BLANK()}
+          onSave={async (data) => {
+            await handleSaveNew(data);
+            if (onClearPrepopulated) onClearPrepopulated();
+          }}
+          onCancel={() => {
+            setShowForm(false);
+            if (onClearPrepopulated) onClearPrepopulated();
+          }}
+          currentUserName={currentUserName}
+          buildingOptions={buildingOptions}
+          leads={leads}
+        />
       )}
 
       {/* Edit form */}
       {editingTenant && (
-        <TenantForm initial={editingTenant} onSave={handleSaveEdit} onCancel={() => setEditingTenant(null)} currentUserName={currentUserName} buildingOptions={buildingOptions} />
+        <TenantForm
+          initial={editingTenant}
+          onSave={handleSaveEdit}
+          onCancel={() => setEditingTenant(null)}
+          currentUserName={currentUserName}
+          buildingOptions={buildingOptions}
+          leads={leads}
+        />
       )}
 
       {/* Loading */}

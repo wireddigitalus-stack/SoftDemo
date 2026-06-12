@@ -106,6 +106,7 @@ export async function PATCH(req: NextRequest) {
     leaseAlertDays: "lease_alert_days",
     escalationPct: "escalation_pct", escalationDate: "escalation_date",
     status: "status", notes: "notes",
+    sourceLeadId: "source_lead_id",
   };
 
   const patch: Record<string, unknown> = {};

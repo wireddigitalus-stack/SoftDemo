@@ -688,8 +688,9 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
   }, {});
   const spaceList = Object.entries(bySpace).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
-  const convRate = tenants.length > 0 && activeLeads.length > 0
-    ? pct(tenants.length, activeLeads.length + tenants.length)
+  const convertedCount = tenants.filter(t => !!t.sourceLeadId).length;
+  const convRate = (activeLeads.length + convertedCount) > 0
+    ? pct(convertedCount, activeLeads.length + convertedCount)
     : 0;
 
   if (loading) {
@@ -724,7 +725,7 @@ export default function AnalyticsTab({ leads }: { leads: AnalyticsLead[] }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard label="Portfolio ARR" value={fmtMoney(totalARR, true)} sub={`${fmtMoney(totalMRR, true)}/mo from ${activeTenants.length} tenants`} icon={Building2} color="#4ADE80" />
         <StatCard label="Hot Pipeline" value={fmtMoney(hotPipeline, true)} sub={`${hotLeads.length} hot leads`} icon={Flame} color="#EF4444" />
-        <StatCard label="Conversion Rate" value={`${convRate}%`} sub={`${tenants.length} leads → tenants`} icon={Target} color="#60A5FA" />
+        <StatCard label="Conversion Rate" value={`${convRate}%`} sub={`${convertedCount} lead${convertedCount !== 1 ? "s" : ""} → lease${convertedCount !== 1 ? "s" : ""}`} icon={Target} color="#60A5FA" />
       <StatCard label="Avg Lead Score" value={`${avgScore}`} sub={`${whaleLeads.length} whale${whaleLeads.length !== 1 ? "s" : ""} detected`} icon={TrendingUp} color="#FACC15" />
       </div>
 

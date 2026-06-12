@@ -892,6 +892,7 @@ export default function AdminPage() {
   const [deletingAll, setDeletingAll] = useState(false);
   const [deleteAllConfirm, setDeleteAllConfirm] = useState("");
   const [archiveConfirmId, setArchiveConfirmId] = useState<string | null>(null);
+  const [prepopulatedTenant, setPrepopulatedTenant] = useState<Partial<Tenant> | null>(null);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -2192,8 +2193,27 @@ export default function AdminPage() {
                           }}
                         />
                       </div>
-                      {/* Archive button */}
-                      <div className="flex items-center justify-end mt-2.5">
+                      {/* Actions */}
+                      <div className="flex items-center justify-between mt-2.5 gap-2">
+                        <button
+                          onClick={() => {
+                            setPrepopulatedTenant({
+                              name: lead.name,
+                              contactName: lead.name,
+                              email: lead.email,
+                              phone: lead.phone,
+                              monthlyRent: lead.budget || 0,
+                              sourceLeadId: lead.id,
+                              status: "active",
+                            });
+                            setActiveTab("tenants");
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-lg text-[#4ADE80] border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] hover:bg-[rgba(74,222,128,0.08)] transition-all"
+                        >
+                          <Building2 size={11} /> Convert to Tenant
+                        </button>
+
                         {archiveConfirmId === lead.id ? (
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-gray-500">Are you sure?</span>
@@ -2320,7 +2340,13 @@ export default function AdminPage() {
         {activeTab === "tenants" && (
           <>
             {renderLeaseAlerts()}
-            <TenantsTab currentUserName={currentUser?.name} currentUserEmail={currentUser?.email} />
+            <TenantsTab
+              currentUserName={currentUser?.name}
+              currentUserEmail={currentUser?.email}
+              leads={leads}
+              prepopulatedTenant={prepopulatedTenant}
+              onClearPrepopulated={() => setPrepopulatedTenant(null)}
+            />
           </>
         )}
 
