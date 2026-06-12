@@ -98,8 +98,8 @@ function Tooltip({ text, children, wide }: { text: string; children: React.React
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function scoreColor(score: number) {
-  if (score >= 70) return "#EF4444";   // red — hot
-  if (score >= 40) return "#F97316";   // orange — warm
+  if (score >= 75) return "#EF4444";   // red — hot
+  if (score >= 50) return "#F97316";   // orange — warm
   return "#38BDF8";                     // ice blue — nurture/cold
 }
 function scoreBadge(label: string) {
@@ -126,6 +126,32 @@ function nameToSlug(name: string): string {
 function initials(name: string) {
   return name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
 }
+
+// ── Score Decay ──────────────────────────────────────────────────────
+// Leads cool down over time if not contacted. The original AI score is
+// preserved — only the displayed "effective" score decays.
+const SCORE_FLOOR = 25;
+
+function getDecayedScore(
+  originalScore: number,
+  lead: { id: string; timestamp: string },
+  callLogs: import("./CallLogModal").CallLog[]
+): number {
+  const daysSince = daysSinceContact(lead, callLogs);
+  let decay = 0;
+  if (daysSince <= 3) decay = 0;
+  else if (daysSince <= 7) decay = (daysSince - 3) * 2;
+  else if (daysSince <= 14) decay = (4 * 2) + (daysSince - 7) * 3;
+  else decay = (4 * 2) + (7 * 3) + (daysSince - 14) * 4;
+  return Math.max(SCORE_FLOOR, Math.round(originalScore - decay));
+}
+
+function getDecayedLabel(decayedScore: number): string {
+  if (decayedScore >= 75) return "Hot Lead";
+  if (decayedScore >= 50) return "Warm Lead";
+  return "Nurture";
+}
+
 // ── Lead Aging ───────────────────────────────────────────────────────
 
 const MAX_AGE_DAYS = 180;
@@ -1742,11 +1768,15 @@ export default function AdminPage() {
                       const logsForLead = callLogs.filter(l => l.lead_id === lead.id);
                       const lastLog = logsForLead[0];
                       const followUpDue = lastLog?.follow_up_date && new Date(lastLog.follow_up_date) < new Date() && lastLog.outcome !== "answered";
+                      const dScore = getDecayedScore(lead.score, lead, callLogs);
+                      const dLabel = getDecayedLabel(dScore);
                       return (
                         <div key={lead.id} className="rounded-xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] hover:border-[rgba(74,222,128,0.2)] transition-all overflow-hidden">
                           <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-3">
-                            <span className="text-xs font-black w-4 text-center flex-shrink-0" style={{ color: scoreColor(lead.score) }}>#{i + 1}</span>
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 text-xs sm:text-sm font-black" style={{ backgroundColor: `${scoreColor(lead.score)}12`, color: scoreColor(lead.score) }}>{lead.score}</div>
+                            <span className="text-xs font-black w-4 text-center flex-shrink-0" style={{ color: scoreColor(dScore) }}>#{i + 1}</span>
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 text-xs sm:text-sm font-black" style={{ backgroundColor: `${scoreColor(dScore)}12`, color: scoreColor(dScore) }}>
+                              {dScore}{dScore < lead.score && <span className="text-[8px] ml-0.5">↓</span>}
+                            </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-bold text-white truncate">{lead.name}</p>
                               <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-gray-500 mt-0.5">
@@ -1754,7 +1784,7 @@ export default function AdminPage() {
                                 <span className="text-[#4ADE80] font-semibold">${lead.budget.toLocaleString()}/mo</span>
                               </div>
                             </div>
-                            <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold hidden sm:block flex-shrink-0 ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold hidden sm:block flex-shrink-0 ${scoreBadge(dLabel)}`}>{dLabel}</span>
                             <div className="flex items-center gap-1.5 flex-shrink-0">
                               <a href={`tel:${lead.phone}`} className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#4ADE80] to-[#22C55E] text-black text-xs font-black hover:opacity-90 transition-opacity">
                                 <Phone size={11} />
@@ -1933,21 +1963,37 @@ export default function AdminPage() {
                   )}
                   <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                     <div className="flex-shrink-0 text-center">
-                      <Tooltip text={`AI Lead Score: ${lead.score}/100 — calculated from budget, urgency, timeline, and space type signals.`} wide>
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center border cursor-help" style={{ borderColor: `${scoreColor(lead.score)}40`, backgroundColor: `${scoreColor(lead.score)}0A` }}>
-                          <span className="text-lg sm:text-2xl font-black tabular-nums leading-none" style={{ color: scoreColor(lead.score) }}>{lead.score}</span>
-                          <span className="text-[8px] sm:text-[9px] text-gray-600 mt-0.5">/ 100</span>
-                        </div>
-                      </Tooltip>
+                      {(() => {
+                        const dScore = getDecayedScore(lead.score, lead, callLogs);
+                        const hasDecayed = dScore < lead.score;
+                        return (
+                          <Tooltip text={hasDecayed ? `Original: ${lead.score} → Now: ${dScore} (decayed over ${daysOld(lead.timestamp)}d without contact)` : `AI Lead Score: ${lead.score}/100 — calculated from budget, urgency, timeline, and space type signals.`} wide>
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center border cursor-help" style={{ borderColor: `${scoreColor(dScore)}40`, backgroundColor: `${scoreColor(dScore)}0A` }}>
+                              <span className="text-lg sm:text-2xl font-black tabular-nums leading-none" style={{ color: scoreColor(dScore) }}>{dScore}</span>
+                              {hasDecayed ? (
+                                <span className="text-[8px] sm:text-[9px] text-gray-600 mt-0.5 line-through">{lead.score}</span>
+                              ) : (
+                                <span className="text-[8px] sm:text-[9px] text-gray-600 mt-0.5">/ 100</span>
+                              )}
+                            </div>
+                          </Tooltip>
+                        );
+                      })()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="text-white font-bold text-sm sm:text-base">{lead.name}</h3>
-                            <Tooltip text={lead.scoreLabel === "Hot Lead" ? "Hot Lead: Score 70+. Call today — high close probability." : lead.scoreLabel === "Warm Lead" ? "Warm Lead: Score 40–69. Nurture with follow-up emails or a call this week." : "Nurture: Score below 40. Keep warm — long-term prospect."}>
-                              <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold cursor-help ${scoreBadge(lead.scoreLabel)}`}>{lead.scoreLabel}</span>
-                            </Tooltip>
+                            {(() => {
+                              const dScore = getDecayedScore(lead.score, lead, callLogs);
+                              const dLabel = getDecayedLabel(dScore);
+                              return (
+                                <Tooltip text={dLabel === "Hot Lead" ? "Hot Lead: Score 75+. Call today — high close probability." : dLabel === "Warm Lead" ? "Warm Lead: Score 50–74. Nurture with follow-up emails or a call this week." : "Nurture: Score below 50. Keep warm — long-term prospect."}>
+                                  <span className={`text-xs px-2 py-0.5 rounded-lg border font-bold cursor-help ${scoreBadge(dLabel)}`}>{dLabel}</span>
+                                </Tooltip>
+                              );
+                            })()}
                             {lead.isWhale && lead.whaleTier === "gold" && (
                               <Tooltip text="Whale Alert: Budget $8k+/mo. Top-priority prospect — escalate immediately and offer a personal showing." wide>
                                 <span className="flex items-center gap-1 text-xs font-black text-[#FACC15] bg-[rgba(250,204,21,0.12)] border border-[rgba(250,204,21,0.4)] px-2 py-0.5 rounded-lg cursor-help">
@@ -2169,7 +2215,7 @@ export default function AdminPage() {
                       return (
                         <div key={lead.id} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[rgba(96,165,250,0.04)] border border-[rgba(96,165,250,0.1)] hover:border-[rgba(96,165,250,0.25)] transition-all">
                           {/* Score circle */}
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-black text-gray-500 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">{lead.score}</div>
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-black text-gray-500 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">{getDecayedScore(lead.score, lead, callLogs)}</div>
                           {/* Info */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">

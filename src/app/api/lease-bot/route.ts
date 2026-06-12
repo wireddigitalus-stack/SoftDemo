@@ -108,20 +108,23 @@ Available Vision LLC Properties (use EXACT id values shown):
 const SCORING_PROMPT = (lead: Partial<Lead>) => `
 You are a commercial real estate lead scoring AI for Vision LLC in Bristol, TN/VA.
 
-Score this lead from 0-100 based on these criteria:
-- Budget > $2,000/mo = strong signal (+25 pts)
-- Budget $1,000–$2,000/mo = moderate signal (+15 pts)
+Score this lead from 25-100 (minimum score is always 25). Use these criteria:
+- Base score: 25 (every lead starts here)
+- Budget > $2,000/mo = strong signal (+20 pts)
+- Budget $1,000–$2,000/mo = moderate signal (+12 pts)
 - Budget < $1,000/mo = weak signal (+5 pts)
-- Move-in timeline < 30 days = very hot (+30 pts)
-- Move-in timeline 30–60 days = warm (+20 pts)
-- Move-in timeline 60–90 days = cool (+10 pts)
-- Move-in timeline > 90 days = cold (+5 pts)
-- Space type = Office or Executive Suite = high fit (+20 pts)
-- Space type = CoWork = good fit (+15 pts)
-- Space type = Retail or Warehouse = moderate fit (+10 pts)
-- Team size 5+ = strong need (+15 pts)
-- Team size 2–4 = moderate need (+10 pts)
-- Solo = solo (+5 pts)
+- Move-in timeline < 30 days = very hot (+25 pts)
+- Move-in timeline 30–60 days = warm (+15 pts)
+- Move-in timeline 60–90 days = cool (+8 pts)
+- Move-in timeline > 90 days = cold (+3 pts)
+- Space type = Office or Executive Suite = high fit (+15 pts)
+- Space type = CoWork = good fit (+10 pts)
+- Space type = Retail or Warehouse = moderate fit (+8 pts)
+- Team size 5+ = strong need (+10 pts)
+- Team size 2–4 = moderate need (+7 pts)
+- Solo = solo (+3 pts)
+
+The final score MUST be between 25 and 100 inclusive. Never return a score below 25.
 
 LEAD DATA:
 - Name: ${lead.name}
@@ -135,7 +138,7 @@ ${PROPERTIES_CONTEXT}
 
 Respond with ONLY valid JSON in this exact format (no markdown, no explanation):
 {
-  "score": <number 0-100>,
+  "score": <number 25-100>,
   "scoreLabel": "<Hot Lead|Warm Lead|Nurture>",
   "reasoning": "<2-sentence max explanation of score>",
   "matchedProperties": [
@@ -151,9 +154,9 @@ Respond with ONLY valid JSON in this exact format (no markdown, no explanation):
 }
 
 Rules for scoreLabel:
-- score >= 70 = "Hot Lead"
-- score 40–69 = "Warm Lead"
-- score < 40 = "Nurture"
+- score >= 75 = "Hot Lead"
+- score 50–74 = "Warm Lead"
+- score < 50 = "Nurture"
 
 Include 1-2 best matching properties only.
 `;
