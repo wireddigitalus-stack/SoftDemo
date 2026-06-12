@@ -46,6 +46,7 @@ interface Lead {
   medium?: string;
   campaign?: string;
   additionalInfo?: string;
+  archivedAt?: string | null;
 }
 
 interface AllowedUser {
