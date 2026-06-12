@@ -143,7 +143,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
             </div>
             <div>
               <h2 className="text-sm font-black text-white">Activity Log</h2>
-              <p className="text-[10px] text-gray-600">Who did what &amp; when</p>
+              <p className="text-[11px] text-gray-400">Who did what &amp; when</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -305,7 +305,7 @@ export default function ActivityFeedPanel({ onClose }: Props) {
                           v !== undefined && v !== null && v !== "" && String(v).trim() ? (
                             <span
                               key={k}
-                              className="text-[10px] text-gray-600 bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5 rounded-md max-w-full truncate"
+                              className="text-[11px] text-gray-400 bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5 rounded-md max-w-full truncate"
                               style={{ maxWidth: "100%" }}
                             >
                               {String(k).replace(/_/g, " ")}:{" "}
@@ -321,10 +321,10 @@ export default function ActivityFeedPanel({ onClose }: Props) {
                     {/* Time + actor email */}
                     <div className="flex items-center gap-1 mt-1.5 min-w-0 overflow-hidden">
                       <Clock size={9} className="text-gray-700 flex-shrink-0" />
-                      <span className="text-[10px] text-gray-700 flex-shrink-0" title={formatDate(log.created_at)}>
+                      <span className="text-[11px] text-gray-400 flex-shrink-0" title={formatDate(log.created_at)}>
                         {timeAgo(log.created_at)}
                       </span>
-                      <span className="text-[10px] text-gray-800 ml-1 truncate" title={log.actor_email}>
+                      <span className="text-[11px] text-gray-500 ml-1 truncate" title={log.actor_email}>
                         · {log.actor_email}
                       </span>
                     </div>

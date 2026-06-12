@@ -253,7 +253,7 @@ function QBExportButton() {
         {exporting ? <><Loader2 size={13} className="animate-spin" /> Generating…</> : <><Download size={13} /> Export for QuickBooks</>}
       </button>
       {tenantCount !== null && (
-        <p className="text-[10px] text-gray-600 text-center">{tenantCount} active tenant{tenantCount !== 1 ? "s" : ""} will be exported</p>
+        <p className="text-[11px] text-gray-400 text-center">{tenantCount} active tenant{tenantCount !== 1 ? "s" : ""} will be exported</p>
       )}
     </div>
   );
@@ -1273,7 +1273,7 @@ function LoginHistory() {
                       {/* Time */}
                       <div className="flex-shrink-0 text-right min-w-[70px]">
                         <p className="text-xs font-bold text-gray-400 tabular-nums">{timeAgo(login.created_at)}</p>
-                        <p className="text-[10px] text-gray-600 tabular-nums">
+                        <p className="text-[11px] text-gray-400 tabular-nums">
                           {new Date(login.created_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                         </p>
                       </div>
@@ -1353,7 +1353,7 @@ function DataExportSection({ leads }: { leads: Lead[] }) {
                   <div className="w-8 h-8 rounded-xl bg-[rgba(250,204,21,0.12)] flex items-center justify-center text-base">📒</div>
                   <div>
                     <p className="text-xs font-black text-white uppercase tracking-widest">QuickBooks Desktop</p>
-                    <p className="text-[10px] text-gray-500">Export tenant data for QB Desktop import</p>
+                    <p className="text-[11px] text-gray-400">Export tenant data for QB Desktop import</p>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 leading-relaxed mb-3">
@@ -1381,7 +1381,7 @@ function DataExportSection({ leads }: { leads: Lead[] }) {
                   </div>
                 </div>
                 <div className="rounded-xl border border-[rgba(250,204,21,0.1)] bg-[rgba(0,0,0,0.2)] p-3">
-                  <p className="text-[10px] text-gray-600 leading-relaxed">
+                  <p className="text-[11px] text-gray-400 leading-relaxed">
                     <strong className="text-[#FACC15]">How to import:</strong> In QuickBooks Desktop → File → Utilities → Import → IIF Files → select the downloaded .iif file. The Excel file is for your reference.
                   </p>
                 </div>
