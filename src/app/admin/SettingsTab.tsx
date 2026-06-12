@@ -585,137 +585,85 @@ function NotificationsCard() {
 
       <div className="space-y-4">
 
-        {/* ── Email Alerts ── */}
-        <div className="rounded-2xl border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.03)] p-4" style={{ boxShadow: "0 0 20px rgba(96,165,250,0.06)" }}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[rgba(96,165,250,0.12)] flex items-center justify-center">
-                <Mail size={16} className="text-[#60A5FA]" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-white">Email Alerts</p>
-                <p className="text-xs text-gray-500">Receive notifications via email</p>
-              </div>
+        {/* ── Active Email Notifications ── */}
+        <div className="rounded-2xl border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.03)] p-4" style={{ boxShadow: "0 0 20px rgba(74,222,128,0.06)" }}>
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-[rgba(74,222,128,0.12)] flex items-center justify-center">
+              <Mail size={16} className="text-[#4ADE80]" />
             </div>
-            <button onClick={() => update({ emailEnabled: !prefs.emailEnabled })}
-              className="w-11 h-6 rounded-full transition-all duration-300 relative"
-              style={{
-                backgroundColor: prefs.emailEnabled ? "#60A5FA" : "rgba(255,255,255,0.08)",
-                boxShadow: prefs.emailEnabled ? "0 0 12px rgba(96,165,250,0.4)" : "none",
-              }}>
-              <div className="w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md"
-                style={{ left: prefs.emailEnabled ? "22px" : "2px" }} />
-            </button>
+            <div>
+              <p className="text-sm font-black text-white">Email Notifications</p>
+              <p className="text-xs text-[#4ADE80] font-bold">Active · Powered by Resend</p>
+            </div>
+            <div className="ml-auto flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse" />
+              <span className="text-[10px] font-black text-[#4ADE80] uppercase tracking-wider">Live</span>
+            </div>
           </div>
-          {prefs.emailEnabled && (
-            <input
-              type="email"
-              value={prefs.emailAddress}
-              onChange={e => update({ emailAddress: e.target.value })}
-              placeholder="your@email.com"
-              className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(96,165,250,0.2)] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none focus:border-[rgba(96,165,250,0.5)] transition-colors"
-            />
-          )}
+
+          {/* Recipients */}
+          <div className="mb-3">
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Recipients</p>
+            <div className="space-y-1.5">
+              {[
+                { name: "J. McClanahan", email: "jmcclanahan@teamvisionllc.com" },
+                { name: "D. Myers", email: "dmyers@teamvisionllc.com" },
+              ].map(r => (
+                <div key={r.email} className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.05)]">
+                  <div className="w-6 h-6 rounded-lg bg-[rgba(74,222,128,0.1)] flex items-center justify-center text-[10px] font-black text-[#4ADE80]">
+                    {r.name.split(" ").map(w => w[0]).join("")}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-white truncate">{r.name}</p>
+                    <p className="text-[10px] text-gray-600 truncate">{r.email}</p>
+                  </div>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] flex-shrink-0" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* What triggers emails */}
+          <div>
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Triggers</p>
+            <div className="space-y-1">
+              {[
+                { icon: <Zap size={12} className="text-[#FACC15]" />, label: "New Lead (Chatbot)", desc: "Instant email when someone submits via Ask VISION" },
+                { icon: <MessageSquare size={12} className="text-[#60A5FA]" />, label: "Contact Form", desc: "Inquiry from the website contact page" },
+              ].map((t, i) => (
+                <div key={i} className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[rgba(0,0,0,0.15)]">
+                  <div className="w-6 h-6 rounded-lg bg-[rgba(255,255,255,0.04)] flex items-center justify-center flex-shrink-0">
+                    {t.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-white">{t.label}</p>
+                    <p className="text-[10px] text-gray-600">{t.desc}</p>
+                  </div>
+                  <span className="text-[9px] font-black text-[#4ADE80] px-2 py-0.5 rounded-md bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.2)]">ON</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* ── SMS Alerts (Twilio — Coming Soon) ── */}
+        {/* ── SMS Alerts (Coming Soon) ── */}
         <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-4 relative overflow-hidden">
-          {/* Coming Soon overlay */}
           <div className="absolute inset-0 bg-[rgba(8,12,20,0.6)] backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-2xl">
             <div className="w-10 h-10 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center mb-2">
               <Lock size={16} className="text-gray-500" />
             </div>
             <p className="text-xs font-black text-gray-400">Coming Soon</p>
-            <p className="text-xs text-gray-600 mt-0.5">Powered by Twilio</p>
+            <p className="text-xs text-gray-600 mt-0.5">SMS & Customizable Preferences</p>
           </div>
-          {/* Underneath content (dimmed) */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[rgba(74,222,128,0.12)] flex items-center justify-center">
-                <Smartphone size={16} className="text-[#4ADE80]" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-white">SMS Alerts</p>
-                <p className="text-xs text-gray-500">Text message via Twilio</p>
-              </div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[rgba(74,222,128,0.12)] flex items-center justify-center">
+              <Smartphone size={16} className="text-[#4ADE80]" />
             </div>
-            <div className="w-11 h-6 rounded-full bg-[rgba(255,255,255,0.08)] relative">
-              <div className="w-5 h-5 rounded-full bg-gray-600 absolute top-0.5 left-0.5" />
+            <div>
+              <p className="text-sm font-black text-white">SMS Alerts & Custom Routing</p>
+              <p className="text-xs text-gray-500">Per-user preferences, Twilio SMS, quiet hours</p>
             </div>
           </div>
-          <input
-            disabled
-            placeholder="(423) 555-0100"
-            className="w-full bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.06)] rounded-xl px-3 py-2.5 text-sm text-gray-600 outline-none"
-          />
-        </div>
-
-        {/* ── Alert Types ── */}
-        <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-4">
-          <p className="text-xs font-black text-white uppercase tracking-wider mb-3">What to notify</p>
-          <div className="space-y-1">
-            {ALERT_TYPES.map(({ key, label, icon, desc }) => (
-              <button key={key} onClick={() => toggleAlert(key)}
-                className="w-full flex items-center gap-3 p-2.5 rounded-xl transition-all hover:bg-[rgba(255,255,255,0.03)] active:scale-[0.98]">
-                <div className="w-7 h-7 rounded-lg bg-[rgba(255,255,255,0.04)] flex items-center justify-center flex-shrink-0">
-                  {icon}
-                </div>
-                <div className="flex-1 text-left min-w-0">
-                  <p className="text-xs font-bold text-white truncate">{label}</p>
-                  <p className="text-xs text-gray-600 truncate">{desc}</p>
-                </div>
-                <div className="w-9 h-5 rounded-full transition-all duration-300 relative flex-shrink-0"
-                  style={{
-                    backgroundColor: prefs.alerts[key] ? "#4ADE80" : "rgba(255,255,255,0.08)",
-                    boxShadow: prefs.alerts[key] ? "0 0 8px rgba(74,222,128,0.3)" : "none",
-                  }}>
-                  <div className="w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-sm"
-                    style={{ left: prefs.alerts[key] ? "18px" : "2px" }} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Quiet Hours ── */}
-        <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[rgba(168,85,247,0.12)] flex items-center justify-center">
-                <Moon size={16} className="text-[#A78BFA]" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-white">Quiet Hours</p>
-                <p className="text-xs text-gray-500">Pause non-emergency alerts</p>
-              </div>
-            </div>
-            <button onClick={() => update({ quietHoursEnabled: !prefs.quietHoursEnabled })}
-              className="w-11 h-6 rounded-full transition-all duration-300 relative"
-              style={{
-                backgroundColor: prefs.quietHoursEnabled ? "#A78BFA" : "rgba(255,255,255,0.08)",
-                boxShadow: prefs.quietHoursEnabled ? "0 0 12px rgba(167,139,250,0.3)" : "none",
-              }}>
-              <div className="w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md"
-                style={{ left: prefs.quietHoursEnabled ? "22px" : "2px" }} />
-            </button>
-          </div>
-          {prefs.quietHoursEnabled && (
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-gray-600 font-bold uppercase tracking-wider block mb-1">From</label>
-                <input type="time" value={prefs.quietStart}
-                  onChange={e => update({ quietStart: e.target.value })}
-                  className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(168,85,247,0.2)] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[rgba(168,85,247,0.5)] transition-colors [color-scheme:dark]" />
-              </div>
-              <div className="text-gray-600 text-xs font-bold pt-4">→</div>
-              <div className="flex-1">
-                <label className="text-xs text-gray-600 font-bold uppercase tracking-wider block mb-1">Until</label>
-                <input type="time" value={prefs.quietEnd}
-                  onChange={e => update({ quietEnd: e.target.value })}
-                  className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(168,85,247,0.2)] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[rgba(168,85,247,0.5)] transition-colors [color-scheme:dark]" />
-              </div>
-            </div>
-          )}
         </div>
 
       </div>
