@@ -1608,13 +1608,6 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
       {/* ── Data Import / Export ── */}
       <DataExportSection leads={leads} />
 
-      {/* ─ Divider */}
-      <div className="border-t border-[rgba(255,255,255,0.05)]" />
-
-      {/* ── Danger Zone: Clear All Leads ── */}
-      <DangerZoneSection leads={leads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />
-
-
       {/* ─ QR Capture Hub ───────────────────────────────────────── */}
       <div>
         <div className="flex items-center gap-2 mb-4">
@@ -1778,6 +1771,12 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
           )}
         </div>
       </div>
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
+      {/* ── Danger Zone: Clear All Leads ── */}
+      <DangerZoneSection leads={leads} deletingAll={deletingAll} deleteAllConfirm={deleteAllConfirm} setDeleteAllConfirm={setDeleteAllConfirm} deleteAllLeads={deleteAllLeads} />
     </div>
   );
 }
