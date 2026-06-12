@@ -107,3 +107,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }
+
+// PATCH — archive or unarchive a lead
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, archive } = await req.json();
+    if (!id) return NextResponse.json({ error: "Missing lead id" }, { status: 400 });
+
+    const archived_at = archive ? new Date().toISOString() : null;
+
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/leads?id=eq.${encodeURIComponent(id)}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_SERVICE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_KEY}`,
+          "Prefer": "return=minimal",
+        },
+        body: JSON.stringify({ archived_at }),
+      }
+    );
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Archive PATCH failed:", err);
+      return NextResponse.json({ error: "Archive failed" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, id, archived_at });
+  } catch (err) {
+    console.error("admin-lead PATCH error:", err);
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+  }
+}

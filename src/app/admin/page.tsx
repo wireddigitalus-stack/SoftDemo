@@ -163,8 +163,8 @@ function daysOld(ts: string): number {
 function daysRemaining(ts: string): number {
   return Math.max(0, MAX_AGE_DAYS - daysOld(ts));
 }
-function isArchived(ts: string): boolean {
-  return daysOld(ts) >= MAX_AGE_DAYS;
+function isArchived(lead: { timestamp: string; archivedAt?: string | null }): boolean {
+  return !!lead.archivedAt || daysOld(lead.timestamp) >= MAX_AGE_DAYS;
 }
 // Note: callLogs passed in at call site — no closure needed
 function daysSinceContact(lead: { id: string; timestamp: string }, callLogs: import("./CallLogModal").CallLog[]): number {
@@ -174,8 +174,8 @@ function daysSinceContact(lead: { id: string; timestamp: string }, callLogs: imp
     : new Date(lead.timestamp);
   return Math.floor((Date.now() - lastDate.getTime()) / 864e5);
 }
-function isCold(lead: { id: string; timestamp: string }, callLogs: import("./CallLogModal").CallLog[]): boolean {
-  return daysSinceContact(lead, callLogs) >= COLD_DAYS && !isArchived(lead.timestamp);
+function isCold(lead: { id: string; timestamp: string; archivedAt?: string | null }, callLogs: import("./CallLogModal").CallLog[]): boolean {
+  return daysSinceContact(lead, callLogs) >= COLD_DAYS && !isArchived(lead);
 }
 function ageBarColor(days: number): string {
   if (days < 90) return "#4ADE80";   // green — fresh
@@ -890,6 +890,7 @@ export default function AdminPage() {
   const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
   const [deletingAll, setDeletingAll] = useState(false);
   const [deleteAllConfirm, setDeleteAllConfirm] = useState("");
+  const [archiveConfirmId, setArchiveConfirmId] = useState<string | null>(null);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -977,6 +978,20 @@ export default function AdminPage() {
     } catch { /* silent */ }
     setDeletingAll(false);
     setDeleteAllConfirm("");
+  };
+
+  const archiveLead = async (leadId: string) => {
+    try {
+      const res = await fetch("/api/admin-lead", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: leadId, archive: true }),
+      });
+      if (res.ok) {
+        setLeads(prev => prev.map(l => l.id === leadId ? { ...l, archivedAt: new Date().toISOString() } : l));
+      }
+    } catch { /* silent */ }
+    setArchiveConfirmId(null);
   };
 
   // Fetch call logs on mount
@@ -1167,11 +1182,11 @@ export default function AdminPage() {
   }, [recentLiveIds]);
 
   // ── Lead Segmentation ──────────────────────────────────────────────────
-  const allNonArchived = leads.filter(l => !isArchived(l.timestamp));
+  const allNonArchived = leads.filter(l => !isArchived(l));
   const coldLeads      = allNonArchived.filter(l => isCold(l, callLogs));
   const coldSet        = new Set(coldLeads.map(l => l.id));
   const activeLeads    = allNonArchived.filter(l => !coldSet.has(l.id));
-  const archivedLeads  = leads.filter(l => isArchived(l.timestamp));
+  const archivedLeads  = leads.filter(l => isArchived(l));
   // Temperature priority based on DECAYED score: Hot (0) > Warm (1) > Nurture (2), then highest decayed score first, then newest
   const decayedRank = (l: Lead) => {
     const dLabel = getDecayedLabel(getDecayedScore(l.score, l, callLogs));
@@ -2176,6 +2191,33 @@ export default function AdminPage() {
                           }}
                         />
                       </div>
+                      {/* Archive button */}
+                      <div className="flex items-center justify-end mt-2.5">
+                        {archiveConfirmId === lead.id ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-gray-500">Are you sure?</span>
+                            <button
+                              onClick={() => archiveLead(lead.id)}
+                              className="text-[11px] font-bold px-3 py-1 rounded-lg bg-[rgba(239,68,68,0.12)] text-red-400 border border-[rgba(239,68,68,0.25)] hover:bg-[rgba(239,68,68,0.2)] transition-colors"
+                            >
+                              Yes, Archive
+                            </button>
+                            <button
+                              onClick={() => setArchiveConfirmId(null)}
+                              className="text-[11px] font-bold px-3 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] text-gray-500 border border-[rgba(255,255,255,0.08)] hover:text-gray-300 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setArchiveConfirmId(lead.id)}
+                            className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-lg text-gray-600 hover:text-gray-400 border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                          >
+                            <Archive size={11} /> Archive Lead
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2296,14 +2338,14 @@ export default function AdminPage() {
                 <Archive size={14} className="text-gray-500" />
                 <p className="text-sm font-bold text-gray-400">Archived Leads</p>
               </div>
-              <p className="text-xs text-gray-600">Leads that have passed the 180-day window. They are retained for reference and can be reactivated at any time.</p>
+              <p className="text-xs text-gray-600">Leads archived manually or after passing the 180-day window. They are retained for reference.</p>
             </div>
 
             {archivedLeads.length === 0 ? (
               <div className="text-center py-20 text-gray-700">
                 <Archive size={32} className="mx-auto mb-3 opacity-30" />
                 <p>No archived leads yet.</p>
-                <p className="text-sm mt-1 text-gray-600">Leads automatically move here after 180 days.</p>
+                <p className="text-sm mt-1 text-gray-600">Leads automatically move here after 180 days, or you can archive them manually.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -2318,7 +2360,12 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm font-bold text-gray-400">{lead.name}</p>
                           <span className="text-xs px-2 py-0.5 rounded-lg border border-[rgba(148,163,184,0.2)] text-gray-600 font-bold">{lead.scoreLabel}</span>
-                          <span className="text-xs text-gray-700 flex items-center gap-1"><Archive size={9} /> Archived {daysOld(lead.timestamp) - MAX_AGE_DAYS}d ago</span>
+                          <span className="text-xs text-gray-700 flex items-center gap-1">
+                            <Archive size={9} />
+                            {lead.archivedAt
+                              ? `Archived ${Math.floor((Date.now() - new Date(lead.archivedAt).getTime()) / 864e5)}d ago`
+                              : `Archived ${daysOld(lead.timestamp) - MAX_AGE_DAYS}d ago`}
+                          </span>
                         </div>
                         <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-xs text-gray-600">
                           <span>{lead.spaceType}</span>

@@ -33,6 +33,8 @@ export interface Lead {
   source?: string;    // e.g. "facebook", "instagram", "google", "organic"
   medium?: string;    // e.g. "social", "cpc", "email"
   campaign?: string;  // e.g. "spring-office-push"
+  // Manual archive
+  archivedAt?: string | null;
 }
 
 

@@ -39,5 +39,6 @@ export function rowToLead(row: any) {
     source: row.source || "organic",
     medium: row.medium || "direct",
     campaign: row.campaign || "",
+    archivedAt: row.archived_at || null,
   };
 }
