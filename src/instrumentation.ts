@@ -1,5 +1,10 @@
 export async function register() {
-  if (process.env.NEXT_RUNTIME === "nodejs") {
+  // Only activate the mock interceptor in local demo mode
+  // (when SUPABASE_URL points to the local mock endpoint)
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const isLocalMock = supabaseUrl.includes("mock-supabase") || supabaseUrl.includes("localhost");
+
+  if (process.env.NEXT_RUNTIME === "nodejs" && isLocalMock) {
     const { handleMockSupabaseRequest } = await import("./lib/mock-db-handler");
 
     const originalFetch = globalThis.fetch;
@@ -15,8 +20,8 @@ export async function register() {
           ? input.toString()
           : input.url;
 
-      // Intercept calls to supabase URL
-      if (url.includes("supabase.co") || url.includes("/api/mock-supabase")) {
+      // Only intercept mock-supabase calls (local demo mode)
+      if (url.includes("mock-supabase")) {
         const method = init?.method || "GET";
         const headers: Record<string, string> = {};
         
@@ -81,7 +86,7 @@ export async function register() {
     };
 
     console.log(
-      "[Mock Supabase Interceptor] Global server-side fetch interceptor registered successfully!"
+      "[Mock Supabase Interceptor] Local demo mode — fetch interceptor registered."
     );
   }
 }
