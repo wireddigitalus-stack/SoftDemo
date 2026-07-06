@@ -145,11 +145,11 @@ function ReportModal({ workerName, onClose, onSubmit }: { workerName: string; on
             <select value={building} onChange={e => setBuilding(e.target.value)}
               className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[rgba(250,204,21,0.4)]">
               <option value="" style={{ background: "#0A0F1A" }}>Select property…</option>
-              <option value="City Centre Professional Suites" style={{ background: "#0A0F1A" }}>City Centre Professional Suites</option>
-              <option value="Bristol CoWork" style={{ background: "#0A0F1A" }}>Bristol CoWork</option>
+              <option value="Metro Park Professional Suites" style={{ background: "#0A0F1A" }}>Metro Park Professional Suites</option>
+              <option value="Summit CoWork" style={{ background: "#0A0F1A" }}>Summit CoWork</option>
               <option value="The Executive" style={{ background: "#0A0F1A" }}>The Executive</option>
               <option value="Centre Point" style={{ background: "#0A0F1A" }}>Centre Point</option>
-              <option value="Foundation Event Facility" style={{ background: "#0A0F1A" }}>Foundation Event Facility</option>
+              <option value="Heritage Event Facility" style={{ background: "#0A0F1A" }}>Heritage Event Facility</option>
               <option value="Commercial Warehouse" style={{ background: "#0A0F1A" }}>Commercial Warehouse</option>
             </select>
           </div>

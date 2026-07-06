@@ -19,7 +19,7 @@ export default function GeoMarketsSection() {
             <span className="gradient-text-green">Entire Region</span>
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed">
-            Vision LLC&apos;s reach extends far beyond Downtown Bristol. Explore our dedicated
+            Vision LLC&apos;s reach extends far beyond Downtown Ashton. Explore our dedicated
             market pages for commercial real estate opportunities across the Tri-Cities and
             Southwest Virginia.
           </p>
@@ -48,7 +48,7 @@ export default function GeoMarketsSection() {
               <div className="relative lg:w-2/5 h-52 lg:h-auto overflow-hidden">
                 <Image
                   src="/images/Down-Town-Bristol-TN-VA.jpg"
-                  alt="Downtown Bristol, TN-VA — Commercial Real Estate"
+                  alt="Downtown Ashton, TN-VA — Commercial Real Estate"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 1024px) 100vw, 40vw"
@@ -66,7 +66,7 @@ export default function GeoMarketsSection() {
                   Commercial Real Estate in Bristol, TN/VA
                 </h3>
                 <p className="text-gray-400 leading-relaxed mb-6">
-                  Bristol sits on the Tennessee-Virginia state line, offering businesses a rare dual-state advantage. Downtown Bristol is experiencing a powerful urban revival — and with the opening of Hard Rock Hotel &amp; Casino on the Virginia side, the entire corridor has become the region&apos;s fastest-growing commercial market.
+                  Bristol sits on the Tennessee-Virginia state line, offering businesses a rare dual-state advantage. Downtown Ashton is experiencing a powerful urban revival — and with the opening of Hard Rock Hotel &amp; Casino on the Virginia side, the entire corridor has become the region&apos;s fastest-growing commercial market.
                 </p>
 
                 <div className="flex flex-wrap gap-4 mb-6">

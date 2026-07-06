@@ -17,33 +17,33 @@ const cityBadges = [
 const HERO_SLIDES = [
   {
     src: "/property-images/commercial-city-centre-exterior.jpg",
-    label: "City Centre Professional Suites",
-    location: "Downtown Bristol, TN",
+    label: "Metro Park Professional Suites",
+    location: "Downtown Ashton, TN",
   },
   {
     src: "/property-images/cowork-shared-office.jpg",
-    label: "Bristol CoWork",
-    location: "620 State Street",
+    label: "Summit CoWork",
+    location: "450 Market Street",
   },
   {
     src: "/property-images/commercial-executive-entry.jpg",
     label: "The Executive — Premier Offices",
-    location: "Downtown Bristol, TN",
+    location: "Downtown Ashton, TN",
   },
   {
     src: "/property-images/commercial-centerpoint-mall.jpg",
-    label: "Centre Point Suites",
+    label: "Midtown Point Suites",
     location: "Bristol, TN",
   },
   {
     src: "/property-images/development-event-space-after.jpg",
-    label: "Foundation Event Facility",
-    location: "Downtown Bristol",
+    label: "Heritage Event Facility",
+    location: "Downtown Ashton",
   },
   {
     src: "/property-images/cowork-conference-room.jpg",
-    label: "Bristol CoWork — Conference Rooms",
-    location: "620 State Street",
+    label: "Summit CoWork — Conference Rooms",
+    location: "450 Market Street",
   },
 ];
 
@@ -124,11 +124,11 @@ export default function HeroSection({ overrides }: { overrides?: HeroOverrides }
   const nextSlideData = slides[nextSlide] || HERO_SLIDES[0];
 
   // CMS-editable values with defaults
-  const trustBadge = o.trust_badge ?? "#1 Commercial Property Owner in Downtown Bristol";
+  const trustBadge = o.trust_badge ?? "#1 Commercial Property Owner in Downtown Ashton";
   const headlineBefore = o.headline_before ?? "The Tri-Cities\u2019 ";
   const headlineHighlight = o.headline_highlight ?? "Commercial";
   const headlineAfter = o.headline_after ?? " Real Estate Leader";
-  const subtext = o.subtext ?? "Vision LLC has been building Downtown Bristol — and serving businesses across the entire Tri-Cities region — for over 20 years. Office. Retail. Warehouse. Development. Executive Advisement.\nOne team. One vision.";
+  const subtext = o.subtext ?? "Vision LLC has been building Downtown Ashton — and serving businesses across the entire Tri-Cities region — for over 20 years. Office. Retail. Warehouse. Development. Executive Advisement.\nOne team. One vision.";
   const ctaPrimary = o.cta_primary ?? "Schedule a Tour";
   const ctaSecondary = o.cta_secondary ?? COMPANY.phone;
 

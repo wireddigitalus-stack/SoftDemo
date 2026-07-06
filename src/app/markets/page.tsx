@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tri-Cities CRE Markets | Bristol · Kingsport · Johnson City | Vision LLC",
     description:
-      "Vision LLC is based in Downtown Bristol, TN — serving commercial real estate clients across the full Tri-Cities metro. Bristol · Kingsport · Johnson City · Abingdon & more.",
+      "Vision LLC is based in Downtown Ashton, TN — serving commercial real estate clients across the full Tri-Cities metro. Bristol · Kingsport · Johnson City · Abingdon & more.",
     url: "https://www.teamvisionllc.com/markets",
     images: [
       {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tri-Cities CRE Markets | Bristol · Kingsport · Johnson City | Vision LLC",
     description:
-      "Commercial real estate services across Bristol TN/VA, Kingsport, Johnson City, Abingdon VA & surrounding Tri-Cities cities. Vision LLC's portfolio is in Downtown Bristol, TN.",
+      "Commercial real estate services across Bristol TN/VA, Kingsport, Johnson City, Abingdon VA & surrounding Tri-Cities cities. Vision LLC's portfolio is in Downtown Ashton, TN.",
     images: [
       "https://www.teamvisionllc.com/api/og?title=Markets+We+Serve&subtitle=Bristol+%C2%B7+Kingsport+%C2%B7+Johnson+City+%C2%B7+Abingdon+%E2%80%94+Vision+LLC&tag=Tri-Cities&type=default",
     ],

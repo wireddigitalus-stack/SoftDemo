@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Loader2, CheckCircle2, X, Upload, Video, ImageIcon, Trash2, Save, RefreshCw, AlertTriangle, Monitor } from "lucide-react";
 import { PROPERTIES } from "@/lib/data";
 
-const MAIN_IDS = ["city-centre","bristol-cowork","the-executive","centre-point-suites","foundation-event-facility","warehouse"];
+const MAIN_IDS = ["metro-park","summit-cowork","the-pinnacle","midtown-point","heritage-event","warehouse"];
 const BANNER_PROPS = PROPERTIES.filter(p => MAIN_IDS.includes(p.id));
 
 interface Slide { type: "property"|"custom"; propertyId?: string; imageUrl?: string; label: string; location: string; enabled: boolean; order: number; }

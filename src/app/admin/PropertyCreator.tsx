@@ -200,7 +200,7 @@ ALTER TABLE properties ENABLE ROW LEVEL SECURITY;`}</pre>
           </div>
           <div>
             <label className={labelCls}>Address</label>
-            <input className={inputCls} placeholder="e.g. 100 5th St., Suite 3A" value={form.address} onChange={e => set("address", e.target.value)} />
+            <input className={inputCls} placeholder="e.g. 200 Commerce Ave., Suite 3A" value={form.address} onChange={e => set("address", e.target.value)} />
           </div>
           <div>
             <label className={labelCls}>City *</label>

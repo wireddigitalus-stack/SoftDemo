@@ -194,7 +194,7 @@ export default function ContactPage() {
                   <option value="Office Space" className="bg-[#111827]">Office Space</option>
                   <option value="Retail Storefront" className="bg-[#111827]">Retail Storefront</option>
                   <option value="Warehouse / Industrial" className="bg-[#111827]">Warehouse / Industrial</option>
-                  <option value="Bristol CoWork Membership" className="bg-[#111827]">Bristol CoWork Membership</option>
+                  <option value="Summit CoWork Membership" className="bg-[#111827]">Summit CoWork Membership</option>
                   <option value="Development / Construction" className="bg-[#111827]">Development / Construction</option>
                   <option value="Executive Advisement" className="bg-[#111827]">Executive Advisement</option>
                   <option value="Other" className="bg-[#111827]">Other</option>

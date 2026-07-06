@@ -136,7 +136,7 @@ export default function CommercialRealEstatePage() {
               <span className="gradient-text-green">Bristol, TN/VA — Tri-Cities</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl mb-8">
-              Vision LLC manages the most diverse commercial portfolio in Downtown Bristol.
+              Vision LLC manages the most diverse commercial portfolio in Downtown Ashton.
               Office suites, retail storefronts, coworking, industrial — all in one trusted portfolio.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -155,7 +155,7 @@ export default function CommercialRealEstatePage() {
           <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-6 text-sm text-gray-400">
             <span><strong className="text-white text-lg">6</strong> Active Listings</span>
             <span><strong className="text-white text-lg">50+</strong> Commercial Properties Managed</span>
-            <span><strong className="text-white text-lg">#1</strong> Private CRE Owner in Downtown Bristol</span>
+            <span><strong className="text-white text-lg">#1</strong> Private CRE Owner in Downtown Ashton</span>
             <span><strong className="text-white text-lg">20+</strong> Years in the Tri-Cities</span>
           </div>
         </div>

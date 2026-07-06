@@ -140,7 +140,7 @@ export default async function PropertyDetailPage({ params }: Props) {
     image: heroImage ? [`https://www.teamvisionllc.com${heroImage}`] : [],
     address: {
       "@type": "PostalAddress",
-      streetAddress: (property as any).address || "Downtown Bristol",
+      streetAddress: (property as any).address || "Downtown Ashton",
       addressLocality: property.city.replace(", TN", "").replace(", VA", ""),
       addressRegion: property.city.includes("VA") ? "VA" : "TN",
       postalCode: "37620",
@@ -183,7 +183,7 @@ export default async function PropertyDetailPage({ params }: Props) {
     telephone: "+14235731022",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "100 5th St., Suite 2W",
+      streetAddress: "200 Commerce Ave., Suite 2W",
       addressLocality: "Bristol",
       addressRegion: "TN",
       postalCode: "37620",

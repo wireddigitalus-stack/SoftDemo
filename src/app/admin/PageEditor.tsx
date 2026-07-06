@@ -44,9 +44,9 @@ function buildDefaults(): Record<string, Record<string, FieldMeta>> {
 
   // ── CoWork standalone page ──
   sections["page:cowork"] = {
-    hero_badge:       { label: "Hero Badge Text", value: "Now Open · 620 State Street", type: "text" },
-    hero_description: { label: "Hero Description", value: "Downtown Bristol's premier professional workspace — built for entrepreneurs, remote teams, and growing businesses that need more than a coffee shop.", type: "textarea" },
-    hero_subtext:     { label: "Hero Subtext", value: "620 State Street, Bristol, TN · All-inclusive memberships · Private offices available today", type: "text" },
+    hero_badge:       { label: "Hero Badge Text", value: "Now Open · 450 Market Street", type: "text" },
+    hero_description: { label: "Hero Description", value: "Downtown Ashton's premier professional workspace — built for entrepreneurs, remote teams, and growing businesses that need more than a coffee shop.", type: "textarea" },
+    hero_subtext:     { label: "Hero Subtext", value: "450 Market Street, Bristol, TN · All-inclusive memberships · Private offices available today", type: "text" },
     plans_heading:    { label: "Plans Section Heading", value: "Membership Plans", type: "text" },
     plans_subtext:    { label: "Plans Section Subtext", value: "All plans include Wi-Fi, coffee, and access to communal areas. Contact us for current rates.", type: "textarea" },
     plan_1_name:      { label: "Plan 1 — Name", value: "Hot Desk", type: "text" },
@@ -62,7 +62,7 @@ function buildDefaults(): Record<string, Record<string, FieldMeta>> {
     plan_3_desc:      { label: "Plan 3 — Description", value: "Fully furnished, lockable private office. Move in tomorrow.", type: "text" },
     plan_3_features:  { label: "Plan 3 — Features (one per line)", value: "Private Lockable Office\nFurnished & Ready\nAll Utilities Included\nDedicated Internet\nBusiness Address\nConference Rooms Included\n24/7 Access\nSignage Options", type: "textarea" },
     location_heading: { label: "Location Section Heading", value: "Prime Downtown Location", type: "text" },
-    location_address: { label: "Location Address", value: "620 State Street · Bristol, TN 37620", type: "text" },
+    location_address: { label: "Location Address", value: "450 Market Street · Bristol, TN 37620", type: "text" },
     location_desc:    { label: "Location Description", value: "Located on Bristol's iconic State Street — right on the TN/VA state line, steps from restaurants, hotels, and the region's most active commercial corridor.", type: "textarea" },
   };
 
@@ -103,7 +103,7 @@ function buildDefaults(): Record<string, Record<string, FieldMeta>> {
     who_subtext:      { label: "Who We Work With Subtext", value: "From local founders to national executives — we work with leaders who are serious about growth.", type: "textarea" },
     who_tags:         { label: "Client Types (one per line)", value: "Growth-Stage Founders\nC-Suite & Board Members\nRegional Governments\nPrivate Equity Firms\nHealthcare Organizations\nManufacturing Companies\nCommercial Developers\nNonprofit Leadership", type: "textarea" },
     final_quote:      { label: "Final Quote", value: "\"The sum of all parts is greater than the whole.\"", type: "text" },
-    final_attribution:{ label: "Quote Attribution", value: "— J. Allen Hurley II", type: "text" },
+    final_attribution:{ label: "Quote Attribution", value: "— J. Alex Harrison II", type: "text" },
     final_subtext:    { label: "Final Subtext", value: "That's not just a philosophy. It's how we build. How we advise. How we grow — with you.", type: "textarea" },
   };
 
@@ -124,7 +124,7 @@ const PAGE_META: { key: string; label: string; description: string; color: strin
   {
     key: "page:cowork",
     label: "CoWork Page",
-    description: "/cowork — Bristol CoWork standalone page",
+    description: "/cowork — Summit CoWork standalone page",
     color: "#FACC15",
   },
   {

@@ -60,7 +60,7 @@ Enhance the article body for local SEO. Rules you MUST follow:
 ## LOCAL SEO TERM BANK (use naturally, not all at once)
 Geographic: Bristol TN, Bristol VA, Tri-Cities TN/VA, Kingsport TN, Johnson City TN, Northeast Tennessee, Southwest Virginia, State Street, Sullivan County, Washington County, zip 37620, zip 37660, zip 37601, I-81 corridor, Blountville TN
 Property-specific: Class-A office, commercial real estate, coworking space, executive suites, retail space, adaptive reuse, historic tax credit
-Brand: Vision LLC, Bristol CoWork, City Centre Professional Suites, The Executive
+Brand: Vision LLC, Summit CoWork, Metro Park Professional Suites, The Executive
 
 ## OUTPUT FORMAT
 Return ONLY valid JSON, no markdown wrapper:

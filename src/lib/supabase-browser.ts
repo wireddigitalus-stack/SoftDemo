@@ -98,7 +98,7 @@ export const supabaseBrowser = {
             { name: "Demo Admin", email: "demo@teamvisionllc.com", avatar: undefined }
           ],
           "allen@teamvisionllc.com": [
-            { name: "J. Allen Hurley", email: "allen@teamvisionllc.com", avatar: undefined }
+            { name: "J. Alex Harrison", email: "allen@teamvisionllc.com", avatar: undefined }
           ],
           "leasing@teamvisionllc.com": [
             { name: "Leasing Agent", email: "leasing@teamvisionllc.com", avatar: undefined }

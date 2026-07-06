@@ -19,9 +19,9 @@ import { trackEvent, getAnalyticsSessionId } from "@/hooks/useAnalytics";
 // ─── Property URL map (id → individual property page) ───────────────────────
 const PROPERTY_URLS: Record<string, string> = {
   // Canonical IDs — direct links to individual property detail pages
-  "city-centre":              "/properties/city-centre",
-  "the-executive":            "/properties/the-executive",
-  "bristol-cowork":           "/properties/bristol-cowork",
+  "metro-park":              "/properties/city-centre",
+  "the-pinnacle":            "/properties/the-executive",
+  "summit-cowork":           "/properties/bristol-cowork",
   "centre-point":             "/properties/centre-point-suites",
   "foundation-event":         "/properties/foundation-event-facility",
   "commercial-warehouse":     "/properties/warehouse",
@@ -32,11 +32,11 @@ const PROPERTY_URLS: Record<string, string> = {
   "the-executive-suites":     "/properties/the-executive",
   "bristol-cowork-space":     "/properties/bristol-cowork",
   "cowork":                   "/properties/bristol-cowork",
-  "centre-point-suites":      "/properties/centre-point-suites",
+  "midtown-point":      "/properties/centre-point-suites",
   "centerpoint":              "/properties/centre-point-suites",
   "center-point":             "/properties/centre-point-suites",
   "foundation":               "/properties/foundation-event-facility",
-  "foundation-event-facility":"/properties/foundation-event-facility",
+  "heritage-event":"/properties/foundation-event-facility",
   "warehouse":                "/properties/warehouse",
   "commercial-warehouse-space":"/properties/warehouse",
 };
@@ -280,40 +280,40 @@ export default function LeaseBotWidget() {
       score += 10;
       matchedProperties = [{
         id: "centre-point",
-        name: "Centre Point Suites",
+        name: "Midtown Point Suites",
         type: "Retail",
         sqft: "800–5,000 sqft",
-        location: "Downtown Bristol, TN/VA",
+        location: "Downtown Ashton, TN/VA",
         matchReason: "High-traffic retail frontage in a prime downtown corridor.",
       }];
     } else if (st.includes("cowork")) {
       score += 15;
       matchedProperties = [{
-        id: "bristol-cowork",
-        name: "Bristol CoWork",
+        id: "summit-cowork",
+        name: "Summit CoWork",
         type: "CoWork",
         sqft: "Private offices & dedicated desks",
-        location: "620 State Street, Bristol TN/VA",
+        location: "450 Market Street, Bristol TN/VA",
         matchReason: "All-inclusive monthly membership — no long-term lease required.",
       }];
     } else if (st.includes("executive")) {
       score += 20;
       matchedProperties = [{
-        id: "the-executive",
+        id: "the-pinnacle",
         name: "The Executive",
         type: "Office",
         sqft: "500–12,000 sqft",
-        location: "Downtown Bristol, TN/VA",
+        location: "Downtown Ashton, TN/VA",
         matchReason: "Private executive suites in a prestigious historic building.",
       }];
     } else {
       score += 20;
       matchedProperties = [{
-        id: "city-centre",
-        name: "City Centre Professional Suites",
+        id: "metro-park",
+        name: "Metro Park Professional Suites",
         type: "Office",
         sqft: "1,200–18,000+ sqft",
-        location: "Downtown Bristol, TN/VA",
+        location: "Downtown Ashton, TN/VA",
         matchReason: "Premium downtown office space with flexible suite sizes.",
       }];
     }
@@ -659,7 +659,7 @@ export default function LeaseBotWidget() {
                   <p className="text-lg font-black text-[#4ADE80] mb-1">🎉 We have a match for you!</p>
                   <p className="text-sm text-gray-300">
                     {lead.name ? `${lead.name}, based` : "Based"} on what you&apos;re looking for,
-                    here{result.matchedProperties.length === 1 ? "&apos;s the property" : " are the properties"} we recommend from our Downtown Bristol portfolio:
+                    here{result.matchedProperties.length === 1 ? "&apos;s the property" : " are the properties"} we recommend from our Downtown Ashton portfolio:
                   </p>
                 </div>
 

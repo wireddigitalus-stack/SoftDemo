@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
             </span>
             <span style={{ fontSize: 15, color: "#374151", margin: "0 12px" }}>·</span>
             <span style={{ fontSize: 15, color: "#6B7280" }}>
-              Largest private CRE owner in Downtown Bristol
+              Largest private CRE owner in Downtown Ashton
             </span>
           </div>
 

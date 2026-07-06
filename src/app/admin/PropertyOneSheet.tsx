@@ -610,7 +610,7 @@ function buildOneSheetHTML(
           </div>
 
           <p class="cta-tagline">
-            Vision LLC — Downtown Bristol's premier commercial property owner.
+            Vision LLC — Downtown Ashton's premier commercial property owner.
             Our team personally walks every prospect through available spaces.
           </p>
         </div>

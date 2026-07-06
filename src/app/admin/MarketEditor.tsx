@@ -30,8 +30,8 @@ function buildMarketDefaults(): Record<string, Record<string, FieldMeta>> {
       availableTypes:  { label: "Available Space Types (one per line)", value: g.availableTypes.join("\n"), type: "textarea" },
       faq_q1:          { label: "FAQ 1 — Question", value: `Does Vision LLC have commercial property available in ${g.city}, ${g.state}?`, type: "text" },
       faq_a1:          { label: "FAQ 1 — Answer", value: g.isPrimary
-        ? `Yes! Vision LLC is the largest private commercial property owner in Downtown Bristol with a full portfolio. Contact our team at 423-573-1022.`
-        : `Vision LLC actively serves businesses from ${g.city} — connecting them with our commercial portfolio in Downtown Bristol, TN.`, type: "textarea" },
+        ? `Yes! Vision LLC is the largest private commercial property owner in Downtown Ashton with a full portfolio. Contact our team at 423-573-1022.`
+        : `Vision LLC actively serves businesses from ${g.city} — connecting them with our commercial portfolio in Downtown Ashton, TN.`, type: "textarea" },
       faq_q2:          { label: "FAQ 2 — Question", value: `What types of commercial space does Vision LLC offer in the ${g.region}?`, type: "text" },
       faq_a2:          { label: "FAQ 2 — Answer", value: `In the ${g.region} market, Vision LLC offers ${g.availableTypes.join(", ")}. We specialize in finding the right fit for your business.`, type: "textarea" },
       faq_q3:          { label: "FAQ 3 — Question", value: `How long has Vision LLC been serving ${g.city}?`, type: "text" },

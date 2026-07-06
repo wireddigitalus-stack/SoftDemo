@@ -8,15 +8,15 @@ import Navigation from "@/components/Navigation";
 import { getAllSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
-  title: "About Vision LLC | J. Allen Hurley II — Bristol, TN/VA CRE Leader",
+  title: "About Vision LLC | J. Alex Harrison II — Bristol, TN/VA CRE Leader",
   description:
-    "Downtown Bristol's largest private commercial property owner, led by CEO J. Allen Hurley II. 20+ years of Tri-Cities real estate & executive advisement. Call 423-573-1022.",
+    "Downtown Ashton's largest private commercial property owner, led by CEO J. Alex Harrison II. 20+ years of Tri-Cities real estate & executive advisement. Call 423-573-1022.",
   keywords: [
     "Vision LLC about",
-    "J Allen Hurley II",
+    "J Alex Harrison II",
     "Bristol TN commercial real estate owner",
     "Bristol VA commercial real estate owner",
-    "Downtown Bristol property developer",
+    "Downtown Ashton property developer",
     "Tri-Cities CRE leadership",
     "Vision LLC history",
     "adaptive reuse Bristol Tennessee",
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     canonical: "https://www.teamvisionllc.com/about",
   },
   openGraph: {
-    title: "J. Allen Hurley II | CEO, Vision LLC — Bristol, TN/VA's #1 CRE Firm",
-    description: "20+ years. 50+ properties. Downtown Bristol's largest private commercial property owner & the Tri-Cities' most integrated CRE firm.",
+    title: "J. Alex Harrison II | CEO, Vision LLC — Bristol, TN/VA's #1 CRE Firm",
+    description: "20+ years. 50+ properties. Downtown Ashton's largest private commercial property owner & the Tri-Cities' most integrated CRE firm.",
     url: "https://www.teamvisionllc.com/about",
     siteName: "Vision LLC",
     type: "website",
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Vision LLC | J. Allen Hurley II — Bristol's Top CRE Firm",
+    title: "About Vision LLC | J. Alex Harrison II — Bristol's Top CRE Firm",
     description:
-      "20+ years. 50+ properties. Downtown Bristol's largest private commercial property owner. Led by CEO J. Allen Hurley II.",
+      "20+ years. 50+ properties. Downtown Ashton's largest private commercial property owner. Led by CEO J. Alex Harrison II.",
     images: [
       "https://www.teamvisionllc.com/api/og?title=About+Vision+LLC&subtitle=J.+Allen+Hurley+II+%C2%B7+20%2B+Years+in+the+Tri-Cities&tag=Est.+2002&type=default",
     ],
@@ -54,10 +54,10 @@ export const metadata: Metadata = {
 
 const timeline = [
   { year: "2002", event: "Vision LLC founded in Bristol, TN" },
-  { year: "2005", event: "First major Downtown Bristol acquisition" },
+  { year: "2005", event: "First major Downtown Ashton acquisition" },
   { year: "2010", event: "Launched historic adaptive reuse program" },
-  { year: "2015", event: "Became #1 private CRE owner in Downtown Bristol" },
-  { year: "2018", event: "Opened Bristol CoWork at 620 State Street" },
+  { year: "2015", event: "Became #1 private CRE owner in Downtown Ashton" },
+  { year: "2018", event: "Opened Summit CoWork at 450 Market Street" },
   { year: "2022", event: "Expanded Executive Advisement division" },
   { year: "2024", event: "50+ commercial properties under management" },
 ];
@@ -92,13 +92,13 @@ export default async function AboutPage() {
   const o = allContent.about || {};
 
   const heroHeading1 = o.hero_heading_1 ?? "20+ Years Building";
-  const heroHeading2 = o.hero_heading_2 ?? "Downtown Bristol";
-  const heroSubtext = o.hero_subtext ?? "Vision LLC is the largest private commercial property owner in Downtown Bristol, TN/VA — and the most integrated commercial real estate firm in the Tri-Cities.";
-  const leaderHeading = o.leader_heading ?? "J. Allen Hurley II";
-  const leaderBio1 = o.leader_bio_1 ?? "J. Allen Hurley II is the CEO of Vision LLC and one of the most respected commercial real estate leaders in the Tri-Cities region. With 30+ years of executive experience spanning development, construction, and corporate strategy, Allen has shaped the commercial landscape of Downtown Bristol more than any other private individual.";
+  const heroHeading2 = o.hero_heading_2 ?? "Downtown Ashton";
+  const heroSubtext = o.hero_subtext ?? "Vision LLC is the largest private commercial property owner in Downtown Ashton, TN/VA — and the most integrated commercial real estate firm in the Tri-Cities.";
+  const leaderHeading = o.leader_heading ?? "J. Alex Harrison II";
+  const leaderBio1 = o.leader_bio_1 ?? "J. Alex Harrison II is the CEO of Vision LLC and one of the most respected commercial real estate leaders in the Tri-Cities region. With 30+ years of executive experience spanning development, construction, and corporate strategy, Allen has shaped the commercial landscape of Downtown Ashton more than any other private individual.";
   const leaderBio2 = o.leader_bio_2 ?? "Under his leadership, Vision LLC has reactivated millions of square feet of dormant commercial space, preserved some of Bristol's most iconic historic buildings, and delivered measurable economic impact across Northeast Tennessee and Southwest Virginia.";
   const leaderBio3 = o.leader_bio_3 ?? "Beyond real estate, Allen serves as an executive advisor to C-suite leaders, boards, and government entities — bringing the same strategic rigor to Fortune 500 challenges that he applies to Main Street development.";
-  const leaderQuote = o.leader_quote ?? "We don't just own buildings. We invest in communities. Every block we restore is a statement that Downtown Bristol has a future worth fighting for.";
+  const leaderQuote = o.leader_quote ?? "We don't just own buildings. We invest in communities. Every block we restore is a statement that Downtown Ashton has a future worth fighting for.";
   const ctaHeading = o.cta_heading ?? "Ready to Work With Vision?";
   const ctaSubtext = o.cta_subtext ?? "Whether you need a lease, a development partner, or an executive advisor — our team is ready.";
 
@@ -114,7 +114,7 @@ export default async function AboutPage() {
             url: "https://www.teamvisionllc.com/about",
             mainEntity: {
               "@type": "Person",
-              name: "J. Allen Hurley II",
+              name: "J. Alex Harrison II",
               jobTitle: "CEO",
               worksFor: {
                 "@type": "RealEstateAgent",
@@ -123,7 +123,7 @@ export default async function AboutPage() {
                 telephone: "+14235731022",
                 address: {
                   "@type": "PostalAddress",
-                  streetAddress: "100 5th St., Suite 2W",
+                  streetAddress: "200 Commerce Ave., Suite 2W",
                   addressLocality: "Bristol",
                   addressRegion: "TN",
                   postalCode: "37620",
@@ -182,7 +182,7 @@ export default async function AboutPage() {
             {[
               { n: "20+", label: "Years in the Tri-Cities" },
               { n: "50+", label: "Commercial Properties" },
-              { n: "#1", label: "Private CRE Owner, Downtown Bristol" },
+              { n: "#1", label: "Private CRE Owner, Downtown Ashton" },
               { n: "3", label: "Integrated Business Divisions" },
             ].map((s) => (
               <div key={s.label}>
@@ -222,7 +222,7 @@ export default async function AboutPage() {
             <div className="relative h-96 lg:h-[520px] rounded-2xl overflow-hidden">
               <Image
                 src="/property-images/commercial-city-centre-exterior.jpg"
-                alt="Vision LLC Downtown Bristol portfolio"
+                alt="Vision LLC Downtown Ashton portfolio"
                 fill
                 className="object-cover"
               />

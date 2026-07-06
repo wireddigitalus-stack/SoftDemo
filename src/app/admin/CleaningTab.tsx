@@ -417,11 +417,11 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
               }}
             >
               <option value="" style={{ background: "#0A0F1A" }}>Select property…</option>
-              <option value="City Centre Professional Suites" style={{ background: "#0A0F1A" }}>City Centre Professional Suites</option>
-              <option value="Bristol CoWork" style={{ background: "#0A0F1A" }}>Bristol CoWork</option>
+              <option value="Metro Park Professional Suites" style={{ background: "#0A0F1A" }}>Metro Park Professional Suites</option>
+              <option value="Summit CoWork" style={{ background: "#0A0F1A" }}>Summit CoWork</option>
               <option value="The Executive" style={{ background: "#0A0F1A" }}>The Executive</option>
               <option value="Centre Point" style={{ background: "#0A0F1A" }}>Centre Point</option>
-              <option value="Foundation Event Facility" style={{ background: "#0A0F1A" }}>Foundation Event Facility</option>
+              <option value="Heritage Event Facility" style={{ background: "#0A0F1A" }}>Heritage Event Facility</option>
               <option value="Commercial Warehouse" style={{ background: "#0A0F1A" }}>Commercial Warehouse</option>
             </select>
           </div>
@@ -473,11 +473,11 @@ function AssignmentForm({ onSave, onCancel, currentUserName, currentUserEmail }:
           <label className={LABEL}>Property / Building *</label>
           <select value={property} onChange={e => setProperty(e.target.value)} className={FIELD}>
             <option value="" className="bg-[#0A0F1A]">Select property…</option>
-            <option value="City Centre Professional Suites" className="bg-[#0A0F1A]">City Centre Professional Suites</option>
-            <option value="Bristol CoWork" className="bg-[#0A0F1A]">Bristol CoWork</option>
+            <option value="Metro Park Professional Suites" className="bg-[#0A0F1A]">Metro Park Professional Suites</option>
+            <option value="Summit CoWork" className="bg-[#0A0F1A]">Summit CoWork</option>
             <option value="The Executive" className="bg-[#0A0F1A]">The Executive</option>
             <option value="Centre Point" className="bg-[#0A0F1A]">Centre Point</option>
-            <option value="Foundation Event Facility" className="bg-[#0A0F1A]">Foundation Event Facility</option>
+            <option value="Heritage Event Facility" className="bg-[#0A0F1A]">Heritage Event Facility</option>
             <option value="Commercial Warehouse" className="bg-[#0A0F1A]">Commercial Warehouse</option>
           </select>
         </div>

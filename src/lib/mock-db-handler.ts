@@ -65,9 +65,9 @@ const DEFAULT_DB: MockDatabase = {
       team_size: "2–4 people",
       score: 91,
       score_label: "Hot Lead",
-      reasoning: "Strong budget ($3,500/mo), urgent timeline, and team size of 2-4 match the City Centre Professional Suites perfectly. Property has premium office options and immediate availability.",
+      reasoning: "Strong budget ($3,500/mo), urgent timeline, and team size of 2-4 match the Metro Park Professional Suites perfectly. Property has premium office options and immediate availability.",
       matched_properties: [
-        { id: "city-centre", name: "City Centre Professional Suites", type: "Office", sqft: "120 – 6,000", matchReason: "All-inclusive pricing covers utilities, fits 2-4 people nicely." }
+        { id: "metro-park", name: "Metro Park Professional Suites", type: "Office", sqft: "120 – 6,000", matchReason: "All-inclusive pricing covers utilities, fits 2-4 people nicely." }
       ],
       is_whale: false,
       whale_tier: null,
@@ -92,8 +92,8 @@ const DEFAULT_DB: MockDatabase = {
       score_label: "Hot Lead",
       reasoning: "Premium budget ($9,500/mo), immediate timeline, and established medical/consulting firm size of 5-10 people. Matches The Executive Premier Office Suites (historic prestige) and City Centre larger suites.",
       matched_properties: [
-        { id: "the-executive", name: "The Executive — Premier Office Suites", type: "Office", sqft: "500 – 12,000", matchReason: "Prestige address, full-service amenities fit corporate/medical offices." },
-        { id: "city-centre", name: "City Centre Professional Suites", type: "Office", sqft: "120 – 6,000", matchReason: "Larger contiguous layout options available." }
+        { id: "the-pinnacle", name: "The Pinnacle — Premier Office Suites", type: "Office", sqft: "500 – 12,000", matchReason: "Prestige address, full-service amenities fit corporate/medical offices." },
+        { id: "metro-park", name: "Metro Park Professional Suites", type: "Office", sqft: "120 – 6,000", matchReason: "Larger contiguous layout options available." }
       ],
       is_whale: true,
       whale_tier: "gold",
@@ -116,9 +116,9 @@ const DEFAULT_DB: MockDatabase = {
       team_size: "Solo",
       score: 64,
       score_label: "Warm Lead",
-      reasoning: "Solo designer seeking coworking setup. Bristol CoWork memberships are available immediately. Good candidate for dedicated desk or private single office.",
+      reasoning: "Solo designer seeking coworking setup. Summit CoWork memberships are available immediately. Good candidate for dedicated desk or private single office.",
       matched_properties: [
-        { id: "bristol-cowork", name: "Bristol CoWork", type: "CoWorking", sqft: "5,000+", matchReason: "Fully furnished private offices, dedicated desks, high-speed internet." }
+        { id: "summit-cowork", name: "Summit CoWork", type: "CoWorking", sqft: "5,000+", matchReason: "Fully furnished private offices, dedicated desks, high-speed internet." }
       ],
       is_whale: false,
       whale_tier: null,
@@ -141,9 +141,9 @@ const DEFAULT_DB: MockDatabase = {
       team_size: "15+ people",
       score: 94,
       score_label: "Hot Lead",
-      reasoning: "Extremely high budget ($15,000/mo) and large space requirement for industrial distribution. Fits former Coca-Cola warehouse at West State Commons perfectly.",
+      reasoning: "Extremely high budget ($15,000/mo) and large space requirement for industrial distribution. Fits former Coca-Cola warehouse at Commerce Park perfectly.",
       matched_properties: [
-        { id: "west-state-commons", name: "West State Commons — Offices & Warehouse", type: "Mixed-Use / Industrial", sqft: "8,000 Office + 45,500 Warehouse", matchReason: "Coca-Cola facility has 45k sqft warehouse, high ceilings, loading docks." }
+        { id: "commerce-park", name: "Commerce Park — Offices & Warehouse", type: "Mixed-Use / Industrial", sqft: "8,000 Office + 45,500 Warehouse", matchReason: "Coca-Cola facility has 45k sqft warehouse, high ceilings, loading docks." }
       ],
       is_whale: true,
       whale_tier: "gold",
@@ -159,13 +159,13 @@ const DEFAULT_DB: MockDatabase = {
     // Commercial Tenants
     {
       id: "tenant_comm_1",
-      name: "Bristol Catering Company",
-      contact_name: "Julie McClanahan",
+      name: "Valley Catering Company",
+      contact_name: "Jessica Morgan",
       email: "jmcclanahan@bristolcatering.com",
       phone: "423-573-1022",
-      building: "City Centre Professional Suites",
+      building: "Metro Park Professional Suites",
       unit: "Suite 100",
-      rep: "Julie McClanahan",
+      rep: "Jessica Morgan",
       monthly_rent: 4500,
       utilities_fee: 150,
       security_deposit: 4500,
@@ -186,13 +186,13 @@ const DEFAULT_DB: MockDatabase = {
     },
     {
       id: "tenant_comm_2",
-      name: "Wolf Hills Law Group",
-      contact_name: "Blake Thornton, Esq.",
+      name: "Summit Law Group",
+      contact_name: "Brian Thompson, Esq.",
       email: "bthornton@wolfhillslaw.com",
       phone: "276-555-9012",
-      building: "Jamestown at Shelby",
+      building: "Madison Square at Oakley",
       unit: "Suite 300",
-      rep: "Allen Hurley",
+      rep: "Alex Harrison",
       monthly_rent: 2800,
       utilities_fee: 100,
       security_deposit: 2800,
@@ -211,14 +211,14 @@ const DEFAULT_DB: MockDatabase = {
       source_lead_id: "demo_4",
       created_at: new Date(Date.now() - 1000 * 3600 * 24 * 200).toISOString(),
     },
-    // Multi-tenant Residential (St. Albert Court Apartments)
+    // Multi-tenant Residential (Riverside Court Apartments)
     {
       id: "tenant_res_1",
       name: "David & Emily Carter",
       contact_name: "David Carter",
       email: "dcarter@gmail.com",
       phone: "423-555-7890",
-      building: "St. Albert Court Apartments",
+      building: "Riverside Court Apartments",
       unit: "Apt 101",
       rep: "Leasing Agent",
       monthly_rent: 1250,
@@ -245,7 +245,7 @@ const DEFAULT_DB: MockDatabase = {
       contact_name: "Sophia Martinez",
       email: "smartinez@king.edu",
       phone: "423-555-4512",
-      building: "St. Albert Court Apartments",
+      building: "Riverside Court Apartments",
       unit: "Apt 102",
       rep: "Leasing Agent",
       monthly_rent: 1200,
@@ -272,7 +272,7 @@ const DEFAULT_DB: MockDatabase = {
       contact_name: "Marcus Vance",
       email: "marcus.vance@yahoo.com",
       phone: "865-555-4091",
-      building: "St. Albert Court Apartments",
+      building: "Riverside Court Apartments",
       unit: "Apt 201",
       rep: "Leasing Agent",
       monthly_rent: 1450,
@@ -299,7 +299,7 @@ const DEFAULT_DB: MockDatabase = {
       contact_name: "Thomas Jenkins",
       email: "tjenkins@gmail.com",
       phone: "276-555-1122",
-      building: "Virginia Heights Residential",
+      building: "Highland Ridge Townhomes",
       unit: "Townhouse A",
       rep: "Leasing Agent",
       monthly_rent: 1650,
@@ -324,7 +324,7 @@ const DEFAULT_DB: MockDatabase = {
   maintenance_tickets: [
     {
       id: "ticket_1",
-      property: "St. Albert Court Apartments",
+      property: "Riverside Court Apartments",
       unit: "Apt 101",
       issue: "Garbage disposal jammed and kitchen sink draining slowly.",
       priority: 2,
@@ -337,7 +337,7 @@ const DEFAULT_DB: MockDatabase = {
     },
     {
       id: "ticket_2",
-      property: "City Centre Professional Suites",
+      property: "Metro Park Professional Suites",
       unit: "Suite 100",
       issue: "HVAC blowing warm air in receptionist area.",
       priority: 1,
@@ -350,7 +350,7 @@ const DEFAULT_DB: MockDatabase = {
     },
     {
       id: "ticket_3",
-      property: "St. Albert Court Apartments",
+      property: "Riverside Court Apartments",
       unit: "Apt 201",
       issue: "Replace balcony door weather stripping.",
       priority: 3,
@@ -365,7 +365,7 @@ const DEFAULT_DB: MockDatabase = {
   cleaning_assignments: [
     {
       id: "clean_1",
-      property: "City Centre Professional Suites",
+      property: "Metro Park Professional Suites",
       area: "Common Lobby & Bathrooms",
       scheduled_date: new Date(Date.now() + 1000 * 3600 * 24).toISOString().split("T")[0],
       assigned_worker: "Mary S. (Cleaning)",
@@ -375,7 +375,7 @@ const DEFAULT_DB: MockDatabase = {
     },
     {
       id: "clean_2",
-      property: "St. Albert Court Apartments",
+      property: "Riverside Court Apartments",
       area: "Apt 102 Move-in Cleaning Prep",
       scheduled_date: new Date(Date.now() - 1000 * 3600 * 24 * 2).toISOString().split("T")[0],
       assigned_worker: "Mary S. (Cleaning)",
@@ -389,12 +389,12 @@ const DEFAULT_DB: MockDatabase = {
       key: "hero_config",
       value: {
         slides: [
-          { type: "property", propertyId: "city-centre", label: "City Centre Professional Suites", location: "Downtown Bristol, TN", enabled: true, order: 0 },
-          { type: "property", propertyId: "bristol-cowork", label: "Bristol CoWork", location: "620 State Street, Bristol, TN", enabled: true, order: 1 },
-          { type: "property", propertyId: "the-executive", label: "The Executive Office Suites", location: "Downtown Bristol, TN", enabled: true, order: 2 },
-          { type: "property", propertyId: "centre-point-suites", label: "Centre Point", location: "Bristol, VA (Casino Adjacent)", enabled: true, order: 3 },
-          { type: "property", propertyId: "foundation-event-facility", label: "Foundation Event Venue", location: "Downtown Bristol, TN", enabled: true, order: 4 },
-          { type: "property", propertyId: "west-state-commons", label: "West State Commons", location: "Bristol, VA", enabled: true, order: 5 }
+          { type: "property", propertyId: "metro-park", label: "Metro Park Professional Suites", location: "Downtown Ashton, TN", enabled: true, order: 0 },
+          { type: "property", propertyId: "summit-cowork", label: "Summit CoWork", location: "450 Market Street, Bristol, TN", enabled: true, order: 1 },
+          { type: "property", propertyId: "the-pinnacle", label: "The Pinnacle Office Suites", location: "Downtown Ashton, TN", enabled: true, order: 2 },
+          { type: "property", propertyId: "midtown-point", label: "Centre Point", location: "Bristol, VA (Casino Adjacent)", enabled: true, order: 3 },
+          { type: "property", propertyId: "heritage-event", label: "Foundation Event Venue", location: "Downtown Ashton, TN", enabled: true, order: 4 },
+          { type: "property", propertyId: "commerce-park", label: "Commerce Park", location: "Bristol, VA", enabled: true, order: 5 }
         ],
         videoUrl: null,
         videoEnabled: false
@@ -452,7 +452,7 @@ const DEFAULT_DB: MockDatabase = {
       utm_source: "google",
       utm_medium: "cpc",
       utm_campaign: "bristol_cre",
-      event_data: { property_id: "city-centre" },
+      event_data: { property_id: "metro-park" },
       duration_ms: 12000,
       device_type: "desktop",
       screen_width: 1440,
@@ -463,7 +463,7 @@ const DEFAULT_DB: MockDatabase = {
       session_id: "session_mock_1",
       event_type: "cta_click",
       page_path: "/properties/city-centre",
-      page_title: "City Centre Professional Suites | Vision LLC",
+      page_title: "Metro Park Professional Suites | Vision LLC",
       referrer: "https://www.google.com/",
       utm_source: "google",
       utm_medium: "cpc",
@@ -478,10 +478,10 @@ const DEFAULT_DB: MockDatabase = {
   blog_posts: [
     {
       id: "blog_1",
-      title: "The Historical Transformation of Downtown Bristol",
+      title: "The Historical Transformation of Downtown Ashton",
       slug: "historical-transformation-downtown-bristol",
       summary: "Explore how adaptive reuse of 100-year-old structures is powering a modern economic boom along State Street.",
-      content: "<p>Downtown Bristol is experiencing a massive revival...</p>",
+      content: "<p>Downtown Ashton is experiencing a massive revival...</p>",
       published: true,
       published_at: new Date(Date.now() - 1000 * 3600 * 24 * 15).toISOString(),
       created_at: new Date(Date.now() - 1000 * 3600 * 24 * 16).toISOString()
@@ -494,9 +494,9 @@ const DEFAULT_DB: MockDatabase = {
       actor_name: "Demo Admin",
       action: "created",
       resource_type: "tenant",
-      resource_name: "Wolf Hills Law Group",
+      resource_name: "Summit Law Group",
       resource_id: "tenant_comm_2",
-      metadata: { building: "Jamestown at Shelby", unit: "Suite 300", monthly_rent: 2800 },
+      metadata: { building: "Madison Square at Oakley", unit: "Suite 300", monthly_rent: 2800 },
       created_at: new Date(Date.now() - 1000 * 3600 * 24 * 5).toISOString()
     },
     {

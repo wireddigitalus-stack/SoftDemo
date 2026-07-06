@@ -23,17 +23,17 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.teamvisionllc.com"),
   title: {
-    default: "Vision LLC | Downtown Bristol's #1 Commercial Real Estate Company",
+    default: "Vision LLC | Downtown Ashton's #1 Commercial Real Estate Company",
     template: "%s | Vision LLC",
   },
   description:
-    "Vision LLC — Downtown Bristol's premier commercial real estate firm. Office space, retail, coworking & executive consulting across the Tri-Cities TN/VA region.",
+    "Vision LLC — Downtown Ashton's premier commercial real estate firm. Office space, retail, coworking & executive consulting across the Tri-Cities TN/VA region.",
   keywords: [
     "commercial real estate Bristol TN",
     "commercial real estate Bristol VA",
     "Tri-Cities commercial real estate",
     "office space downtown Bristol",
-    "Bristol CoWork",
+    "Summit CoWork",
     "executive advisement Tri-Cities",
     "Vision LLC Bristol",
     "Sullivan County commercial real estate",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "Vision LLC",
     title: "Vision LLC | Tri-Cities Commercial Real Estate Leader",
     description:
-      "The largest private commercial property owner in Downtown Bristol, TN/VA. Serving the entire Tri-Cities region.",
+      "The largest private commercial property owner in Downtown Ashton, TN/VA. Serving the entire Tri-Cities region.",
     images: [
       {
         url: "https://www.teamvisionllc.com/vision-social.png",
@@ -124,7 +124,7 @@ export default function RootLayout({
               email: "leasing@teamvisionllc.com",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "100 5th St., Suite 2W",
+                streetAddress: "200 Commerce Ave., Suite 2W",
                 addressLocality: "Bristol",
                 addressRegion: "TN",
                 postalCode: "37620",
@@ -146,7 +146,7 @@ export default function RootLayout({
                 { "@type": "City", name: "Blountville", containedIn: "Tennessee" },
               ],
               description:
-                "Vision LLC is the largest private commercial property owner in Downtown Bristol and an award-winning developer specializing in historic adaptive reuse across the Tri-Cities region.",
+                "Vision LLC is the largest private commercial property owner in Downtown Ashton and an award-winning developer specializing in historic adaptive reuse across the Tri-Cities region.",
               foundingDate: "2002",
               aggregateRating: {
                 "@type": "AggregateRating",

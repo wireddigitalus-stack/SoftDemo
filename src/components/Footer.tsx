@@ -79,7 +79,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { label: "All Listings", href: "/commercial-real-estate" },
-                { label: "Bristol CoWork", href: "/cowork" },
+                { label: "Summit CoWork", href: "/cowork" },
                 { label: "Executive Advisement", href: "/executive-advisement" },
                 { label: "Development", href: "/commercial-real-estate" },
                 { label: "About Vision LLC", href: "/about" },

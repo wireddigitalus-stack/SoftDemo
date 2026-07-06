@@ -132,7 +132,7 @@ export default function BlogGenerator() {
           <div className="sm:col-span-2">
             <label className={LABEL}>Article Topic *</label>
             <input value={topic} onChange={e => setTopic(e.target.value)} className={FIELD}
-              placeholder="e.g. Why Downtown Bristol TN is the Best Place to Open a Business in 2026" />
+              placeholder="e.g. Why Downtown Ashton TN is the Best Place to Open a Business in 2026" />
           </div>
           <div>
             <label className={LABEL}>Target Keyword</label>

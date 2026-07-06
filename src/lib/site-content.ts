@@ -76,7 +76,7 @@ export async function getAllSiteContent(): Promise<Record<string, ContentMap>> {
 
 /**
  * Fetch all property-related overrides (sections starting with "property:").
- * Returns { "city-centre": { name: "...", description: "..." }, ... }
+ * Returns { "metro-park": { name: "...", description: "..." }, ... }
  */
 export async function getPropertyOverrides(): Promise<Record<string, ContentMap>> {
   try {
@@ -97,7 +97,7 @@ export async function getPropertyOverrides(): Promise<Record<string, ContentMap>
     const rows: { section: string; key: string; value: string }[] = await res.json();
     const result: Record<string, ContentMap> = {};
     for (const row of rows) {
-      // section is "property:city-centre" → extract "city-centre"
+      // section is "property:city-centre" → extract "metro-park"
       const propId = row.section.replace("property:", "");
       if (!result[propId]) result[propId] = {};
       result[propId][row.key] = row.value;

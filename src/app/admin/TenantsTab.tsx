@@ -273,7 +273,7 @@ function TenantForm({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div><label className={LABEL}>Assigned Rep</label>
           <div className="flex gap-1.5 items-center"><input value={form.rep || ""} onChange={e => set("rep", e.target.value)}
-            placeholder={currentUserName || "Allen Hurley"} className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("rep", (form.rep || "") + (form.rep ? " " : "") + t)} /></div></div>
+            placeholder={currentUserName || "Alex Harrison"} className={FIELD + " flex-1"} /><MicButton onResult={(t) => set("rep", (form.rep || "") + (form.rep ? " " : "") + t)} /></div></div>
         <div><label className={LABEL}>Status</label>
           <select value={form.status || "active"} onChange={e => set("status", e.target.value as "active"|"pending"|"expired")} className={FIELD}>
             <option value="active" className="bg-[#0A0F1A]">Active</option>
@@ -722,9 +722,9 @@ export default function TenantsTab({
 
   // Static known properties (matches the hardcoded list from PropDetailsTab)
   const STATIC_PROPERTIES = [
-    "City Centre Professional Suites", "Bristol CoWork", "The Executive",
-    "Centre Point", "Foundation Event Facility", "Commercial Warehouse",
-    "West State Commons", "Jamestown at Shelby", "250 Commonwealth Ave",
+    "Metro Park Professional Suites", "Summit CoWork", "The Executive",
+    "Centre Point", "Heritage Event Facility", "Commercial Warehouse",
+    "Commerce Park", "Madison Square at Oakley", "250 Commonwealth Ave",
     "628 State Street",
   ];
 

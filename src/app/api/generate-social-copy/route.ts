@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       ? `\nContent Goal: ${goalGuide[goal]}`
       : "";
 
-    const prompt = `You are a top-tier social media strategist for Vision LLC, Downtown Bristol TN/VA's premier commercial real estate firm (20+ years, largest private CRE owner downtown).
+    const prompt = `You are a top-tier social media strategist for Vision LLC, Downtown Ashton TN/VA's premier commercial real estate firm (20+ years, largest private CRE owner downtown).
 
 PROPERTY: ${property.name}
 TYPE: ${property.type}

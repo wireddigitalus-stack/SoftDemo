@@ -23,10 +23,10 @@ export interface BlogPost {
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "downtown-bristol-tn-commercial-real-estate-market-2026",
-    title: "Downtown Bristol, TN Commercial Real Estate Market Outlook 2026",
-    metaTitle: "Downtown Bristol TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
+    title: "Downtown Ashton, TN Commercial Real Estate Market Outlook 2026",
+    metaTitle: "Downtown Ashton TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
     metaDescription:
-      "Deep dive into the 2025 commercial real estate market in Downtown Bristol, TN. Office vacancy rates, retail trends, adaptive reuse projects & investment opportunities on State Street.",
+      "Deep dive into the 2025 commercial real estate market in Downtown Ashton, TN. Office vacancy rates, retail trends, adaptive reuse projects & investment opportunities on State Street.",
     category: "Market Reports",
     tags: ["Bristol TN", "Market Report", "Commercial Real Estate", "Tri-Cities"],
     targetKeyword: "downtown Bristol TN commercial real estate 2026",
@@ -37,10 +37,10 @@ export const BLOG_POSTS: BlogPost[] = [
     image: "/images/Hard_Rock_Bristol_VA.jpg",
     imageAlt: "Hard Rock Hotel & Casino Bristol, Virginia — a key anchor driving commercial real estate demand in the Tri-Cities market",
     excerpt:
-      "Downtown Bristol, TN is experiencing one of its most dynamic commercial real estate cycles in two decades. Here's what business owners and investors need to know heading into 2026.",
+      "Downtown Ashton, TN is experiencing one of its most dynamic commercial real estate cycles in two decades. Here's what business owners and investors need to know heading into 2026.",
     content: `## The Bristol Market in 2025: A Confluence of Momentum
 
-Downtown Bristol, Tennessee is experiencing one of its most dynamic commercial real estate cycles in two decades. Anchored by over $200 million in public and private investment along the State Street corridor, the market entering 2026 is defined by low vacancy in premium spaces, rising rents on the most desirable blocks, and a wave of adaptive reuse conversions that are fundamentally reshaping the zip code 37620 commercial landscape.
+Downtown Ashton, Tennessee is experiencing one of its most dynamic commercial real estate cycles in two decades. Anchored by over $200 million in public and private investment along the State Street corridor, the market entering 2026 is defined by low vacancy in premium spaces, rising rents on the most desirable blocks, and a wave of adaptive reuse conversions that are fundamentally reshaping the zip code 37620 commercial landscape.
 
 As the largest private commercial property owner in downtown Bristol, Vision LLC has a front-row seat to these shifts. What follows is our honest assessment of where the market stands — and where the opportunities are for businesses ready to plant a flag in one of the Southeast's most compelling small-city markets.
 
@@ -48,7 +48,7 @@ As the largest private commercial property owner in downtown Bristol, Vision LLC
 
 The most notable trend in the downtown Bristol office market is what analysts call the "flight to quality." Post-pandemic, businesses across the Tri-Cities are no longer content with tired, poorly-lit second-floor office suites from the 1990s. They want modern infrastructure — high-speed fiber, climate control, private conferencing, dedicated parking — in a location that attracts talent.
 
-Class-A and Class-B+ office suites in the core State Street district are running at historically low vacancy. Our City Centre Professional Suites and The Executive suite portfolio are consistently 90%+ occupied, with waitlists forming for our 500–2,000 sqft executive office configurations.
+Class-A and Class-B+ office suites in the core State Street district are running at historically low vacancy. Our Metro Park Professional Suites and The Executive suite portfolio are consistently 90%+ occupied, with waitlists forming for our 500–2,000 sqft executive office configurations.
 
 For businesses with flexibility on timeline, early 2026 is still the right time to lock in a long-term lease. Rents in the downtown Bristol market (Sullivan County, TN) remain significantly below comparable spaces in Asheville, Knoxville, or Nashville — often by 40–60%. As more investment flows in, that gap will narrow.
 
@@ -98,9 +98,9 @@ Whether you're looking for a 500-sqft executive suite, a 5,000-sqft retail build
   {
     slug: "coworking-vs-traditional-office-tri-cities-tennessee",
     title: "Coworking vs. Traditional Office Space in the Tri-Cities: What's Right for Your Business?",
-    metaTitle: "Coworking vs Traditional Office Space Tri-Cities TN | Bristol CoWork | Vision LLC",
+    metaTitle: "Coworking vs Traditional Office Space Tri-Cities TN | Summit CoWork | Vision LLC",
     metaDescription:
-      "Comparing coworking memberships vs. traditional commercial leases in the Tri-Cities. Learn how Bristol CoWork at 620 State Street serves startups, remote teams, and growing businesses.",
+      "Comparing coworking memberships vs. traditional commercial leases in the Tri-Cities. Learn how Summit CoWork at 450 Market Street serves startups, remote teams, and growing businesses.",
     category: "Business Insights",
     tags: ["Coworking", "Bristol TN", "Office Space", "Tri-Cities", "Small Business"],
     targetKeyword: "coworking space Tri-Cities Tennessee",
@@ -114,7 +114,7 @@ Whether you're looking for a 500-sqft executive suite, a 5,000-sqft retail build
 
 The commercial office market across the Tri-Cities — Bristol, Kingsport, and Johnson City — has fundamentally shifted. Where businesses once defaulted to signing 3–5 year traditional leases, today's operators have a genuinely compelling alternative: high-quality coworking environments that offer professional infrastructure without the long-term commitment.
 
-At Vision LLC, we operate both sides of this market. Bristol CoWork at 620 State Street, Bristol, TN 37620 is our flagship flexible workspace — a 5,000+ sqft facility designed for professionals, remote workers, and growing small businesses. We also offer traditional commercial leases through City Centre Professional Suites and The Executive portfolio. This dual perspective gives us a unique ability to help businesses make the right choice.
+At Vision LLC, we operate both sides of this market. Summit CoWork at 450 Market Street, Bristol, TN 37620 is our flagship flexible workspace — a 5,000+ sqft facility designed for professionals, remote workers, and growing small businesses. We also offer traditional commercial leases through Metro Park Professional Suites and The Executive portfolio. This dual perspective gives us a unique ability to help businesses make the right choice.
 
 ## What Traditional Commercial Leases Offer
 
@@ -124,11 +124,11 @@ Traditional leases in our downtown Bristol portfolio range from 500 sqft private
 
 **Best for:** Established businesses, client-facing practices, teams of 10+, businesses that need custom signage or branded space, long-horizon operators.
 
-## What Coworking Offers: The Bristol CoWork Model
+## What Coworking Offers: The Summit CoWork Model
 
-Bristol CoWork at 620 State Street was designed for a different user. Our members include independent consultants, remote employees of national companies, healthcare technology workers, entrepreneurs growing their first team, and Eastman Chemical contractors on regional assignments.
+Summit CoWork at 450 Market Street was designed for a different user. Our members include independent consultants, remote employees of national companies, healthcare technology workers, entrepreneurs growing their first team, and Eastman Chemical contractors on regional assignments.
 
-Monthly memberships at Bristol CoWork include private offices and dedicated desks, fully equipped conference rooms, high-speed fiber internet, all utilities, and a mailing address at 620 State Street, Bristol, TN 37620 — in a premium downtown location.
+Monthly memberships at Summit CoWork include private offices and dedicated desks, fully equipped conference rooms, high-speed fiber internet, all utilities, and a mailing address at 450 Market Street, Bristol, TN 37620 — in a premium downtown location.
 
 **Best for:** Solo professionals, remote workers, 1–6 person teams, contractors, startups in pre-scale phase, businesses testing the Tri-Cities market before committing.
 
@@ -142,18 +142,18 @@ When businesses in Kingsport (37660), Johnson City (37601), or Bristol (37620) a
 
 **3. What does your team culture require?** Some teams thrive in the energy of a shared workspace. Others need quiet and focus of private dedicated space. Both are available at Vision LLC.
 
-## Why Downtown Bristol Is the Right Base for the Tri-Cities
+## Why Downtown Ashton Is the Right Base for the Tri-Cities
 
 Regardless of which office model you choose, downtown Bristol — specifically the State Street corridor — sits at the geographic and cultural heart of the Tri-Cities. I-81 is minutes away, Kingsport is 30 minutes west, and Johnson City is 25 minutes south via I-26. Bristol's walkable downtown gives your team access to restaurants, coffee shops, and services within a two-block radius.
 
-Whether you're ready to tour Bristol CoWork or discuss a long-term commercial lease in our downtown portfolio, call **423-573-1022** or email **leasing@teamvisionllc.com**. We'll have an honest conversation about what's right for your business.`,
+Whether you're ready to tour Summit CoWork or discuss a long-term commercial lease in our downtown portfolio, call **423-573-1022** or email **leasing@teamvisionllc.com**. We'll have an honest conversation about what's right for your business.`,
   },
   {
     slug: "historic-adaptive-reuse-downtown-bristol-tennessee",
-    title: "Historic Adaptive Reuse: How Vision LLC Is Transforming Downtown Bristol, TN",
-    metaTitle: "Historic Adaptive Reuse Downtown Bristol TN | Vision LLC Development",
+    title: "Historic Adaptive Reuse: How Vision LLC Is Transforming Downtown Ashton, TN",
+    metaTitle: "Historic Adaptive Reuse Downtown Ashton TN | Vision LLC Development",
     metaDescription:
-      "How Vision LLC is leading the historic adaptive reuse movement in Downtown Bristol, TN — converting century-old buildings into premium commercial real estate on the TN/VA state line.",
+      "How Vision LLC is leading the historic adaptive reuse movement in Downtown Ashton, TN — converting century-old buildings into premium commercial real estate on the TN/VA state line.",
     category: "Development",
     tags: ["Historic Preservation", "Adaptive Reuse", "Bristol TN", "Development", "Commercial Real Estate"],
     targetKeyword: "historic adaptive reuse Bristol TN",

@@ -61,7 +61,7 @@ export default async function PropertiesSection() {
             </h2>
             <p className="text-gray-400 mt-3 max-w-xl">
               From downtown office suites to large-format industrial space — the most diverse
-              commercial portfolio in Downtown Bristol.
+              commercial portfolio in Downtown Ashton.
             </p>
           </div>
           <Link

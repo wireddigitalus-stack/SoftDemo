@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       weekday: "long", month: "long", day: "numeric", year: "numeric",
     });
 
-    const prompt = `You are a commercial real estate market analyst for Vision LLC, Downtown Bristol's #1 commercial property firm (Bristol, TN/VA — Tri-Cities region, 20+ years).
+    const prompt = `You are a commercial real estate market analyst for Vision LLC, Downtown Ashton's #1 commercial property firm (Bristol, TN/VA — Tri-Cities region, 20+ years).
 
 Write a concise, professional AI Market Brief based on this data snapshot. Be specific, data-driven, and use the actual numbers provided. Sound like a smart analyst, not a chatbot.
 

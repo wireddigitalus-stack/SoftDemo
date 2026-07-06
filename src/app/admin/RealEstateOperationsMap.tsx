@@ -43,7 +43,7 @@ const NODES: FlowNode[] = [
   { id: "act-lead",    label: "Prospective Tenant",   type: "actor",     domain: "leads",       x: 60,  y: 100, sub: "submits lead via bot" },
   { id: "act-tenant",  label: "Active Tenants",       type: "actor",     domain: "leasing",     x: 60,  y: 260, sub: "commercial & residential" },
   { id: "act-staff",   label: "Maintenance & Cleaning",type: "actor",    domain: "maintenance", x: 60,  y: 420, sub: "operational field staff" },
-  { id: "act-owner",   label: "J. Allen Hurley (Owner)",type: "actor",   domain: "investor",    x: 60,  y: 580, sub: "stewardship & investment" },
+  { id: "act-owner",   label: "J. Alex Harrison (Owner)",type: "actor",   domain: "investor",    x: 60,  y: 580, sub: "stewardship & investment" },
 
   // ─── Column 2: Operations & Events (x=370) ───────────────────────────────────
   { id: "op-chatbot",   label: "AI Lease-Bot Parsing",  type: "operation", domain: "leads",       x: 370, y: 70,  sub: "scores budgets & timelines" },
@@ -142,7 +142,7 @@ function pathD(from: FlowNode, to: FlowNode): string {
     return `M${exitX},${y1} C${arcX},${y1} ${arcX},${midY} ${arcX},${midY} S${arcX},${y2} ${entryX},${y2}`;
   }
 
-  // Right-to-left feedback loop back to Allen Hurley (Owner)
+  // Right-to-left feedback loop back to Alex Harrison (Owner)
   if (from.x > to.x && to.id === "act-owner") {
     let index = 0;
     if (from.id === "out-noi") index = 1;

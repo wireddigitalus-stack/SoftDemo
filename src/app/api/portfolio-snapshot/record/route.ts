@@ -14,14 +14,14 @@ const H = {
 
 // Same dropdown name map used in PropDetailsTab / PortfolioOverviewCard
 const PROPERTY_DROPDOWN_NAMES: Record<string, string[]> = {
-  "city-centre": ["City Centre Professional Suites", "City Centre"],
-  "bristol-cowork": ["Bristol CoWork"],
-  "the-executive": ["The Executive"],
-  "centre-point-suites": ["Centre Point"],
-  "foundation-event-facility": ["Foundation Event Facility"],
+  "metro-park": ["Metro Park Professional Suites", "City Centre"],
+  "summit-cowork": ["Summit CoWork"],
+  "the-pinnacle": ["The Executive"],
+  "midtown-point": ["Centre Point"],
+  "heritage-event": ["Heritage Event Facility"],
   "commercial-warehouse": ["Commercial Warehouse"],
-  "west-state-commons": ["West State Commons"],
-  "815-shelby-street": ["Jamestown at Shelby"],
+  "commerce-park": ["Commerce Park"],
+  "200-oakley-ave": ["Madison Square at Oakley"],
   "250-commonwealth-ave": ["250 Commonwealth Ave"],
   "628-state-street": ["628 State Street"],
 };

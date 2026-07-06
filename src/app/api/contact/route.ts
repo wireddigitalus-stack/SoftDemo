@@ -3,9 +3,9 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { checkRateLimit } from "@/lib/rateLimit";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const TO_EMAILS = ["leasing@teamvisionllc.com", "jmcclanahan@teamvisionllc.com", "dmyers@teamvisionllc.com"];
+const TO_EMAILS = ["leasing@visionpip-demo.com", "jmorgan@visionpip-demo.com", "dmyers@visionpip-demo.com"];
 // Must match a verified domain in Resend — set RESEND_FROM env var or update below
-const FROM_EMAIL = process.env.RESEND_FROM ?? "Vision LLC <noreply@teamvisionllc.com>";
+const FROM_EMAIL = process.env.RESEND_FROM ?? "Vision LLC <noreply@visionpip-demo.com>";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

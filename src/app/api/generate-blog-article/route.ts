@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
   if (!topic) return NextResponse.json({ error: "topic required" }, { status: 400 });
 
-  const prompt = `You are an expert commercial real estate content writer for Vision LLC — the largest private CRE owner in Downtown Bristol, TN/VA.
+  const prompt = `You are an expert commercial real estate content writer for Vision LLC — the largest private CRE owner in Downtown Ashton, TN/VA.
 
 Write a complete, publication-ready SEO blog article with the following specs:
 - Topic: ${topic}
@@ -29,7 +29,7 @@ OUTPUT FORMAT (return valid JSON only, no markdown wrapper):
 }
 
 Rules:
-- The content MUST mention Downtown Bristol, TN/VA and Vision LLC naturally
+- The content MUST mention Downtown Ashton, TN/VA and Vision LLC naturally
 - Include the target keyword in the first paragraph
 - Write at a professional B2B level — no fluff, real insights
 - Return ONLY the JSON, no other text`;

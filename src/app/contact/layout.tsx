@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contact Vision LLC | Commercial Real Estate Experts — Bristol, TN/VA",
     description:
-      "Reach out to schedule a tour of office suites, retail space, or coworking memberships in Downtown Bristol. Vision LLC — the Tri-Cities' leading commercial property firm.",
+      "Reach out to schedule a tour of office suites, retail space, or coworking memberships in Downtown Ashton. Vision LLC — the Tri-Cities' leading commercial property firm.",
     url: "https://www.teamvisionllc.com/contact",
     siteName: "Vision LLC",
     type: "website",
@@ -68,7 +68,7 @@ export default function ContactLayout({ children }: { children: React.ReactNode 
               email: "leasing@teamvisionllc.com",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "100 5th St., Suite 2W",
+                streetAddress: "200 Commerce Ave., Suite 2W",
                 addressLocality: "Bristol",
                 addressRegion: "TN",
                 postalCode: "37620",

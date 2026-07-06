@@ -37,7 +37,7 @@ const sections = [
   },
   {
     heading: "Contact Us",
-    body: `If you have questions about this Privacy Policy or how we handle your personal information, please contact us at leasing@teamvisionllc.com or by phone at (423) 573-1022. Our office is located at 100 5th St., Suite 2W, Bristol, TN 37620.`,
+    body: `If you have questions about this Privacy Policy or how we handle your personal information, please contact us at leasing@teamvisionllc.com or by phone at (423) 573-1022. Our office is located at 200 Commerce Ave., Suite 2W, Bristol, TN 37620.`,
   },
 ];
 

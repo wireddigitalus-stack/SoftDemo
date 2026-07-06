@@ -410,7 +410,7 @@ function Tooltip({ text, children, wide }: { text: string; children: React.React
 
 // ─── Owner lock — these emails can never be deleted from the dashboard
 const OWNER_EMAILS = new Set([
-  "ahurley1474@gmail.com",   // Allen Hurley — owner
+  "ahurley1474@gmail.com",   // Alex Harrison — owner
   "wireddigitalus@gmail.com", // Robert Neilson — developer
 ]);
 
@@ -771,8 +771,8 @@ function NotificationsCard() {
             <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Recipients</p>
             <div className="space-y-1.5">
               {[
-                { name: "J. McClanahan", email: "jmcclanahan@teamvisionllc.com" },
-                { name: "D. Myers", email: "dmyers@teamvisionllc.com" },
+                { name: "J. Morgan", email: "jmorgan@visionpip-demo.com" },
+                { name: "D. Myers", email: "dmyers@visionpip-demo.com" },
               ].map(r => (
                 <div key={r.email} className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.05)]">
                   <div className="w-6 h-6 rounded-lg bg-[rgba(74,222,128,0.1)] flex items-center justify-center text-[10px] font-black text-[#4ADE80]">
@@ -848,11 +848,11 @@ export function SocialLinksCard() {
 
   const LINKS = [
     { slug: "", label: "All Properties", emoji: "🏠", desc: "Default — shows all properties equally" },
-    { slug: "the-executive", label: "The Executive", emoji: "🏢", desc: "Premier office suites · Downtown" },
-    { slug: "city-centre", label: "City Centre", emoji: "💼", desc: "Flexible offices · 1.2k–18k sqft" },
-    { slug: "bristol-cowork", label: "Bristol CoWork", emoji: "☕", desc: "All-inclusive · 620 State St" },
-    { slug: "centre-point-suites", label: "Centre Point", emoji: "🏪", desc: "Casino adjacent · Retail & office" },
-    { slug: "foundation-event-facility", label: "Foundation Events", emoji: "🎉", desc: "Premier event facility" },
+    { slug: "the-pinnacle", label: "The Executive", emoji: "🏢", desc: "Premier office suites · Downtown" },
+    { slug: "metro-park", label: "City Centre", emoji: "💼", desc: "Flexible offices · 1.2k–18k sqft" },
+    { slug: "summit-cowork", label: "Summit CoWork", emoji: "☕", desc: "All-inclusive · 450 Market St" },
+    { slug: "midtown-point", label: "Centre Point", emoji: "🏪", desc: "Casino adjacent · Retail & office" },
+    { slug: "heritage-event", label: "Foundation Events", emoji: "🎉", desc: "Premier event facility" },
     { slug: "warehouse", label: "Warehouse", emoji: "🏭", desc: "2k–25k sqft · Bristol Metro" },
   ];
 
@@ -1601,7 +1601,7 @@ CREATE POLICY "anon_all_allowed_users" ON allowed_users
 
 -- Seed your own email as first admin:
 INSERT INTO allowed_users (id, email, name, role, active)
-VALUES ('user_owner', 'ahurley1474@gmail.com', 'Allen Hurley', 'admin', true)
+VALUES ('user_owner', 'ahurley1474@gmail.com', 'Alex Harrison', 'admin', true)
 ON CONFLICT (email) DO NOTHING;`}</pre>
             <button onClick={loadUsers} className="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#4ADE80] hover:underline">
               <RefreshCw size={11} /> Refresh after running SQL

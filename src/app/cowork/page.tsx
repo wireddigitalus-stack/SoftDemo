@@ -13,31 +13,31 @@ import { getSiteContent } from "@/lib/site-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN/VA",
+  title: "Summit CoWork | Private Offices & Coworking | 450 Market St, Bristol TN/VA",
   description:
-    "Bristol CoWork at 620 State Street offers private offices, dedicated desks & conference rooms in downtown Bristol, TN. All-inclusive. Move-in ready. Call 423-573-1022.",
+    "Summit CoWork at 450 Market Street offers private offices, dedicated desks & conference rooms in downtown Bristol, TN. All-inclusive. Move-in ready. Call 423-573-1022.",
   alternates: {
     canonical: "https://www.teamvisionllc.com/cowork",
   },
   openGraph: {
-    title: "Bristol CoWork | Downtown Bristol's Coworking & Private Offices",
+    title: "Summit CoWork | Downtown Ashton's Coworking & Private Offices",
     description:
-      "Private offices, dedicated desks & conference rooms at 620 State Street, Bristol, TN/VA. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
+      "Private offices, dedicated desks & conference rooms at 450 Market Street, Bristol, TN/VA. All-inclusive memberships. Move in tomorrow. Call 423-573-1022.",
     url: "https://www.teamvisionllc.com/cowork",
     images: [
       {
         url: "https://www.teamvisionllc.com/api/og?title=Bristol+CoWork&subtitle=620+State+Street+%C2%B7+Bristol%2C+TN+%E2%80%94+Premium+Coworking&tag=Now+Open&type=default",
         width: 1200,
         height: 630,
-        alt: "Bristol CoWork — 620 State Street, Bristol TN",
+        alt: "Summit CoWork — 450 Market Street, Bristol TN",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bristol CoWork | Private Offices & Coworking in Downtown Bristol, TN/VA",
+    title: "Summit CoWork | Private Offices & Coworking in Downtown Ashton, TN/VA",
     description:
-      "Private offices, dedicated desks & conference rooms. 620 State Street, Bristol TN. All-inclusive memberships from Vision LLC.",
+      "Private offices, dedicated desks & conference rooms. 450 Market Street, Bristol TN. All-inclusive memberships from Vision LLC.",
     images: [
       "https://www.teamvisionllc.com/api/og?title=Bristol+CoWork&subtitle=620+State+Street+%C2%B7+Bristol%2C+TN+%E2%80%94+Premium+Coworking&tag=Now+Open&type=default",
     ],
@@ -98,10 +98,10 @@ export default async function CoWorkPage() {
   ]);
   const c = (key: string, fallback: string) => overrides[key] || fallback;
 
-  const liveUrls = resolveAllImages("bristol-cowork", STATIC_IMAGES, STATIC_IMAGES[0], imgOverrides);
+  const liveUrls = resolveAllImages("summit-cowork", STATIC_IMAGES, STATIC_IMAGES[0], imgOverrides);
   const gallery = liveUrls.map((src, i) => ({
     src,
-    alt: `Bristol CoWork interior view ${i + 1}`,
+    alt: `Summit CoWork interior view ${i + 1}`,
   }));
 
   // Build plans from overrides (falls back to static defaults)
@@ -142,14 +142,14 @@ export default async function CoWorkPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CoworkingSpace",
-            name: "Bristol CoWork",
+            name: "Summit CoWork",
             url: "https://www.teamvisionllc.com/cowork",
             telephone: "+14235731022",
             email: "leasing@teamvisionllc.com",
-            description: "Downtown Bristol's premier professional coworking space — private offices, dedicated desks, and conference rooms at 620 State Street.",
+            description: "Downtown Ashton's premier professional coworking space — private offices, dedicated desks, and conference rooms at 450 Market Street.",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "620 State Street",
+              streetAddress: "450 Market Street",
               addressLocality: "Bristol",
               addressRegion: "TN",
               postalCode: "37620",
@@ -190,7 +190,7 @@ export default async function CoWorkPage() {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Home", item: "https://www.teamvisionllc.com" },
-              { "@type": "ListItem", position: 2, name: "Bristol CoWork", item: "https://www.teamvisionllc.com/cowork" },
+              { "@type": "ListItem", position: 2, name: "Summit CoWork", item: "https://www.teamvisionllc.com/cowork" },
             ],
           }),
         }}
@@ -223,7 +223,7 @@ export default async function CoWorkPage() {
             <div>
               {/* "Now Open" badge — above the logo+title row */}
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgba(250,204,21,0.1)] border border-[rgba(250,204,21,0.2)] text-[#FACC15] text-xs font-bold mb-5 tracking-wider uppercase">
-                {c("hero_badge", "Now Open · 620 State Street")}
+                {c("hero_badge", "Now Open · 450 Market Street")}
               </div>
 
               {/* Squircle logo + h1 side by side */}
@@ -240,7 +240,7 @@ export default async function CoWorkPage() {
                 >
                   <Image
                     src="/images/bristol-cowork-logo.svg"
-                    alt="Bristol CoWork — 620 State Street, Bristol TN"
+                    alt="Summit CoWork — 450 Market Street, Bristol TN"
                     width={560}
                     height={270}
                     className="w-full h-auto"
@@ -254,10 +254,10 @@ export default async function CoWorkPage() {
                 </h1>
               </div>
               <p className="text-xl text-gray-400 mb-4">
-                {c("hero_description", "Downtown Bristol's premier professional workspace — built for entrepreneurs, remote teams, and growing businesses that need more than a coffee shop.")}
+                {c("hero_description", "Downtown Ashton's premier professional workspace — built for entrepreneurs, remote teams, and growing businesses that need more than a coffee shop.")}
               </p>
               <p className="text-gray-500 mb-8">
-                {c("hero_subtext", "620 State Street, Bristol, TN · All-inclusive memberships · Private offices available today")}
+                {c("hero_subtext", "450 Market Street, Bristol, TN · All-inclusive memberships · Private offices available today")}
               </p>
               <div className="flex flex-wrap gap-4">
                 <a href={COMPANY.phoneHref} className="btn-primary" style={{ background: "#FACC15", color: "#000", borderColor: "#FACC15" }}>
@@ -346,7 +346,7 @@ export default async function CoWorkPage() {
             <h2 className="text-3xl font-black text-white mb-4">
               {c("location_heading", "Prime Downtown Location").includes("Location") ? <>{c("location_heading", "Prime Downtown Location").replace("Location", "")}<span className="gradient-text-green">Location</span></> : c("location_heading", "Prime Downtown Location")}
             </h2>
-            <p className="text-gray-400 mb-2 text-lg">{c("location_address", "620 State Street · Bristol, TN 37620")}</p>
+            <p className="text-gray-400 mb-2 text-lg">{c("location_address", "450 Market Street · Bristol, TN 37620")}</p>
             <p className="text-gray-500 mb-8">
               {c("location_desc", "Located on Bristol's iconic State Street — right on the TN/VA state line, steps from restaurants, hotels, and the region's most active commercial corridor.")}
             </p>

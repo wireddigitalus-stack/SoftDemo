@@ -15,7 +15,7 @@ Each log entry has:
 - created_at: Timestamp.
 
 THREAT ASSESSMENT GUIDELINES:
-1. Normal successful logins ("admin_login") from regular users (like J. Allen Hurley, Robert, etc.) at normal hours (e.g. 7 AM to 10 PM) are SAFE.
+1. Normal successful logins ("admin_login") from regular users (like J. Alex Harrison, Robert, etc.) at normal hours (e.g. 7 AM to 10 PM) are SAFE.
 2. Successful logins at highly unusual hours (e.g., between 1 AM and 5 AM) from standard users are a slight anomaly — rate as WARNING with minor alert.
 3. Blocked logins ("admin_blocked") with "reason": "Unauthorized admin email attempt" are SUSPICIOUS. Multiple different emails being blocked indicate a potential brute-force or probing attempt — rate as THREAT or WARNING.
 4. Blocked logins marked with metadata "simulated": true are SIMULATED ATTACKS. Treat them as real threats in your evaluation (rate as THREAT), but explicitly mention in your summary that this is a simulated test of the AI Security Guard.

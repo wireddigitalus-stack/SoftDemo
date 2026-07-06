@@ -12,16 +12,16 @@ import { HOMEPAGE_FAQ_SCHEMA } from "@/lib/faq-data";
 import { getAllSiteContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
-  title: "Vision LLC | Downtown Bristol's #1 Commercial Real Estate Company",
+  title: "Vision LLC | Downtown Ashton's #1 Commercial Real Estate Company",
   description:
-    "Vision LLC is the largest private commercial property owner in Downtown Bristol, TN/VA. Award-winning commercial real estate, development & executive consulting across the Tri-Cities. Call 423-573-1022.",
+    "Vision LLC is the largest private commercial property owner in Downtown Ashton, TN/VA. Award-winning commercial real estate, development & executive consulting across the Tri-Cities. Call 423-573-1022.",
   alternates: {
     canonical: "https://www.teamvisionllc.com",
   },
   openGraph: {
     title: "Vision LLC | #1 Commercial Real Estate Firm in Bristol, TN",
     description:
-      "The largest private commercial property owner in Downtown Bristol, TN/VA. 50+ properties. Office, retail, coworking & executive consulting. Call 423-573-1022.",
+      "The largest private commercial property owner in Downtown Ashton, TN/VA. 50+ properties. Office, retail, coworking & executive consulting. Call 423-573-1022.",
     url: "https://www.teamvisionllc.com",
     images: [
       {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Vision LLC | #1 Commercial Real Estate in Bristol, TN",
     description:
-      "50+ commercial properties. Downtown Bristol's largest private owner. Office, retail, coworking & executive consulting. Call 423-573-1022.",
+      "50+ commercial properties. Downtown Ashton's largest private owner. Office, retail, coworking & executive consulting. Call 423-573-1022.",
     images: [
       "https://www.teamvisionllc.com/vision-social.png",
     ],

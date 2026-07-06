@@ -24,14 +24,14 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "C-Suite Executive Advisement & Strategic Consulting | Vision LLC, Bristol TN/VA",
   description:
-    "C-suite consulting, strategic planning & government advisement from Vision LLC — led by J. Allen Hurley II. 30+ years of executive leadership. Bristol, TN. Call 423-573-1022.",
+    "C-suite consulting, strategic planning & government advisement from Vision LLC — led by J. Alex Harrison II. 30+ years of executive leadership. Bristol, TN. Call 423-573-1022.",
   alternates: {
     canonical: "https://www.teamvisionllc.com/executive-advisement",
   },
   openGraph: {
-    title: "Executive Advisement & C-Suite Consulting | J. Allen Hurley II | Vision LLC",
+    title: "Executive Advisement & C-Suite Consulting | J. Alex Harrison II | Vision LLC",
     description:
-      "C-suite consulting, strategic planning & government advisement from J. Allen Hurley II — 30+ years of real-world executive leadership in the Tri-Cities.",
+      "C-suite consulting, strategic planning & government advisement from J. Alex Harrison II — 30+ years of real-world executive leadership in the Tri-Cities.",
     url: "https://www.teamvisionllc.com/executive-advisement",
     images: [
       {
@@ -106,7 +106,7 @@ const divisions = [
 ];
 
 const ecosystem = [
-  { label: "Real Estate Ownership", sub: "50+ properties, Downtown Bristol anchor" },
+  { label: "Real Estate Ownership", sub: "50+ properties, Downtown Ashton anchor" },
   { label: "Development & Construction", sub: "Historic adaptive reuse, ground-up builds" },
   { label: "Executive Advisement", sub: "30+ years C-suite & strategy expertise" },
   { label: "Private Equity", sub: "Board-level involvement, portfolio scaling" },
@@ -135,14 +135,14 @@ export default async function ExecutiveAdvisementPage() {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     name: "Vision LLC — Executive Advisement",
-    description: "C-suite consulting, strategic planning, government advisement & private equity advisory from Vision LLC, led by J. Allen Hurley II. Serving the Tri-Cities TN/VA region.",
+    description: "C-suite consulting, strategic planning, government advisement & private equity advisory from Vision LLC, led by J. Alex Harrison II. Serving the Tri-Cities TN/VA region.",
     url: "https://www.teamvisionllc.com/executive-advisement",
     telephone: "+14235731022",
     email: "leasing@teamvisionllc.com",
     priceRange: "$$$",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "100 5th St., Suite 2W",
+      streetAddress: "200 Commerce Ave., Suite 2W",
       addressLocality: "Bristol",
       addressRegion: "TN",
       postalCode: "37620",
@@ -167,7 +167,7 @@ export default async function ExecutiveAdvisementPage() {
     },
     founder: {
       "@type": "Person",
-      name: "J. Allen Hurley II",
+      name: "J. Alex Harrison II",
       jobTitle: "Chief Executive Officer",
       worksFor: { "@type": "Organization", name: "Vision LLC" },
     },
@@ -427,7 +427,7 @@ export default async function ExecutiveAdvisementPage() {
               <h2 className="text-3xl font-black text-white mb-4">
                 {c("final_quote", '"The sum of all parts is greater than the whole."')}
               </h2>
-              <p className="text-gray-400 mb-2 text-lg italic">{c("final_attribution", "— J. Allen Hurley II")}</p>
+              <p className="text-gray-400 mb-2 text-lg italic">{c("final_attribution", "— J. Alex Harrison II")}</p>
               <p className="text-gray-500 mb-10 max-w-lg mx-auto">
                 {c("final_subtext", "That's not just a philosophy. It's how we build. How we advise. How we grow — with you.")}
               </p>

@@ -114,7 +114,7 @@ export default async function SpaceTypePage({ params }: Props) {
     telephone: "+14235731022",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "100 5th St., Suite 2W",
+      streetAddress: "200 Commerce Ave., Suite 2W",
       addressLocality: "Bristol",
       addressRegion: "TN",
       postalCode: "37620",

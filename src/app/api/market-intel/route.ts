@@ -102,7 +102,7 @@ async function scoreWithAI(items: FeedItem[]): Promise<{ title: string; link: st
     }));
   }
 
-  const prompt = `You are a commercial real estate market analyst for Vision LLC, a CRE firm in Downtown Bristol, Virginia/Tennessee (USA), in the Tri-Cities region.
+  const prompt = `You are a commercial real estate market analyst for Vision LLC, a CRE firm in Downtown Ashton, Virginia/Tennessee (USA), in the Tri-Cities region.
 
 STRICT GEOGRAPHIC FILTER:
 - ONLY score articles about TENNESSEE (TN) or VIRGINIA (VA) in the United States.

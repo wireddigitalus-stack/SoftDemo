@@ -5,7 +5,7 @@ import AIChatWidget from "@/components/AIChatWidget";
 
 export const metadata: Metadata = {
   title: "Find Commercial Space in Bristol, TN/VA | Vision LLC",
-  description: "Looking for office, retail, or coworking space in the Tri-Cities area? Vision LLC has premium commercial spaces in Downtown Bristol, TN/VA.",
+  description: "Looking for office, retail, or coworking space in the Tri-Cities area? Vision LLC has premium commercial spaces in Downtown Ashton, TN/VA.",
   robots: { index: false, follow: false },
 };
 
@@ -15,36 +15,36 @@ const PROPERTY_DETAILS: Record<string, {
   label: string; sub: string; href: string; emoji: string;
   image: string; headline: string; desc: string; tags: string[];
 }> = {
-  "the-executive": {
+  "the-pinnacle": {
     label: "🏢 Executive Suites", sub: "The Executive · Downtown", href: "/properties/the-executive", emoji: "🏢",
     image: "/property-images/commercial-executive-entry.jpg",
-    headline: "The Executive — Premier Office Suites",
-    desc: "Prestigious office space in a restored historic Downtown Bristol building. Full-service amenities, professional address, and flexible terms from 500–12,000 sqft.",
+    headline: "The Pinnacle — Premier Office Suites",
+    desc: "Prestigious office space in a restored historic Downtown Ashton building. Full-service amenities, professional address, and flexible terms from 500–12,000 sqft.",
     tags: ["Historic Building", "Full-Service", "500–12k sqft"],
   },
-  "city-centre": {
+  "metro-park": {
     label: "💼 City Centre Suites", sub: "Flexible offices · 1,200–18k sqft", href: "/properties/city-centre", emoji: "💼",
     image: "/property-images/commercial-city-centre-exterior.jpg",
     headline: "City Centre — Flexible Office Suites",
     desc: "Modern professional office space in the heart of Bristol. Scalable suites from 1,200 to 18,000 sqft with premium finishes and all-inclusive options.",
     tags: ["Flexible Terms", "Premium Finishes", "1.2k–18k sqft"],
   },
-  "bristol-cowork": {
-    label: "☕ Bristol CoWork", sub: "620 State St · All-inclusive", href: "/properties/bristol-cowork", emoji: "☕",
+  "summit-cowork": {
+    label: "☕ Summit CoWork", sub: "450 Market St · All-inclusive", href: "/properties/bristol-cowork", emoji: "☕",
     image: "/property-images/cowork-shared-office.jpg",
-    headline: "Bristol CoWork — All-Inclusive Workspace",
-    desc: "Move-in ready coworking at 620 State Street. Private offices, dedicated desks, high-speed internet, and a creative community — all included.",
-    tags: ["All-Inclusive", "Move-In Ready", "620 State St"],
+    headline: "Summit CoWork — All-Inclusive Workspace",
+    desc: "Move-in ready coworking at 450 Market Street. Private offices, dedicated desks, high-speed internet, and a creative community — all included.",
+    tags: ["All-Inclusive", "Move-In Ready", "450 Market St"],
   },
-  "centre-point-suites": {
+  "midtown-point": {
     label: "🏪 Centre Point", sub: "Retail & office · Casino Adjacent", href: "/properties/centre-point-suites", emoji: "🏪",
     image: "/property-images/commercial-centerpoint-mall.jpg",
     headline: "Centre Point — Casino Adjacent Development",
     desc: "Prime commercial space directly across from Hard Rock Hotel & Casino Bristol. Ideal for retail, restaurant, or service businesses seeking high-traffic visibility.",
     tags: ["Casino Adjacent", "High Traffic", "Retail/Restaurant"],
   },
-  "foundation-event-facility": {
-    label: "🎉 Event Facility", sub: "Up to 450 Guests · 620 State St", href: "/properties/foundation-event-facility", emoji: "🎉",
+  "heritage-event": {
+    label: "🎉 Event Facility", sub: "Up to 450 Guests · 450 Market St", href: "/properties/foundation-event-facility", emoji: "🎉",
     image: "/property-images/development-event-space-after.jpg",
     headline: "Foundation — Premier Event Venue",
     desc: "The Tri-Cities' premier event venue in a restored 110+ year-old building. 3 distinct rooms for up to 450 guests — featuring 17-ft ceilings, Bose sound, HD projection, elevated stage, built-in bar, and full-service catering.",
@@ -99,8 +99,8 @@ export default async function FacebookLandingPage({
 
         <p className="text-gray-400 text-lg max-w-md mb-8 leading-relaxed">
           {featured
-            ? `Check out this featured property — or browse all available spaces in Downtown Bristol, TN/VA.`
-            : `Office suites, coworking, and retail in Downtown Bristol, TN/VA. Browse available spaces or chat with our AI advisor — no phone calls required.`
+            ? `Check out this featured property — or browse all available spaces in Downtown Ashton, TN/VA.`
+            : `Office suites, coworking, and retail in Downtown Ashton, TN/VA. Browse available spaces or chat with our AI advisor — no phone calls required.`
           }
         </p>
 
@@ -208,7 +208,7 @@ export default async function FacebookLandingPage({
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-6 text-[11px] text-gray-700">
-        Vision LLC · Downtown Bristol, TN/VA · All rights reserved
+        Vision LLC · Downtown Ashton, TN/VA · All rights reserved
       </footer>
 
       {/* Chat widget */}

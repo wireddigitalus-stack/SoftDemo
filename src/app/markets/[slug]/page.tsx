@@ -108,8 +108,8 @@ export default async function GeoPage({ params }: Props) {
     {
       q: `Does Vision LLC have commercial property available in ${geo.city}, ${geo.state}?`,
       a: geo.isPrimary
-        ? `Yes! Vision LLC is the largest private commercial property owner in Downtown Bristol with a full portfolio including ${geoData.availableTypes.join(", ")}. Contact our team at ${COMPANY.phone} to discuss current availability.`
-        : `Vision LLC doesn't maintain offices in ${geo.city}, but we actively serve businesses from ${geo.city} — connecting them with our commercial portfolio in Downtown Bristol, TN, typically a short drive via regional highways. Our available types include ${geoData.availableTypes.join(", ")}. Call ${COMPANY.phone} to discuss options.`,
+        ? `Yes! Vision LLC is the largest private commercial property owner in Downtown Ashton with a full portfolio including ${geoData.availableTypes.join(", ")}. Contact our team at ${COMPANY.phone} to discuss current availability.`
+        : `Vision LLC doesn't maintain offices in ${geo.city}, but we actively serve businesses from ${geo.city} — connecting them with our commercial portfolio in Downtown Ashton, TN, typically a short drive via regional highways. Our available types include ${geoData.availableTypes.join(", ")}. Call ${COMPANY.phone} to discuss options.`,
     },
     {
       q: `What types of commercial space does Vision LLC offer in the ${geo.region}?`,
@@ -117,7 +117,7 @@ export default async function GeoPage({ params }: Props) {
     },
     {
       q: `How long has Vision LLC been serving ${geo.city}?`,
-      a: `Vision LLC has been investing in and serving the ${geo.region} region for over 20 years. Based in Downtown Bristol, TN, we extend our commercial real estate expertise across the entire Tri-Cities and Southwest Virginia market.`,
+      a: `Vision LLC has been investing in and serving the ${geo.region} region for over 20 years. Based in Downtown Ashton, TN, we extend our commercial real estate expertise across the entire Tri-Cities and Southwest Virginia market.`,
     },
     {
       q: `How do I schedule a property tour in ${geo.city}?`,
@@ -139,7 +139,7 @@ export default async function GeoPage({ params }: Props) {
     email: "leasing@teamvisionllc.com",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "100 5th St., Suite 2W",
+      streetAddress: "200 Commerce Ave., Suite 2W",
       addressLocality: "Bristol",
       addressRegion: "TN",
       postalCode: "37620",
@@ -333,7 +333,7 @@ export default async function GeoPage({ params }: Props) {
             {/* Available space types */}
             <div className="glass rounded-2xl p-7 border border-[rgba(74,222,128,0.15)]">
               <h3 className="text-lg font-bold text-white mb-5">
-                {geo.isPrimary ? `Available Space Types in ${geo.city}` : "Space Types Available — Downtown Bristol, TN"}
+                {geo.isPrimary ? `Available Space Types in ${geo.city}` : "Space Types Available — Downtown Ashton, TN"}
               </h3>
               <div className="space-y-4">
                 {geoData.availableTypes.map((type) => (
@@ -437,12 +437,12 @@ export default async function GeoPage({ params }: Props) {
             <h2 className="text-2xl sm:text-3xl font-black text-white mb-3">
               {geo.isPrimary
                 ? `Ready to Explore Commercial Real Estate in ${geo.city}?`
-                : "Ready to Find Your Space in Downtown Bristol?"}
+                : "Ready to Find Your Space in Downtown Ashton?"}
             </h2>
             <p className="text-gray-400 mb-8 max-w-lg mx-auto">
               {geo.isPrimary
                 ? `Our team has deep roots in the ${geo.region} market. Let's find the right space for your business.`
-                : `Our Downtown Bristol portfolio is a short drive from ${geo.city}. Let's find the right space for your business.`}
+                : `Our Downtown Ashton portfolio is a short drive from ${geo.city}. Let's find the right space for your business.`}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/contact" id={`geo-final-cta-${slug}`} className="btn-primary py-4 px-8">
@@ -467,7 +467,7 @@ export default async function GeoPage({ params }: Props) {
               </h2>
               <address className="not-italic space-y-2 text-sm text-gray-400">
                 <p className="font-semibold text-white">Vision LLC</p>
-                <p>100 5th St., Suite 2W</p>
+                <p>200 Commerce Ave., Suite 2W</p>
                 <p>Bristol, TN 37620</p>
                 <p>
                   <a href="tel:+14235731022" className="text-[#4ADE80] hover:underline font-semibold">

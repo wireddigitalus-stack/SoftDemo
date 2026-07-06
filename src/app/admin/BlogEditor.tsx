@@ -70,9 +70,9 @@ function formatBytes(bytes: number): string {
 const STATIC_POSTS = [
   {
     slug: "downtown-bristol-tn-commercial-real-estate-market-2026",
-    title: "Downtown Bristol, TN Commercial Real Estate Market Outlook 2026",
-    meta_title: "Downtown Bristol TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
-    meta_description: "Deep dive into the 2025 commercial real estate market in Downtown Bristol, TN.",
+    title: "Downtown Ashton, TN Commercial Real Estate Market Outlook 2026",
+    meta_title: "Downtown Ashton TN Commercial Real Estate Market Outlook 2026 | Vision LLC",
+    meta_description: "Deep dive into the 2025 commercial real estate market in Downtown Ashton, TN.",
     category: "Market Reports",
     tags: ["Bristol TN", "Market Report", "Commercial Real Estate", "Tri-Cities"],
     read_time: 6,
@@ -81,13 +81,13 @@ const STATIC_POSTS = [
     author_title: "Commercial Real Estate Experts — Tri-Cities, TN",
     image_url: "/images/Hard_Rock_Bristol_VA.jpg",
     image_alt: "Hard Rock Hotel & Casino Bristol, Virginia",
-    excerpt: "Downtown Bristol, TN is experiencing one of its most dynamic commercial real estate cycles in two decades.",
+    excerpt: "Downtown Ashton, TN is experiencing one of its most dynamic commercial real estate cycles in two decades.",
     status: "published" as const,
   },
   {
     slug: "coworking-vs-traditional-office-tri-cities-tennessee",
     title: "Coworking vs. Traditional Office Space in the Tri-Cities: What's Right for Your Business?",
-    meta_title: "Coworking vs Traditional Office Space Tri-Cities TN | Bristol CoWork | Vision LLC",
+    meta_title: "Coworking vs Traditional Office Space Tri-Cities TN | Summit CoWork | Vision LLC",
     meta_description: "Comparing coworking memberships vs. traditional commercial leases in the Tri-Cities.",
     category: "Business Insights",
     tags: ["Coworking", "Bristol TN", "Office Space", "Tri-Cities", "Small Business"],
@@ -102,9 +102,9 @@ const STATIC_POSTS = [
   },
   {
     slug: "historic-adaptive-reuse-downtown-bristol-tennessee",
-    title: "Historic Adaptive Reuse: How Vision LLC Is Transforming Downtown Bristol, TN",
-    meta_title: "Historic Adaptive Reuse Downtown Bristol TN | Vision LLC Development",
-    meta_description: "How Vision LLC is leading the historic adaptive reuse movement in Downtown Bristol, TN.",
+    title: "Historic Adaptive Reuse: How Vision LLC Is Transforming Downtown Ashton, TN",
+    meta_title: "Historic Adaptive Reuse Downtown Ashton TN | Vision LLC Development",
+    meta_description: "How Vision LLC is leading the historic adaptive reuse movement in Downtown Ashton, TN.",
     category: "Development",
     tags: ["Historic Preservation", "Adaptive Reuse", "Bristol TN", "Development"],
     read_time: 6,
@@ -950,7 +950,7 @@ function BlogImageUploader({ currentUrl, currentAlt, onUrlChange, onAltChange }:
       <div>
         <label className={LABEL}>Image Alt Text <span className="text-gray-700 font-normal normal-case">(for SEO)</span></label>
         <input value={currentAlt} onChange={e => onAltChange(e.target.value)} className={FIELD}
-          placeholder="e.g. Downtown Bristol Tennessee State Street" />
+          placeholder="e.g. Downtown Ashton Tennessee State Street" />
       </div>
     </div>
   );
@@ -1146,7 +1146,7 @@ function PostEditor({ initial, onSave, onCancel }: {
         <div>
           <label className={LABEL}>Article Title *</label>
           <input ref={titleRef} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className={FIELD}
-            placeholder="e.g. Why Downtown Bristol is the Best Place to Open a Business in 2026" />
+            placeholder="e.g. Why Downtown Ashton is the Best Place to Open a Business in 2026" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-1.5">

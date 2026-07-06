@@ -329,7 +329,7 @@ export default function MarketingTab({ onSubTabChange }: { onSubTabChange?: (sub
               <input
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
-                placeholder="e.g. 2,400 sqft Office Suite — Downtown Bristol"
+                placeholder="e.g. 2,400 sqft Office Suite — Downtown Ashton"
                 className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2.5 text-sm text-white focus:border-[rgba(96,165,250,0.5)] outline-none placeholder:text-gray-700"
               />
             </div>

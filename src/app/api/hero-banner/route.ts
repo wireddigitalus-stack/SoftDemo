@@ -16,7 +16,7 @@ interface SlideConfig {
 }
 interface HeroConfig { slides: SlideConfig[]; videoUrl: string | null; videoEnabled: boolean; }
 
-const MAIN_IDS = ["city-centre","bristol-cowork","the-executive","centre-point-suites","foundation-event-facility","warehouse"];
+const MAIN_IDS = ["metro-park","summit-cowork","the-pinnacle","midtown-point","heritage-event","warehouse"];
 
 /** Returns { value, tableExists } */
 async function getRaw(): Promise<{ value: HeroConfig | null; tableExists: boolean }> {

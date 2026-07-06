@@ -2,7 +2,7 @@
   "allowed_users": [
     {
       "id": "demo-admin-user",
-      "email": "demo@teamvisionllc.com",
+      "email": "demo@visionpip-demo.com",
       "name": "Demo Admin",
       "role": "admin",
       "active": true,
@@ -10,7 +10,7 @@
     },
     {
       "id": "worker-john",
-      "email": "john@teamvisionllc.com",
+      "email": "john@visionpip-demo.com",
       "name": "John W. (Maintenance)",
       "role": "maintenance",
       "active": true,
@@ -19,7 +19,7 @@
     },
     {
       "id": "worker-mary",
-      "email": "mary@teamvisionllc.com",
+      "email": "mary@visionpip-demo.com",
       "name": "Mary S. (Cleaning)",
       "role": "cleaning",
       "active": true,
@@ -40,11 +40,11 @@
       "team_size": "2–4 people",
       "score": 91,
       "score_label": "Hot Lead",
-      "reasoning": "Strong budget ($2,800/mo), urgent timeline, and team size of 2-4 match the City Centre Professional Suites perfectly. Property has premium office options and immediate availability.",
+      "reasoning": "Strong budget ($2,800/mo), urgent timeline, and team size of 2-4 match the Metro Park Professional Suites perfectly. Property has premium office options and immediate availability.",
       "matched_properties": [
         {
-          "id": "city-centre",
-          "name": "City Centre Professional Suites",
+          "id": "metro-park",
+          "name": "Metro Park Professional Suites",
           "type": "Office",
           "sqft": "120 – 6,000",
           "matchReason": "All-inclusive pricing covers utilities, fits 2-4 people nicely."
@@ -63,7 +63,7 @@
       "id": "demo_lead_2",
       "timestamp": "2026-06-13T04:00:29.326Z",
       "name": "Dr. James Patel",
-      "email": "jpatel@tricitiesmedical.org",
+      "email": "jpatel@valleymedgroup.org",
       "phone": "276-555-0847",
       "space_type": "Office",
       "budget": 8500,
@@ -74,15 +74,15 @@
       "reasoning": "Premium budget ($8,500/mo), immediate timeline, and established medical/consulting firm size of 5-10 people. Matches The Executive Premier Office Suites (historic prestige) and City Centre larger suites.",
       "matched_properties": [
         {
-          "id": "the-executive",
-          "name": "The Executive — Premier Office Suites",
+          "id": "the-pinnacle",
+          "name": "The Pinnacle — Premier Office Suites",
           "type": "Office",
           "sqft": "500 – 12,000",
           "matchReason": "Prestige address, full-service amenities fit corporate/medical offices."
         },
         {
-          "id": "city-centre",
-          "name": "City Centre Professional Suites",
+          "id": "metro-park",
+          "name": "Metro Park Professional Suites",
           "type": "Office",
           "sqft": "120 – 6,000",
           "matchReason": "Contiguous square footage meets client space requirements."
@@ -113,11 +113,11 @@
       "team_size": "Solo",
       "score": 64,
       "score_label": "Warm Lead",
-      "reasoning": "Solo designer seeking coworking setup. Bristol CoWork memberships are available immediately. Good candidate for dedicated desk or private single office.",
+      "reasoning": "Solo designer seeking coworking setup. Summit CoWork memberships are available immediately. Good candidate for dedicated desk or private single office.",
       "matched_properties": [
         {
-          "id": "bristol-cowork",
-          "name": "Bristol CoWork",
+          "id": "summit-cowork",
+          "name": "Summit CoWork",
           "type": "CoWorking",
           "sqft": "5,000+",
           "matchReason": "Fully furnished private offices, dedicated desks, high-speed internet."
@@ -136,7 +136,7 @@
       "id": "demo_lead_4",
       "timestamp": "2026-06-11T16:45:29.326Z",
       "name": "Marcus Vance",
-      "email": "mvance@vancelogistics.com",
+      "email": "mvance@ventureship.com",
       "phone": "865-555-4091",
       "space_type": "Mixed-Use / Industrial",
       "budget": 12500,
@@ -147,8 +147,8 @@
       "reasoning": "Extremely high budget ($12,500/mo) and large space requirement for industrial distribution. Fits former Coca-Cola warehouse at West State Commons perfectly.",
       "matched_properties": [
         {
-          "id": "west-state-commons",
-          "name": "West State Commons — Offices & Warehouse",
+          "id": "commerce-park",
+          "name": "Commerce Park — Offices & Warehouse",
           "type": "Mixed-Use / Industrial",
           "sqft": "8,000 Office + 45,500 Warehouse",
           "matchReason": "Coca-Cola facility has 45k sqft warehouse, high ceilings, loading docks."
@@ -171,13 +171,13 @@
   "tenants": [
     {
       "id": "tenant_comm_1",
-      "name": "Bristol Catering Company",
-      "contact_name": "Julie McClanahan",
-      "email": "jmcclanahan@bristolcatering.com",
-      "phone": "423-573-1022",
-      "building": "City Centre Professional Suites",
+      "name": "Valley Catering Company",
+      "contact_name": "Jessica Morgan",
+      "email": "jmorgan@valleycatering.com",
+      "phone": "423-555-1022",
+      "building": "Metro Park Professional Suites",
       "unit": "Suite 100",
-      "rep": "Julie McClanahan",
+      "rep": "Jessica Morgan",
       "monthly_rent": 3800,
       "utilities_fee": 150,
       "security_deposit": 3800,
@@ -198,13 +198,13 @@
     },
     {
       "id": "tenant_comm_2",
-      "name": "Wolf Hills Law Group",
-      "contact_name": "Blake Thornton, Esq.",
-      "email": "bthornton@wolfhillslaw.com",
+      "name": "Summit Law Group",
+      "contact_name": "Brian Thompson, Esq.",
+      "email": "bthompson@summitlaw.com",
       "phone": "276-555-9012",
-      "building": "Jamestown at Shelby",
+      "building": "Madison Square at Oakley",
       "unit": "Suite 300",
-      "rep": "Allen Hurley",
+      "rep": "Alex Harrison",
       "monthly_rent": 2400,
       "utilities_fee": 100,
       "security_deposit": 2400,
@@ -229,7 +229,7 @@
       "contact_name": "David Carter",
       "email": "dcarter@gmail.com",
       "phone": "423-555-7890",
-      "building": "St. Albert Court Apartments",
+      "building": "Riverside Court Apartments",
       "unit": "Apt 101",
       "rep": "Leasing Agent",
       "monthly_rent": 1150,
@@ -256,7 +256,7 @@
       "contact_name": "Sophia Martinez",
       "email": "smartinez@king.edu",
       "phone": "423-555-4512",
-      "building": "St. Albert Court Apartments",
+      "building": "Riverside Court Apartments",
       "unit": "Apt 102",
       "rep": "Leasing Agent",
       "monthly_rent": 1200,
@@ -283,7 +283,7 @@
       "contact_name": "Marcus Vance",
       "email": "marcus.vance@yahoo.com",
       "phone": "865-555-4091",
-      "building": "St. Albert Court Apartments",
+      "building": "Riverside Court Apartments",
       "unit": "Apt 201",
       "rep": "Leasing Agent",
       "monthly_rent": 1400,
@@ -310,7 +310,7 @@
       "contact_name": "Thomas Jenkins",
       "email": "tjenkins@gmail.com",
       "phone": "276-555-1122",
-      "building": "Virginia Heights Residential",
+      "building": "Highland Ridge Townhomes",
       "unit": "Townhouse A",
       "rep": "Leasing Agent",
       "monthly_rent": 1650,
@@ -335,7 +335,7 @@
   "maintenance_tickets": [
     {
       "id": "ticket_1",
-      "property": "St. Albert Court Apartments",
+      "property": "Riverside Court Apartments",
       "unit": "Apt 101",
       "issue": "Garbage disposal jammed and kitchen sink draining slowly.",
       "priority": 2,
@@ -348,7 +348,7 @@
     },
     {
       "id": "ticket_2",
-      "property": "City Centre Professional Suites",
+      "property": "Metro Park Professional Suites",
       "unit": "Suite 100",
       "issue": "HVAC blowing warm air in receptionist area.",
       "priority": 1,
@@ -361,7 +361,7 @@
     },
     {
       "id": "ticket_3",
-      "property": "St. Albert Court Apartments",
+      "property": "Riverside Court Apartments",
       "unit": "Apt 201",
       "issue": "Replace balcony door weather stripping.",
       "priority": 3,
@@ -376,7 +376,7 @@
   "cleaning_assignments": [
     {
       "id": "clean_1",
-      "property": "City Centre Professional Suites",
+      "property": "Metro Park Professional Suites",
       "area": "Common Lobby & Bathrooms",
       "scheduled_date": "2026-06-14",
       "assigned_worker": "Mary S. (Cleaning)",
@@ -386,7 +386,7 @@
     },
     {
       "id": "clean_2",
-      "property": "St. Albert Court Apartments",
+      "property": "Riverside Court Apartments",
       "area": "Apt 102 Move-in Cleaning Prep",
       "scheduled_date": "2026-06-11",
       "assigned_worker": "Mary S. (Cleaning)",
@@ -402,49 +402,49 @@
         "slides": [
           {
             "type": "property",
-            "propertyId": "city-centre",
-            "label": "City Centre Professional Suites",
-            "location": "Downtown Bristol, TN",
+            "propertyId": "metro-park",
+            "label": "Metro Park Professional Suites",
+            "location": "Downtown Ashton, TN",
             "enabled": true,
             "order": 0
           },
           {
             "type": "property",
-            "propertyId": "bristol-cowork",
-            "label": "Bristol CoWork",
-            "location": "620 State Street, Bristol, TN",
+            "propertyId": "summit-cowork",
+            "label": "Summit CoWork",
+            "location": "450 Market Street, Ashton, TN 37601",
             "enabled": true,
             "order": 1
           },
           {
             "type": "property",
-            "propertyId": "the-executive",
+            "propertyId": "the-pinnacle",
             "label": "The Executive Office Suites",
-            "location": "Downtown Bristol, TN",
+            "location": "Downtown Ashton, TN",
             "enabled": true,
             "order": 2
           },
           {
             "type": "property",
-            "propertyId": "centre-point-suites",
+            "propertyId": "midtown-point",
             "label": "Centre Point",
-            "location": "Bristol, VA (Casino Adjacent)",
+            "location": "Ashton, VA (Entertainment District)",
             "enabled": true,
             "order": 3
           },
           {
             "type": "property",
-            "propertyId": "st-albert-apartments",
-            "label": "St. Albert Court Apartments",
-            "location": "Downtown Bristol, TN",
+            "propertyId": "riverside-court",
+            "label": "Riverside Court Apartments",
+            "location": "Downtown Ashton, TN",
             "enabled": true,
             "order": 4
           },
           {
             "type": "property",
-            "propertyId": "west-state-commons",
+            "propertyId": "commerce-park",
             "label": "West State Commons",
-            "location": "Bristol, VA",
+            "location": "Ashton, VA",
             "enabled": true,
             "order": 5
           }
@@ -462,7 +462,7 @@
       "lead_id": "demo_lead_1",
       "lead_name": "Sarah Mitchell",
       "actor_name": "Demo Admin",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "outcome": "spoke",
       "notes": "Spoke with Sarah. She is extremely interested in the 300 sqft corner office at City Centre. Scheduled a physical tour for Monday at 10 AM.",
       "created_at": "2026-06-13T02:15:29.326Z"
@@ -472,7 +472,7 @@
       "lead_id": "demo_lead_2",
       "lead_name": "Dr. James Patel",
       "actor_name": "Demo Admin",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "outcome": "vm",
       "notes": "Left voicemail following up on their clinic expansion requirements. Mentioned The Executive suites and dedicated staff parking.",
       "created_at": "2026-06-12T02:21:29.326Z"
@@ -506,7 +506,7 @@
       "utm_medium": "cpc",
       "utm_campaign": "bristol_cre",
       "event_data": {
-        "property_id": "city-centre"
+        "property_id": "metro-park"
       },
       "duration_ms": 12000,
       "device_type": "desktop",
@@ -517,8 +517,8 @@
       "id": 3,
       "session_id": "session_mock_1",
       "event_type": "cta_click",
-      "page_path": "/properties/city-centre",
-      "page_title: ": "City Centre Professional Suites | Vision LLC",
+      "page_path": "/properties/metro-park",
+      "page_title: ": "Metro Park Professional Suites | Vision LLC",
       "referrer": "https://www.google.com/",
       "utm_source": "google",
       "utm_medium": "cpc",
@@ -535,10 +535,10 @@
   "blog_posts": [
     {
       "id": "blog_1",
-      "title": "The Historical Transformation of Downtown Bristol",
+      "title": "The Historical Transformation of Downtown Ashton",
       "slug": "historical-transformation-downtown-bristol",
-      "summary": "Explore how adaptive reuse of 100-year-old structures is powering a modern economic boom along State Street.",
-      "content": "<p>Downtown Bristol is experiencing a massive revival...</p>",
+      "summary": "Explore how adaptive reuse of 100-year-old structures is powering a modern economic boom along Market Street.",
+      "content": "<p>Downtown Ashton is experiencing a massive revival...</p>",
       "published": true,
       "published_at": "2026-05-29",
       "created_at": "2026-05-28"
@@ -547,14 +547,14 @@
   "activity_log": [
     {
       "id": "act_1",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "created",
       "resource_type": "tenant",
-      "resource_name": "Wolf Hills Law Group",
+      "resource_name": "Summit Law Group",
       "resource_id": "tenant_comm_2",
       "metadata": {
-        "building": "Jamestown at Shelby",
+        "building": "Madison Square at Oakley",
         "unit": "Suite 300",
         "monthly_rent": 2400
       },
@@ -562,7 +562,7 @@
     },
     {
       "id": "act_2",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "updated",
       "resource_type": "maintenance",
@@ -576,7 +576,7 @@
     {
       "id": "acti_1781325929326_nd883",
       "created_at": "2026-06-13T04:45:28.688Z",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "admin_login",
       "resource_type": "auth",
@@ -589,7 +589,7 @@
     {
       "id": "acti_1781326018803_zyjgl",
       "created_at": "2026-06-13T04:46:58.765Z",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "admin_login",
       "resource_type": "auth",
@@ -602,7 +602,7 @@
     {
       "id": "acti_1781326069060_xe8qt",
       "created_at": "2026-06-13T04:47:49.037Z",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "admin_login",
       "resource_type": "auth",
@@ -615,7 +615,7 @@
     {
       "id": "acti_1781419353176_kqt9o",
       "created_at": "2026-06-14T06:42:33.102Z",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "admin_login",
       "resource_type": "auth",
@@ -628,7 +628,7 @@
     {
       "id": "acti_1781419486003_avyrc",
       "created_at": "2026-06-14T06:44:45.976Z",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "admin_login",
       "resource_type": "auth",
@@ -641,7 +641,7 @@
     {
       "id": "acti_1781420230177_zv9rm",
       "created_at": "2026-06-14T06:57:10.118Z",
-      "actor_email": "demo@teamvisionllc.com",
+      "actor_email": "demo@visionpip-demo.com",
       "actor_name": "Demo Admin",
       "action": "admin_login",
       "resource_type": "auth",
@@ -733,45 +733,45 @@
   ],
   "properties": [
     {
-      "id": "city-centre",
-      "name": "City Centre Professional Suites",
+      "id": "metro-park",
+      "name": "Metro Park Professional Suites",
       "type": "Office",
-      "address": "100 5th St., Bristol, TN 37620",
-      "city": "Bristol, TN",
+      "address": "200 Commerce Ave., Ashton, TN 37601",
+      "city": "Ashton, TN",
       "sqft": "120 – 6,000",
       "lease_status": "available",
       "badge": "Featured",
       "badge_color": "#4ADE80",
-      "description": "City Centre Professional Suites is the Preservation Award-winning office address in the heart of Downtown Bristol — The Birthplace of Country Music. We offer premier office suites from 120 to 6,000 sqft with a professional environment that makes a great first impression on clients and business associates.",
+      "description": "Metro Park Professional Suites is the Preservation Award-winning office address in the heart of Downtown Ashton — The Birthplace of Country Music. We offer premier office suites from 120 to 6,000 sqft with a professional environment that makes a great first impression on clients and business associates.",
       "features": [
         "120 – 6,000 sqft Suites",
         "All-Inclusive Pricing",
         "CCTV Security",
         "Fitness Access",
         "Preservation Award Winner",
-        "Downtown Bristol",
+        "Downtown Ashton",
         "Single Offices Available"
       ],
       "images": [
-        "/property-images/commercial-city-centre-exterior.jpg",
+        "/property-images/commercial-metro-park-exterior.jpg",
         "/property-images/commercial-vision-office.jpg"
       ],
-      "hero_image": "/property-images/commercial-city-centre-exterior.jpg",
+      "hero_image": "/property-images/commercial-metro-park-exterior.jpg",
       "in_banner": true,
       "published": true,
       "created_at": "2026-05-14T04:45:29.326Z"
     },
     {
-      "id": "bristol-cowork",
-      "name": "Bristol CoWork",
+      "id": "summit-cowork",
+      "name": "Summit CoWork",
       "type": "CoWorking",
-      "address": "620 State Street, Bristol, TN",
-      "city": "Bristol, TN",
+      "address": "450 Market Street, Ashton, TN 37601",
+      "city": "Ashton, TN",
       "sqft": "5,000+",
       "lease_status": "available",
       "badge": "CoWork",
       "badge_color": "#FACC15",
-      "description": "Experience modern commercial leasing at Bristol CoWork — a 5,000+ sqft facility at 620 State Street offering fully furnished private offices, dedicated desks, and equipped conference rooms with high-speed internet and all utilities included.",
+      "description": "Experience modern commercial leasing at Summit CoWork — a 5,000+ sqft facility at 620 Market Street offering fully furnished private offices, dedicated desks, and equipped conference rooms with high-speed internet and all utilities included.",
       "features": [
         "Private Offices",
         "Dedicated Desks",
@@ -791,16 +791,16 @@
       "created_at": "2026-05-14T04:45:29.326Z"
     },
     {
-      "id": "st-albert-apartments",
-      "name": "St. Albert Court Apartments",
+      "id": "riverside-court",
+      "name": "Riverside Court Apartments",
       "type": "Residential",
-      "address": "312 Spencer St., Bristol, TN 37620",
-      "city": "Bristol, TN",
+      "address": "185 River Walk Dr., Ashton, TN 37601",
+      "city": "Ashton, TN",
       "sqft": "900 – 1,400",
       "lease_status": "available",
       "badge": "Multi-Tenant",
       "badge_color": "#60A5FA",
-      "description": "St. Albert Court Apartments offers premium multi-tenant residential living in Downtown Bristol. Meticulously maintained units featuring 1-2 bedrooms, modern kitchens, off-street parking, and walking distance to State Street.",
+      "description": "Riverside Court Apartments offers premium multi-tenant residential living in Downtown Ashton. Meticulously maintained units featuring 1-2 bedrooms, modern kitchens, off-street parking, and walking distance to Market Street.",
       "features": [
         "1-2 Bedroom Units",
         "Off-Street Parking",
@@ -817,16 +817,16 @@
       "created_at": "2026-05-14T04:45:29.326Z"
     },
     {
-      "id": "virginia-heights",
-      "name": "Virginia Heights Residential",
+      "id": "highland-ridge",
+      "name": "Highland Ridge Townhomes",
       "type": "Residential",
-      "address": "804 Commonwealth Ave, Bristol, VA 24201",
-      "city": "Bristol, VA",
+      "address": "720 Highland Blvd., Ashton, VA 24210",
+      "city": "Ashton, VA",
       "sqft": "1,200 – 1,800",
       "lease_status": "available",
       "badge": "Virginia Side",
       "badge_color": "#FACC15",
-      "description": "Virginia Heights features beautiful townhouses located near the exit 5 corridor, offering easy access to both I-81 and Downtown Bristol VA. Spacious layouts with private garages.",
+      "description": "Virginia Heights features beautiful townhouses located near the exit 5 corridor, offering easy access to both I-81 and Downtown Ashton VA. Spacious layouts with private garages.",
       "features": [
         "Private Garages",
         "Spacious Layouts",
