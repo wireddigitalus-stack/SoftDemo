@@ -5,8 +5,7 @@ import { supabaseAdmin, rowToLead } from "@/lib/supabase";
 import { writeActivityLog } from "@/lib/activity-log";
 
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY environment variable is not set");
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
 
 // ── Email notification config ─────────────────────────────────────────────────
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -170,6 +169,10 @@ export async function POST(req: NextRequest) {
 
     if (!name || !spaceType || !budget) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    if (!GEMINI_API_KEY) {
+      return NextResponse.json({ error: "AI scoring unavailable — GEMINI_API_KEY not configured" }, { status: 503 });
     }
 
     const leadData: Partial<Lead> = {

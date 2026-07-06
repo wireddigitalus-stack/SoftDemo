@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY environment variable is not set");
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
 
 // Lean lead type — only the fields needed for analysis
 type LeanLead = {
@@ -42,6 +41,10 @@ export async function POST(req: NextRequest) {
 
     if (!question) {
       return NextResponse.json({ error: "Question is required" }, { status: 400 });
+    }
+
+    if (!GEMINI_API_KEY) {
+      return NextResponse.json({ error: "AI unavailable — GEMINI_API_KEY not configured" }, { status: 503 });
     }
 
     const leadsContext = buildLeadsContext(leads || []);
