@@ -246,7 +246,7 @@ function FlowPath({ from, to, color, active, pathId }: {
             keyTimes="0;1"
             keySplines="0.42 0 0.58 1"
           >
-            <mpath xlinkHref={`#${pathId}`} />
+            <mpath href={`#${pathId}`} xlinkHref={`#${pathId}`} />
           </animateMotion>
         </circle>
       ))}

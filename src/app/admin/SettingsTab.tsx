@@ -1397,6 +1397,60 @@ function DataExportSection({ leads }: { leads: Lead[] }) {
   );
 }
 
+// ─── Demo Reset Section ───────────────────────────────────────────────────────
+
+function DemoResetSection() {
+  const [resetting, setResetting] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
+
+  const handleReset = async () => {
+    if (!confirm("Reset all demo data to factory state? This will restore the original sample tenants, leads, tickets, and cleaning assignments.")) return;
+    setResetting(true);
+    try {
+      const res = await fetch("/api/demo-reset", { method: "POST" });
+      if (res.ok) {
+        setResetDone(true);
+        setTimeout(() => window.location.reload(), 1200);
+      }
+    } catch (err) {
+      console.error("[DemoReset] Error:", err);
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#60A5FA] to-[#3B82F6] flex items-center justify-center flex-shrink-0">
+          <RefreshCw size={13} className="text-white" />
+        </div>
+        <h2 className="text-sm font-black text-white uppercase tracking-widest">Demo Data Reset</h2>
+      </div>
+      <p className="text-xs text-gray-500 mb-4">
+        Restore all data to its original factory state — tenants, leads, maintenance tickets, and cleaning assignments.
+      </p>
+      <button
+        onClick={handleReset}
+        disabled={resetting || resetDone}
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+          resetDone
+            ? "bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.3)] text-[#4ADE80]"
+            : "bg-[rgba(96,165,250,0.08)] border border-[rgba(96,165,250,0.2)] text-[#60A5FA] hover:bg-[rgba(96,165,250,0.15)]"
+        } disabled:opacity-50`}
+      >
+        {resetDone ? (
+          <><CheckCircle2 size={14} /> Data Reset — Reloading...</>
+        ) : resetting ? (
+          <><Loader2 size={14} className="animate-spin" /> Resetting...</>
+        ) : (
+          <><RefreshCw size={14} /> Reset Demo Data to Factory State</>
+        )}
+      </button>
+    </div>
+  );
+}
+
 // ─── Danger Zone (Collapsible) ────────────────────────────────────────────────
 
 function DangerZoneSection({ leads, deletingAll, deleteAllConfirm, setDeleteAllConfirm, deleteAllLeads }: {
@@ -1771,6 +1825,12 @@ ON CONFLICT (email) DO NOTHING;`}</pre>
           )}
         </div>
       </div>
+
+      {/* ─ Divider */}
+      <div className="border-t border-[rgba(255,255,255,0.05)]" />
+
+      {/* ── Demo Data Reset ── */}
+      <DemoResetSection />
 
       {/* ─ Divider */}
       <div className="border-t border-[rgba(255,255,255,0.05)]" />

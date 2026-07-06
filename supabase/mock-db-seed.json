@@ -1,0 +1,849 @@
+{
+  "allowed_users": [
+    {
+      "id": "demo-admin-user",
+      "email": "demo@teamvisionllc.com",
+      "name": "Demo Admin",
+      "role": "admin",
+      "active": true,
+      "created_at": "2026-05-14T04:45:29.326Z"
+    },
+    {
+      "id": "worker-john",
+      "email": "john@teamvisionllc.com",
+      "name": "John W. (Maintenance)",
+      "role": "maintenance",
+      "active": true,
+      "pin": "111111",
+      "created_at": "2026-05-16T04:45:29.326Z"
+    },
+    {
+      "id": "worker-mary",
+      "email": "mary@teamvisionllc.com",
+      "name": "Mary S. (Cleaning)",
+      "role": "cleaning",
+      "active": true,
+      "pin": "222222",
+      "created_at": "2026-05-16T04:45:29.326Z"
+    }
+  ],
+  "leads": [
+    {
+      "id": "demo_lead_1",
+      "timestamp": "2026-06-13T04:37:29.326Z",
+      "name": "Sarah Mitchell",
+      "email": "smitchell@techcorp.io",
+      "phone": "423-555-0192",
+      "space_type": "Office",
+      "budget": 2800,
+      "timeline": "ASAP — under 30 days",
+      "team_size": "2–4 people",
+      "score": 91,
+      "score_label": "Hot Lead",
+      "reasoning": "Strong budget ($2,800/mo), urgent timeline, and team size of 2-4 match the City Centre Professional Suites perfectly. Property has premium office options and immediate availability.",
+      "matched_properties": [
+        {
+          "id": "city-centre",
+          "name": "City Centre Professional Suites",
+          "type": "Office",
+          "sqft": "120 – 6,000",
+          "matchReason": "All-inclusive pricing covers utilities, fits 2-4 people nicely."
+        }
+      ],
+      "is_whale": false,
+      "whale_tier": null,
+      "whale_keywords": [],
+      "source": "organic",
+      "medium": "search",
+      "campaign": "",
+      "additional_info": "Looking for a turn-key office with good high-speed internet and access to a meeting room.",
+      "archived_at": null
+    },
+    {
+      "id": "demo_lead_2",
+      "timestamp": "2026-06-13T04:00:29.326Z",
+      "name": "Dr. James Patel",
+      "email": "jpatel@tricitiesmedical.org",
+      "phone": "276-555-0847",
+      "space_type": "Office",
+      "budget": 8500,
+      "timeline": "ASAP — under 30 days",
+      "team_size": "5–10 people",
+      "score": 96,
+      "score_label": "Hot Lead",
+      "reasoning": "Premium budget ($8,500/mo), immediate timeline, and established medical/consulting firm size of 5-10 people. Matches The Executive Premier Office Suites (historic prestige) and City Centre larger suites.",
+      "matched_properties": [
+        {
+          "id": "the-executive",
+          "name": "The Executive — Premier Office Suites",
+          "type": "Office",
+          "sqft": "500 – 12,000",
+          "matchReason": "Prestige address, full-service amenities fit corporate/medical offices."
+        },
+        {
+          "id": "city-centre",
+          "name": "City Centre Professional Suites",
+          "type": "Office",
+          "sqft": "120 – 6,000",
+          "matchReason": "Contiguous square footage meets client space requirements."
+        }
+      ],
+      "is_whale": true,
+      "whale_tier": "gold",
+      "whale_keywords": [
+        "medical",
+        "established",
+        "executive"
+      ],
+      "source": "direct",
+      "medium": "direct",
+      "campaign": "",
+      "additional_info": "Needs client waiting area, off-street parking, and professional entry for medical consultation.",
+      "archived_at": null
+    },
+    {
+      "id": "demo_lead_3",
+      "timestamp": "2026-06-13T00:45:29.326Z",
+      "name": "Elena Rostova",
+      "email": "elena.design@gmail.com",
+      "phone": "423-555-9821",
+      "space_type": "CoWorking",
+      "budget": 600,
+      "timeline": "1–2 months",
+      "team_size": "Solo",
+      "score": 64,
+      "score_label": "Warm Lead",
+      "reasoning": "Solo designer seeking coworking setup. Bristol CoWork memberships are available immediately. Good candidate for dedicated desk or private single office.",
+      "matched_properties": [
+        {
+          "id": "bristol-cowork",
+          "name": "Bristol CoWork",
+          "type": "CoWorking",
+          "sqft": "5,000+",
+          "matchReason": "Fully furnished private offices, dedicated desks, high-speed internet."
+        }
+      ],
+      "is_whale": false,
+      "whale_tier": null,
+      "whale_keywords": [],
+      "source": "social",
+      "medium": "facebook",
+      "campaign": "cowork_promo",
+      "additional_info": "Needs 24/7 access and conference room hours.",
+      "archived_at": null
+    },
+    {
+      "id": "demo_lead_4",
+      "timestamp": "2026-06-11T16:45:29.326Z",
+      "name": "Marcus Vance",
+      "email": "mvance@vancelogistics.com",
+      "phone": "865-555-4091",
+      "space_type": "Mixed-Use / Industrial",
+      "budget": 12500,
+      "timeline": "3–6 months",
+      "team_size": "15+ people",
+      "score": 94,
+      "score_label": "Hot Lead",
+      "reasoning": "Extremely high budget ($12,500/mo) and large space requirement for industrial distribution. Fits former Coca-Cola warehouse at West State Commons perfectly.",
+      "matched_properties": [
+        {
+          "id": "west-state-commons",
+          "name": "West State Commons — Offices & Warehouse",
+          "type": "Mixed-Use / Industrial",
+          "sqft": "8,000 Office + 45,500 Warehouse",
+          "matchReason": "Coca-Cola facility has 45k sqft warehouse, high ceilings, loading docks."
+        }
+      ],
+      "is_whale": true,
+      "whale_tier": "gold",
+      "whale_keywords": [
+        "warehouse",
+        "logistics",
+        "distribution"
+      ],
+      "source": "organic",
+      "medium": "search",
+      "campaign": "",
+      "additional_info": "Requires tractor-trailer accessibility and 3-phase power for packaging systems.",
+      "archived_at": null
+    }
+  ],
+  "tenants": [
+    {
+      "id": "tenant_comm_1",
+      "name": "Bristol Catering Company",
+      "contact_name": "Julie McClanahan",
+      "email": "jmcclanahan@bristolcatering.com",
+      "phone": "423-573-1022",
+      "building": "City Centre Professional Suites",
+      "unit": "Suite 100",
+      "rep": "Julie McClanahan",
+      "monthly_rent": 3800,
+      "utilities_fee": 150,
+      "security_deposit": 3800,
+      "nnn_fee": 0,
+      "cleaning_fee": 0,
+      "cam_fee": 0,
+      "nn_fee": 0,
+      "lease_start": "2024-07-13",
+      "lease_end": "2026-06-28",
+      "renewal_date": "2026-05-29",
+      "lease_alert_days": 90,
+      "escalation_pct": 3,
+      "escalation_date": "2026-05-14",
+      "status": "active",
+      "notes": "Main catering offices and street front retail space. Expiring soon - critical renewal discussion needed.",
+      "source_lead_id": "",
+      "created_at": "2024-07-13T04:45:29.326Z"
+    },
+    {
+      "id": "tenant_comm_2",
+      "name": "Wolf Hills Law Group",
+      "contact_name": "Blake Thornton, Esq.",
+      "email": "bthornton@wolfhillslaw.com",
+      "phone": "276-555-9012",
+      "building": "Jamestown at Shelby",
+      "unit": "Suite 300",
+      "rep": "Allen Hurley",
+      "monthly_rent": 2400,
+      "utilities_fee": 100,
+      "security_deposit": 2400,
+      "nnn_fee": 120,
+      "cleaning_fee": 50,
+      "cam_fee": 0,
+      "nn_fee": 0,
+      "lease_start": "2025-01-29",
+      "lease_end": "2026-07-28",
+      "renewal_date": "2026-06-28",
+      "lease_alert_days": 60,
+      "escalation_pct": 2.5,
+      "escalation_date": "2026-07-13",
+      "status": "active",
+      "notes": "Corporate legal offices. Off-street parking was key requirement. Alert: 45 days remaining on lease.",
+      "source_lead_id": "demo_lead_4",
+      "created_at": "2025-01-29T04:45:29.326Z"
+    },
+    {
+      "id": "tenant_res_1",
+      "name": "David & Emily Carter",
+      "contact_name": "David Carter",
+      "email": "dcarter@gmail.com",
+      "phone": "423-555-7890",
+      "building": "St. Albert Court Apartments",
+      "unit": "Apt 101",
+      "rep": "Leasing Agent",
+      "monthly_rent": 1150,
+      "utilities_fee": 80,
+      "security_deposit": 1150,
+      "nnn_fee": 0,
+      "cleaning_fee": 0,
+      "cam_fee": 15,
+      "nn_fee": 0,
+      "lease_start": "2025-08-17",
+      "lease_end": "2026-08-12",
+      "renewal_date": "2026-07-13",
+      "lease_alert_days": 90,
+      "escalation_pct": 5,
+      "escalation_date": "2026-06-23",
+      "status": "active",
+      "notes": "Quiet residential tenant. Expiring in 60 days. Requested kitchen disposal repair recently.",
+      "source_lead_id": "",
+      "created_at": "2025-08-17T04:45:29.326Z"
+    },
+    {
+      "id": "tenant_res_2",
+      "name": "Sophia Martinez",
+      "contact_name": "Sophia Martinez",
+      "email": "smartinez@king.edu",
+      "phone": "423-555-4512",
+      "building": "St. Albert Court Apartments",
+      "unit": "Apt 102",
+      "rep": "Leasing Agent",
+      "monthly_rent": 1200,
+      "utilities_fee": 80,
+      "security_deposit": 1200,
+      "nnn_fee": 0,
+      "cleaning_fee": 0,
+      "cam_fee": 15,
+      "nn_fee": 0,
+      "lease_start": "2026-03-15",
+      "lease_end": "2027-03-20",
+      "renewal_date": "2027-02-18",
+      "lease_alert_days": 60,
+      "escalation_pct": 4,
+      "escalation_date": "2027-03-10",
+      "status": "active",
+      "notes": "Graduate student at King University. Rent auto-paid on 1st.",
+      "source_lead_id": "",
+      "created_at": "2026-03-15T04:45:29.326Z"
+    },
+    {
+      "id": "tenant_res_3",
+      "name": "Marcus & Clara Vance",
+      "contact_name": "Marcus Vance",
+      "email": "marcus.vance@yahoo.com",
+      "phone": "865-555-4091",
+      "building": "St. Albert Court Apartments",
+      "unit": "Apt 201",
+      "rep": "Leasing Agent",
+      "monthly_rent": 1400,
+      "utilities_fee": 95,
+      "security_deposit": 1400,
+      "nnn_fee": 0,
+      "cleaning_fee": 0,
+      "cam_fee": 15,
+      "nn_fee": 0,
+      "lease_start": "2025-06-03",
+      "lease_end": "2026-06-03",
+      "renewal_date": "2026-05-04",
+      "lease_alert_days": 60,
+      "escalation_pct": 6,
+      "escalation_date": "2026-06-03",
+      "status": "active",
+      "notes": "Spacious upper floor layout. ALERT: Lease has expired 10 days ago! Requires urgent follow up.",
+      "source_lead_id": "",
+      "created_at": "2025-06-03T04:45:29.326Z"
+    },
+    {
+      "id": "tenant_res_4",
+      "name": "Thomas Jenkins",
+      "contact_name": "Thomas Jenkins",
+      "email": "tjenkins@gmail.com",
+      "phone": "276-555-1122",
+      "building": "Virginia Heights Residential",
+      "unit": "Townhouse A",
+      "rep": "Leasing Agent",
+      "monthly_rent": 1650,
+      "utilities_fee": 0,
+      "security_deposit": 1650,
+      "nnn_fee": 0,
+      "cleaning_fee": 0,
+      "cam_fee": 0,
+      "nn_fee": 0,
+      "lease_start": "2026-01-14",
+      "lease_end": "2027-01-09",
+      "renewal_date": "2026-12-10",
+      "lease_alert_days": 60,
+      "escalation_pct": 3.5,
+      "escalation_date": "2027-01-09",
+      "status": "active",
+      "notes": "Residential tenant on the Virginia side. Self-paying utilities.",
+      "source_lead_id": "",
+      "created_at": "2026-01-14T04:45:29.326Z"
+    }
+  ],
+  "maintenance_tickets": [
+    {
+      "id": "ticket_1",
+      "property": "St. Albert Court Apartments",
+      "unit": "Apt 101",
+      "issue": "Garbage disposal jammed and kitchen sink draining slowly.",
+      "priority": 2,
+      "status": "open",
+      "assigned_worker": null,
+      "notes": "David reported it this morning. Needs inspection.",
+      "created_at": "2026-06-13T01:45:29.326Z",
+      "completed_at": null,
+      "parts_needed": "None yet"
+    },
+    {
+      "id": "ticket_2",
+      "property": "City Centre Professional Suites",
+      "unit": "Suite 100",
+      "issue": "HVAC blowing warm air in receptionist area.",
+      "priority": 1,
+      "status": "scheduled",
+      "assigned_worker": "John W. (Maintenance)",
+      "notes": "John dispatched. Replaced air filters, checking condenser units.",
+      "created_at": "2026-06-12T04:45:29.326Z",
+      "completed_at": null,
+      "parts_needed": "Freon R410A recharge maybe"
+    },
+    {
+      "id": "ticket_3",
+      "property": "St. Albert Court Apartments",
+      "unit": "Apt 201",
+      "issue": "Replace balcony door weather stripping.",
+      "priority": 3,
+      "status": "complete",
+      "assigned_worker": "John W. (Maintenance)",
+      "notes": "Stripping replaced. Door seals fine now.",
+      "created_at": "2026-06-03T04:45:29.326Z",
+      "completed_at": "2026-06-04T04:45:29.326Z",
+      "parts_needed": "Weather seal strip 8ft"
+    }
+  ],
+  "cleaning_assignments": [
+    {
+      "id": "clean_1",
+      "property": "City Centre Professional Suites",
+      "area": "Common Lobby & Bathrooms",
+      "scheduled_date": "2026-06-14",
+      "assigned_worker": "Mary S. (Cleaning)",
+      "status": "scheduled",
+      "notes": "Regular high-frequency common area wipe down.",
+      "created_at": "2026-06-12T04:45:29.326Z"
+    },
+    {
+      "id": "clean_2",
+      "property": "St. Albert Court Apartments",
+      "area": "Apt 102 Move-in Cleaning Prep",
+      "scheduled_date": "2026-06-11",
+      "assigned_worker": "Mary S. (Cleaning)",
+      "status": "completed",
+      "notes": "Post-renovation deep clean. Unit is fully prepped for move-in.",
+      "created_at": "2026-06-08T04:45:29.326Z"
+    }
+  ],
+  "site_settings": [
+    {
+      "key": "hero_config",
+      "value": {
+        "slides": [
+          {
+            "type": "property",
+            "propertyId": "city-centre",
+            "label": "City Centre Professional Suites",
+            "location": "Downtown Bristol, TN",
+            "enabled": true,
+            "order": 0
+          },
+          {
+            "type": "property",
+            "propertyId": "bristol-cowork",
+            "label": "Bristol CoWork",
+            "location": "620 State Street, Bristol, TN",
+            "enabled": true,
+            "order": 1
+          },
+          {
+            "type": "property",
+            "propertyId": "the-executive",
+            "label": "The Executive Office Suites",
+            "location": "Downtown Bristol, TN",
+            "enabled": true,
+            "order": 2
+          },
+          {
+            "type": "property",
+            "propertyId": "centre-point-suites",
+            "label": "Centre Point",
+            "location": "Bristol, VA (Casino Adjacent)",
+            "enabled": true,
+            "order": 3
+          },
+          {
+            "type": "property",
+            "propertyId": "st-albert-apartments",
+            "label": "St. Albert Court Apartments",
+            "location": "Downtown Bristol, TN",
+            "enabled": true,
+            "order": 4
+          },
+          {
+            "type": "property",
+            "propertyId": "west-state-commons",
+            "label": "West State Commons",
+            "location": "Bristol, VA",
+            "enabled": true,
+            "order": 5
+          }
+        ],
+        "videoUrl": null,
+        "videoEnabled": false
+      },
+      "updated_at": "2026-06-13T04:45:29.326Z"
+    }
+  ],
+  "property_image_overrides": [],
+  "call_logs": [
+    {
+      "id": "call_1",
+      "lead_id": "demo_lead_1",
+      "lead_name": "Sarah Mitchell",
+      "actor_name": "Demo Admin",
+      "actor_email": "demo@teamvisionllc.com",
+      "outcome": "spoke",
+      "notes": "Spoke with Sarah. She is extremely interested in the 300 sqft corner office at City Centre. Scheduled a physical tour for Monday at 10 AM.",
+      "created_at": "2026-06-13T02:15:29.326Z"
+    },
+    {
+      "id": "call_2",
+      "lead_id": "demo_lead_2",
+      "lead_name": "Dr. James Patel",
+      "actor_name": "Demo Admin",
+      "actor_email": "demo@teamvisionllc.com",
+      "outcome": "vm",
+      "notes": "Left voicemail following up on their clinic expansion requirements. Mentioned The Executive suites and dedicated staff parking.",
+      "created_at": "2026-06-12T02:21:29.326Z"
+    }
+  ],
+  "site_analytics": [
+    {
+      "id": 1,
+      "session_id": "session_mock_1",
+      "event_type": "page_view",
+      "page_path": "/",
+      "page_title": "Vision LLC — Commercial Properties",
+      "referrer": "https://www.google.com/",
+      "utm_source": "google",
+      "utm_medium": "cpc",
+      "utm_campaign": "bristol_cre",
+      "event_data": {},
+      "duration_ms": 45000,
+      "device_type": "desktop",
+      "screen_width": 1440,
+      "created_at": "2026-06-13T02:33:29.326Z"
+    },
+    {
+      "id": 2,
+      "session_id": "session_mock_1",
+      "event_type": "property_click",
+      "page_path": "/",
+      "page_title": "Vision LLC — Commercial Properties",
+      "referrer": "https://www.google.com/",
+      "utm_source": "google",
+      "utm_medium": "cpc",
+      "utm_campaign": "bristol_cre",
+      "event_data": {
+        "property_id": "city-centre"
+      },
+      "duration_ms": 12000,
+      "device_type": "desktop",
+      "screen_width": 1440,
+      "created_at": "2026-06-13T02:39:29.326Z"
+    },
+    {
+      "id": 3,
+      "session_id": "session_mock_1",
+      "event_type": "cta_click",
+      "page_path": "/properties/city-centre",
+      "page_title: ": "City Centre Professional Suites | Vision LLC",
+      "referrer": "https://www.google.com/",
+      "utm_source": "google",
+      "utm_medium": "cpc",
+      "utm_campaign": "bristol_cre",
+      "event_data": {
+        "label": "Chat with Lease Bot"
+      },
+      "duration_ms": 0,
+      "device_type": "desktop",
+      "screen_width": 1440,
+      "created_at": "2026-06-13T02:45:29.326Z"
+    }
+  ],
+  "blog_posts": [
+    {
+      "id": "blog_1",
+      "title": "The Historical Transformation of Downtown Bristol",
+      "slug": "historical-transformation-downtown-bristol",
+      "summary": "Explore how adaptive reuse of 100-year-old structures is powering a modern economic boom along State Street.",
+      "content": "<p>Downtown Bristol is experiencing a massive revival...</p>",
+      "published": true,
+      "published_at": "2026-05-29",
+      "created_at": "2026-05-28"
+    }
+  ],
+  "activity_log": [
+    {
+      "id": "act_1",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "created",
+      "resource_type": "tenant",
+      "resource_name": "Wolf Hills Law Group",
+      "resource_id": "tenant_comm_2",
+      "metadata": {
+        "building": "Jamestown at Shelby",
+        "unit": "Suite 300",
+        "monthly_rent": 2400
+      },
+      "created_at": "2026-06-08T04:45:29.326Z"
+    },
+    {
+      "id": "act_2",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "updated",
+      "resource_type": "maintenance",
+      "resource_name": "Replace balcony door weather stripping",
+      "resource_id": "ticket_3",
+      "metadata": {
+        "status": "completed"
+      },
+      "created_at": "2026-06-09T04:45:29.326Z"
+    },
+    {
+      "id": "acti_1781325929326_nd883",
+      "created_at": "2026-06-13T04:45:28.688Z",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "admin_login",
+      "resource_type": "auth",
+      "resource_name": "Demo Admin",
+      "resource_id": "",
+      "metadata": {
+        "device": "desktop"
+      }
+    },
+    {
+      "id": "acti_1781326018803_zyjgl",
+      "created_at": "2026-06-13T04:46:58.765Z",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "admin_login",
+      "resource_type": "auth",
+      "resource_name": "Demo Admin",
+      "resource_id": "",
+      "metadata": {
+        "device": "desktop"
+      }
+    },
+    {
+      "id": "acti_1781326069060_xe8qt",
+      "created_at": "2026-06-13T04:47:49.037Z",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "admin_login",
+      "resource_type": "auth",
+      "resource_name": "Demo Admin",
+      "resource_id": "",
+      "metadata": {
+        "device": "desktop"
+      }
+    },
+    {
+      "id": "acti_1781419353176_kqt9o",
+      "created_at": "2026-06-14T06:42:33.102Z",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "admin_login",
+      "resource_type": "auth",
+      "resource_name": "Demo Admin",
+      "resource_id": "",
+      "metadata": {
+        "device": "desktop"
+      }
+    },
+    {
+      "id": "acti_1781419486003_avyrc",
+      "created_at": "2026-06-14T06:44:45.976Z",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "admin_login",
+      "resource_type": "auth",
+      "resource_name": "Demo Admin",
+      "resource_id": "",
+      "metadata": {
+        "device": "desktop"
+      }
+    },
+    {
+      "id": "acti_1781420230177_zv9rm",
+      "created_at": "2026-06-14T06:57:10.118Z",
+      "actor_email": "demo@teamvisionllc.com",
+      "actor_name": "Demo Admin",
+      "action": "admin_login",
+      "resource_type": "auth",
+      "resource_name": "Demo Admin",
+      "resource_id": "",
+      "metadata": {
+        "device": "desktop"
+      }
+    }
+  ],
+  "portfolio_snapshots": [
+    {
+      "snapshot_date": "2026-01-14",
+      "total_revenue": 10500,
+      "total_expenses": 3200,
+      "net_income": 7300,
+      "occupancy_rate": 55.5,
+      "total_tenants": 5,
+      "open_tickets": 4,
+      "notes": "Seeding month 1",
+      "created_at": "2026-01-14T04:45:29.326Z"
+    },
+    {
+      "snapshot_date": "2026-02-13",
+      "total_revenue": 11000,
+      "total_expenses": 3000,
+      "net_income": 8000,
+      "occupancy_rate": 60,
+      "total_tenants": 5,
+      "open_tickets": 3,
+      "notes": "Seeding month 2",
+      "created_at": "2026-02-13T04:45:29.326Z"
+    },
+    {
+      "snapshot_date": "2026-03-15",
+      "total_revenue": 11500,
+      "total_expenses": 3400,
+      "net_income": 8100,
+      "occupancy_rate": 60,
+      "total_tenants": 5,
+      "open_tickets": 2,
+      "notes": "Seeding month 3",
+      "created_at": "2026-03-15T04:45:29.326Z"
+    },
+    {
+      "snapshot_date": "2026-04-14",
+      "total_revenue": 12800,
+      "total_expenses": 2900,
+      "net_income": 9900,
+      "occupancy_rate": 66.6,
+      "total_tenants": 6,
+      "open_tickets": 2,
+      "notes": "Seeding month 4",
+      "created_at": "2026-04-14T04:45:29.326Z"
+    },
+    {
+      "snapshot_date": "2026-05-14",
+      "total_revenue": 13400,
+      "total_expenses": 3100,
+      "net_income": 10300,
+      "occupancy_rate": 66.6,
+      "total_tenants": 6,
+      "open_tickets": 1,
+      "notes": "Seeding month 5",
+      "created_at": "2026-05-14T04:45:29.326Z"
+    },
+    {
+      "snapshot_date": "2026-06-13",
+      "total_revenue": 12650,
+      "total_expenses": 3000,
+      "net_income": 9650,
+      "occupancy_rate": 66.6,
+      "total_tenants": 6,
+      "open_tickets": 2,
+      "notes": "Today's snapshot",
+      "created_at": "2026-06-13T04:45:29.326Z"
+    },
+    {
+      "id": "port_1781420327568_samsl",
+      "created_at": "2026-06-14T06:58:47.568Z",
+      "snapshot_date": "2026-06-14",
+      "total_revenue": 12320,
+      "total_expenses": 0,
+      "net_income": 12320,
+      "occupancy_rate": 46.2,
+      "total_tenants": 6,
+      "open_tickets": 1
+    }
+  ],
+  "properties": [
+    {
+      "id": "city-centre",
+      "name": "City Centre Professional Suites",
+      "type": "Office",
+      "address": "100 5th St., Bristol, TN 37620",
+      "city": "Bristol, TN",
+      "sqft": "120 – 6,000",
+      "lease_status": "available",
+      "badge": "Featured",
+      "badge_color": "#4ADE80",
+      "description": "City Centre Professional Suites is the Preservation Award-winning office address in the heart of Downtown Bristol — The Birthplace of Country Music. We offer premier office suites from 120 to 6,000 sqft with a professional environment that makes a great first impression on clients and business associates.",
+      "features": [
+        "120 – 6,000 sqft Suites",
+        "All-Inclusive Pricing",
+        "CCTV Security",
+        "Fitness Access",
+        "Preservation Award Winner",
+        "Downtown Bristol",
+        "Single Offices Available"
+      ],
+      "images": [
+        "/property-images/commercial-city-centre-exterior.jpg",
+        "/property-images/commercial-vision-office.jpg"
+      ],
+      "hero_image": "/property-images/commercial-city-centre-exterior.jpg",
+      "in_banner": true,
+      "published": true,
+      "created_at": "2026-05-14T04:45:29.326Z"
+    },
+    {
+      "id": "bristol-cowork",
+      "name": "Bristol CoWork",
+      "type": "CoWorking",
+      "address": "620 State Street, Bristol, TN",
+      "city": "Bristol, TN",
+      "sqft": "5,000+",
+      "lease_status": "available",
+      "badge": "CoWork",
+      "badge_color": "#FACC15",
+      "description": "Experience modern commercial leasing at Bristol CoWork — a 5,000+ sqft facility at 620 State Street offering fully furnished private offices, dedicated desks, and equipped conference rooms with high-speed internet and all utilities included.",
+      "features": [
+        "Private Offices",
+        "Dedicated Desks",
+        "Conference Rooms",
+        "High-Speed Internet",
+        "Fully Furnished"
+      ],
+      "images": [
+        "/property-images/cowork-shared-office.jpg",
+        "/property-images/cowork-conference-room.jpg",
+        "/property-images/cowork-lobby-waiting.jpg",
+        "/property-images/cowork-private-office.jpg"
+      ],
+      "hero_image": "/property-images/cowork-shared-office.jpg",
+      "in_banner": true,
+      "published": true,
+      "created_at": "2026-05-14T04:45:29.326Z"
+    },
+    {
+      "id": "st-albert-apartments",
+      "name": "St. Albert Court Apartments",
+      "type": "Residential",
+      "address": "312 Spencer St., Bristol, TN 37620",
+      "city": "Bristol, TN",
+      "sqft": "900 – 1,400",
+      "lease_status": "available",
+      "badge": "Multi-Tenant",
+      "badge_color": "#60A5FA",
+      "description": "St. Albert Court Apartments offers premium multi-tenant residential living in Downtown Bristol. Meticulously maintained units featuring 1-2 bedrooms, modern kitchens, off-street parking, and walking distance to State Street.",
+      "features": [
+        "1-2 Bedroom Units",
+        "Off-Street Parking",
+        "Modern Kitchens",
+        "Pet Friendly",
+        "Walking Distance to Downtown"
+      ],
+      "images": [
+        "/property-images/residential-exterior.jpg"
+      ],
+      "hero_image": "/property-images/residential-exterior.jpg",
+      "in_banner": true,
+      "published": true,
+      "created_at": "2026-05-14T04:45:29.326Z"
+    },
+    {
+      "id": "virginia-heights",
+      "name": "Virginia Heights Residential",
+      "type": "Residential",
+      "address": "804 Commonwealth Ave, Bristol, VA 24201",
+      "city": "Bristol, VA",
+      "sqft": "1,200 – 1,800",
+      "lease_status": "available",
+      "badge": "Virginia Side",
+      "badge_color": "#FACC15",
+      "description": "Virginia Heights features beautiful townhouses located near the exit 5 corridor, offering easy access to both I-81 and Downtown Bristol VA. Spacious layouts with private garages.",
+      "features": [
+        "Private Garages",
+        "Spacious Layouts",
+        "Near Exit 5 Corridor",
+        "Virginia Side Location"
+      ],
+      "images": [
+        "/property-images/townhouse-exterior.jpg"
+      ],
+      "hero_image": "/property-images/townhouse-exterior.jpg",
+      "in_banner": true,
+      "published": true,
+      "created_at": "2026-05-14T04:45:29.326Z"
+    }
+  ],
+  "available_spaces": [],
+  "property_details": [],
+  "contact_submissions": [],
+  "site_content": []
+}

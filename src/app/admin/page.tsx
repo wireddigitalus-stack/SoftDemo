@@ -15,6 +15,7 @@ import CallLogModal, { type CallLog, outcomeColor, outcomeLabel } from "./CallLo
 import PrintButton from "./PrintButton";
 import ActivityFeedPanel from "./ActivityFeedPanel";
 import SettingsTab, { SocialLinksCard } from "./SettingsTab";
+import DemoTourOverlay from "./DemoTourOverlay";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import * as XLSX from "xlsx";
 import {
@@ -872,6 +873,8 @@ export default function AdminPage() {
   };
   const [marketingSubTab, setMarketingSubTab] = useState("blog");
   const [contentSubView, setContentSubView] = useState("content-properties");
+  const [showDemoTour, setShowDemoTour] = useState(false);
+  const [demoBannerDismissed, setDemoBannerDismissed] = useState(false);
 
   // Always start at the very top — prevents browser scroll-restoration from
   // loading the dashboard mid-page and hiding the tab nav under the site nav
@@ -1513,6 +1516,55 @@ export default function AdminPage() {
             onClose={() => setActiveCallLog(null)}
           />
         )}
+
+        {/* ═══ Demo Mode Banner ═══════════════════════════════════════════ */}
+        {!demoBannerDismissed && (
+          <div className="relative overflow-hidden rounded-2xl border border-[rgba(74,222,128,0.15)] mb-5"
+               style={{ background: "linear-gradient(135deg, rgba(74,222,128,0.06) 0%, rgba(96,165,250,0.06) 50%, rgba(167,139,250,0.06) 100%)" }}>
+            <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse" />
+                  <span className="text-xs font-black text-[#4ADE80] tracking-wider uppercase">Demo Mode</span>
+                </div>
+                <span className="text-xs text-gray-500 hidden sm:inline">— Interactive Sandbox · Add data, explore features, reset anytime</span>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={() => setShowDemoTour(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-[#A78BFA] border border-[rgba(167,139,250,0.25)] hover:bg-[rgba(167,139,250,0.1)] transition-colors"
+                >
+                  <Sparkles size={11} />
+                  Tour
+                </button>
+                <button
+                  onClick={async () => {
+                    if (confirm("Reset all demo data to factory state?")) {
+                      try {
+                        const res = await fetch("/api/demo-reset", { method: "POST" });
+                        if (res.ok) { window.location.reload(); }
+                      } catch (e) { console.error(e); }
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-[#60A5FA] border border-[rgba(96,165,250,0.25)] hover:bg-[rgba(96,165,250,0.1)] transition-colors"
+                >
+                  <RefreshCw size={11} />
+                  Reset
+                </button>
+                <button onClick={() => setDemoBannerDismissed(true)} className="text-gray-600 hover:text-gray-400 transition-colors ml-1">
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Demo Tour Overlay */}
+        <DemoTourOverlay
+          open={showDemoTour}
+          onClose={() => setShowDemoTour(false)}
+          onNavigate={(tab) => switchTab(tab as TabKey)}
+        />
 
         {/* ═══ Premium Dashboard Navigation ═══════════════════════════════════ */}
 

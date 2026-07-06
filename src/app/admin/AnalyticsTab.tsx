@@ -10,9 +10,12 @@ import type { Tenant } from "./TenantsTab";
 import SiteTrafficPanel from "./SiteTrafficPanel";
 
 const SystemArchitectureMap = lazy(() => import("./SystemArchitectureMap"));
+const RealEstateOperationsMap = lazy(() => import("./RealEstateOperationsMap"));
 
 function ArchitectureSection() {
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"system" | "operations">("system");
+
   return (
     <div className="rounded-2xl border overflow-hidden bg-[rgba(255,255,255,0.018)]"
       style={{ borderColor: "rgba(167,139,250,0.18)", boxShadow: "0 0 28px rgba(167,139,250,0.06)" }}>
@@ -25,8 +28,8 @@ function ArchitectureSection() {
             <Cpu size={14} className="text-white" />
           </div>
           <div className="text-left">
-            <p className="text-xs font-black text-white uppercase tracking-widest">System Architecture</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">Interactive data flow map — how everything connects</p>
+            <p className="text-xs font-black text-white uppercase tracking-widest">Platform Schematics & Flows</p>
+            <p className="text-[11px] text-gray-500 mt-0.5">Interactive systems architecture and business operations maps</p>
           </div>
         </div>
         <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-300 ${open ? "rotate-180" : ""}`}
@@ -35,14 +38,38 @@ function ArchitectureSection() {
         </div>
       </button>
       {open && (
-        <div className="px-4 sm:px-5 pb-5 pt-1">
+        <div className="px-4 sm:px-5 pb-5 pt-1 space-y-4">
+          {/* Schematic Selector Tabs */}
+          <div className="flex border-b border-[rgba(255,255,255,0.06)] pb-px">
+            <button
+              onClick={() => setActiveTab("system")}
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+                activeTab === "system"
+                  ? "border-[#A78BFA] text-[#A78BFA]"
+                  : "border-transparent text-gray-500 hover:text-white"
+              }`}
+            >
+              🖥️ System & Data Architecture
+            </button>
+            <button
+              onClick={() => setActiveTab("operations")}
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+                activeTab === "operations"
+                  ? "border-[#A78BFA] text-[#A78BFA]"
+                  : "border-transparent text-gray-500 hover:text-white"
+              }`}
+            >
+              💸 Business Operations & Cash Flow
+            </button>
+          </div>
+
           <Suspense fallback={
             <div className="flex items-center justify-center py-16 gap-2">
               <Loader2 size={16} className="animate-spin text-[#A78BFA]" />
-              <span className="text-sm text-gray-500">Loading architecture map…</span>
+              <span className="text-sm text-gray-500">Loading visualization map…</span>
             </div>
           }>
-            <SystemArchitectureMap />
+            {activeTab === "system" ? <SystemArchitectureMap /> : <RealEstateOperationsMap />}
           </Suspense>
         </div>
       )}
