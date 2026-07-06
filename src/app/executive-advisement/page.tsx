@@ -18,6 +18,9 @@ import { COMPANY } from "@/lib/data";
 import Navigation from "@/components/Navigation";
 import { getSiteContent } from "@/lib/site-content";
 
+// Render on-demand — Supabase fetches time out during static build
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "C-Suite Executive Advisement & Strategic Consulting | Vision LLC, Bristol TN/VA",
   description:

@@ -9,6 +9,9 @@ import CoWorkHeroCarousel from "@/components/CoWorkHeroCarousel";
 import { fetchImageOverrides, resolveAllImages } from "@/lib/property-image-overrides";
 import { getSiteContent } from "@/lib/site-content";
 
+// Render on-demand — Supabase fetches time out during static build
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Bristol CoWork | Private Offices & Coworking | 620 State St, Bristol TN/VA",
   description:

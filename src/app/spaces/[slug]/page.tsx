@@ -12,6 +12,9 @@ import { getSiteContent } from "@/lib/site-content";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// Render on-demand — Supabase fetches time out during static build
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   return SPACE_TYPE_PAGES.map((p) => ({ slug: p.slug }));
 }

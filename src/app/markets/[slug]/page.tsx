@@ -15,6 +15,9 @@ import { GEO_PAGES, COMPANY, PROPERTIES } from "@/lib/data";
 import CustomSearchCTA from "@/components/CustomSearchCTA";
 import { getSiteContent } from "@/lib/site-content";
 
+// Render on-demand — Supabase fetches time out during static build
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

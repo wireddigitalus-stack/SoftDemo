@@ -15,6 +15,7 @@ import { getPropertyOverrides } from "@/lib/site-content";
 
 type Props = { params: Promise<{ id: string }> };
 
+export const dynamic = "force-dynamic";
 export const dynamicParams = true; // allow dynamic property pages without rebuild
 
 async function getDynamicProperty(id: string) {
