@@ -11,6 +11,9 @@ import CustomSearchCTA from "@/components/CustomSearchCTA";
 import { HOMEPAGE_FAQ_SCHEMA } from "@/lib/faq-data";
 import { getAllSiteContent } from "@/lib/site-content";
 
+// Render on-demand — Supabase fetches time out during static build
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Vision LLC | Downtown Ashton's #1 Commercial Real Estate Company",
   description:
